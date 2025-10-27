@@ -1,0 +1,1263 @@
+---
+// src/pages/index.astro
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Austin Nafe - Builder & Creator</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --forest: #2d5016;
+      --ocean: #0077be;
+      --coral: #ff6b6b;
+      --bg: #0a0e27;
+      --bg-light: #1a1f3a;
+      --bg-card: #252b4a;
+      --text: #e8eef7;
+      --text-dim: #8b95b0;
+      --border: #2d3557;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      color: var(--text);
+      background: var(--bg);
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    body {
+      cursor: none;
+    }
+
+    .cursor {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--coral);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transition: transform 0.15s ease, border-color 0.3s;
+      mix-blend-mode: difference;
+    }
+
+    .cursor.hover {
+      transform: scale(2);
+      border-color: var(--ocean);
+    }
+
+    nav {
+      padding: 1.5rem 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(10, 14, 39, 0.8);
+      backdrop-filter: blur(20px);
+      z-index: 100;
+      border-bottom: 1px solid var(--border);
+    }
+
+    nav .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    nav ul {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    nav a {
+      color: var(--text-dim);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s;
+      position: relative;
+    }
+
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--forest), var(--ocean), var(--coral));
+      transition: width 0.3s;
+    }
+
+    nav a:hover {
+      color: var(--text);
+    }
+
+    nav a:hover::after {
+      width: 100%;
+    }
+
+    .hero {
+      padding: 12rem 0 8rem;
+      position: relative;
+      overflow: hidden;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+    }
+
+    .floating-shape {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.3;
+      animation: float 20s infinite ease-in-out;
+    }
+
+    .shape-1 {
+      width: 400px;
+      height: 400px;
+      background: var(--forest);
+      top: 10%;
+      right: 10%;
+    }
+
+    .shape-2 {
+      width: 300px;
+      height: 300px;
+      background: var(--ocean);
+      bottom: 20%;
+      left: 5%;
+      animation-delay: 5s;
+    }
+
+    .shape-3 {
+      width: 350px;
+      height: 350px;
+      background: var(--coral);
+      top: 50%;
+      left: 50%;
+      animation-delay: 10s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      25% { transform: translate(30px, -30px) rotate(90deg); }
+      50% { transform: translate(-20px, 20px) rotate(180deg); }
+      75% { transform: translate(40px, 10px) rotate(270deg); }
+    }
+
+    .hero .container {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-content {
+      display: flex;
+      align-items: center;
+      gap: 4rem;
+    }
+
+    .hero-text {
+      flex: 1;
+    }
+
+    .hero-image {
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--forest), var(--ocean), var(--coral));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8rem;
+      animation: float 6s infinite ease-in-out;
+      box-shadow: 0 20px 60px rgba(0, 119, 190, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-image::before {
+      content: '';
+      position: absolute;
+      inset: 3px;
+      border-radius: 50%;
+      background: var(--bg);
+    }
+
+    .hero-image span {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero h1 {
+      font-size: 5rem;
+      font-weight: 900;
+      margin-bottom: 1rem;
+      line-height: 1;
+      background: linear-gradient(135deg, var(--forest), var(--ocean), var(--coral));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: slideUp 0.8s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hero .subtitle {
+      font-size: 1.8rem;
+      color: var(--text-dim);
+      margin-bottom: 2rem;
+      animation: slideUp 0.8s ease-out 0.2s backwards;
+    }
+
+    .hero .bio {
+      font-size: 1.2rem;
+      color: var(--text-dim);
+      margin-bottom: 3rem;
+      line-height: 1.8;
+      animation: slideUp 0.8s ease-out 0.4s backwards;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      animation: slideUp 0.8s ease-out 0.6s backwards;
+    }
+
+    .btn {
+      padding: 1rem 2.5rem;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 700;
+      transition: all 0.3s;
+      display: inline-block;
+      border: 2px solid transparent;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      transition: width 0.6s, height 0.6s;
+      transform: translate(-50%, -50%);
+    }
+
+    .btn:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--forest), var(--ocean));
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 119, 190, 0.4);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--coral);
+      border-color: var(--coral);
+    }
+
+    .btn-secondary:hover {
+      background: var(--coral);
+      color: white;
+      transform: translateY(-3px);
+    }
+
+    section {
+      padding: 6rem 0;
+      position: relative;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .section-header h2 {
+      font-size: 3rem;
+      font-weight: 900;
+      margin-bottom: 1rem;
+      display: inline-block;
+      position: relative;
+    }
+
+    .section-header h2::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--forest), var(--ocean), var(--coral));
+      border-radius: 2px;
+    }
+
+    .section-header p {
+      font-size: 1.2rem;
+      color: var(--text-dim);
+      margin-top: 1.5rem;
+    }
+
+    .business-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+
+    .business-card {
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 24px;
+      padding: 2.5rem;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .business-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, var(--forest), var(--ocean), var(--coral));
+      transform: scaleX(0);
+      transition: transform 0.4s;
+    }
+
+    .business-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .business-card::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: radial-gradient(circle, var(--ocean)10, transparent);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .business-card:hover::after {
+      width: 500px;
+      height: 500px;
+    }
+
+    .business-card:hover {
+      transform: translateY(-10px) rotate(-1deg);
+      border-color: var(--ocean);
+      box-shadow: 0 20px 60px rgba(0, 119, 190, 0.3);
+    }
+
+    .business-icon {
+      font-size: 3rem;
+      margin-bottom: 1.5rem;
+      display: block;
+      position: relative;
+      z-index: 1;
+      transition: transform 0.4s;
+    }
+
+    .business-card:hover .business-icon {
+      transform: scale(1.2) rotate(10deg);
+    }
+
+    .business-card h3 {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      color: var(--text);
+      position: relative;
+      z-index: 1;
+    }
+
+    .business-card p {
+      color: var(--text-dim);
+      margin-bottom: 1.5rem;
+      position: relative;
+      z-index: 1;
+      line-height: 1.7;
+    }
+
+    .business-link {
+      color: var(--coral);
+      text-decoration: none;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: gap 0.3s;
+      position: relative;
+      z-index: 1;
+    }
+
+    .business-link:hover {
+      gap: 1rem;
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+    }
+
+    .project-card {
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 24px;
+      padding: 2.5rem;
+      transition: all 0.4s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .project-card::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(135deg, var(--forest), var(--ocean), var(--coral));
+      border-radius: 24px;
+      opacity: 0;
+      transition: opacity 0.4s;
+      z-index: -1;
+    }
+
+    .project-card:hover::before {
+      opacity: 1;
+    }
+
+    .project-card:hover {
+      transform: translateY(-10px);
+      border-color: transparent;
+      box-shadow: 0 20px 60px rgba(255, 107, 107, 0.3);
+    }
+
+    .project-card h3 {
+      font-size: 1.6rem;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    .project-card p {
+      color: var(--text-dim);
+      margin-bottom: 1.5rem;
+      line-height: 1.7;
+    }
+
+    .project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .tag {
+      padding: 0.4rem 1rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      transition: all 0.3s;
+    }
+
+    .tag:hover {
+      background: var(--ocean);
+      color: white;
+      border-color: var(--ocean);
+      transform: scale(1.05);
+    }
+
+    .project-link {
+      color: var(--forest);
+      text-decoration: none;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: gap 0.3s;
+    }
+
+    .project-link:hover {
+      gap: 1rem;
+    }
+
+    .personal-projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+
+    .personal-project-card {
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      transition: all 0.3s;
+      text-align: center;
+    }
+
+    .personal-project-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--coral);
+      box-shadow: 0 15px 40px rgba(255, 107, 107, 0.2);
+    }
+
+    .project-emoji {
+      font-size: 3rem;
+      display: block;
+      margin-bottom: 1rem;
+    }
+
+    .personal-project-card h4 {
+      font-size: 1.3rem;
+      margin-bottom: 0.75rem;
+      color: var(--text);
+    }
+
+    .personal-project-card p {
+      color: var(--text-dim);
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+      line-height: 1.6;
+    }
+
+    .project-status {
+      display: inline-block;
+      padding: 0.4rem 1rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+    }
+
+    .blog-categories {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 3rem;
+    }
+
+    .category-btn {
+      padding: 0.75rem 1.5rem;
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      border-radius: 25px;
+      color: var(--text-dim);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .category-btn:hover {
+      border-color: var(--ocean);
+      color: var(--text);
+      transform: translateY(-2px);
+    }
+
+    .category-btn.active {
+      background: linear-gradient(135deg, var(--forest), var(--ocean));
+      color: white;
+      border-color: transparent;
+    }
+
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+    }
+
+    .blog-card {
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      transition: all 0.4s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .blog-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--forest), var(--ocean), var(--coral));
+      transform: scaleX(0);
+      transition: transform 0.4s;
+    }
+
+    .blog-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .blog-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--ocean);
+      box-shadow: 0 15px 40px rgba(0, 119, 190, 0.3);
+    }
+
+    .blog-date {
+      font-size: 0.85rem;
+      color: var(--coral);
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+
+    .blog-card h3 {
+      font-size: 1.4rem;
+      margin-bottom: 0.75rem;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .blog-card p {
+      color: var(--text-dim);
+      margin-bottom: 1.5rem;
+      line-height: 1.7;
+    }
+
+    .blog-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .blog-tag {
+      padding: 0.3rem 0.75rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+
+    .blog-link {
+      color: var(--ocean);
+      text-decoration: none;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: gap 0.3s;
+    }
+
+    .blog-link:hover {
+      gap: 1rem;
+    }
+
+    .blog-card.hidden {
+      display: none;
+    }
+
+    .music-grid {
+      display: grid;
+      gap: 2rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .music-card {
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 24px;
+      overflow: hidden;
+      transition: all 0.4s;
+    }
+
+    .music-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--coral);
+      box-shadow: 0 20px 60px rgba(255, 107, 107, 0.3);
+    }
+
+    .music-embed {
+      width: 100%;
+      height: 166px;
+      border: none;
+    }
+
+    .music-info {
+      padding: 1.5rem;
+    }
+
+    .music-info p {
+      color: var(--text-dim);
+      font-size: 0.95rem;
+    }
+
+    .contact {
+      background: linear-gradient(135deg, var(--bg-light), var(--bg));
+      text-align: center;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .contact-link {
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      border-radius: 24px;
+      padding: 2.5rem 2rem;
+      text-decoration: none;
+      color: var(--text);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .contact-link::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--forest), var(--ocean), var(--coral));
+      transform: scaleX(0);
+      transition: transform 0.4s;
+    }
+
+    .contact-link:hover::before {
+      transform: scaleX(1);
+    }
+
+    .contact-link::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: radial-gradient(circle, var(--coral)10, transparent);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .contact-link:hover::after {
+      width: 400px;
+      height: 400px;
+    }
+
+    .contact-link:hover {
+      transform: translateY(-10px) scale(1.05);
+      border-color: var(--coral);
+      box-shadow: 0 20px 60px rgba(255, 107, 107, 0.4);
+    }
+
+    .contact-icon {
+      font-size: 3rem;
+      transition: transform 0.4s;
+      position: relative;
+      z-index: 1;
+    }
+
+    .contact-link:hover .contact-icon {
+      transform: scale(1.2) rotate(10deg);
+    }
+
+    .contact-label {
+      font-weight: 700;
+      font-size: 1.2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .contact-detail {
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      position: relative;
+      z-index: 1;
+    }
+
+    footer {
+      padding: 3rem 0;
+      text-align: center;
+      border-top: 1px solid var(--border);
+      color: var(--text-dim);
+    }
+
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 3rem;
+      }
+
+      .hero .subtitle {
+        font-size: 1.3rem;
+      }
+
+      .hero-content {
+        flex-direction: column-reverse;
+        gap: 2rem;
+      }
+
+      .hero-image {
+        width: 200px;
+        height: 200px;
+        font-size: 5rem;
+      }
+
+      nav ul {
+        gap: 1rem;
+        font-size: 0.9rem;
+      }
+
+      .section-header h2 {
+        font-size: 2.5rem;
+      }
+
+      body {
+        cursor: auto;
+      }
+
+      .cursor {
+        display: none;
+      }
+
+      .contact-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="cursor"></div>
+
+  <div class="floating-shape shape-1"></div>
+  <div class="floating-shape shape-2"></div>
+  <div class="floating-shape shape-3"></div>
+
+  <nav>
+    <div class="container">
+      <a href="#" class="logo">AN</a>
+      <ul>
+        <li><a href="#businesses">Businesses</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#blog">Blog</a></li>
+        <li><a href="#music">Music</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-text">
+          <h1>Austin Nafe</h1>
+          <p class="subtitle">Builder. Creator. Innovator.</p>
+          <p class="bio">
+            Building AI-powered businesses, crafting code, creating music, and exploring the intersection of technology and creativity.
+          </p>
+          <div class="cta-buttons">
+            <a href="#projects" class="btn btn-primary">View My Work</a>
+            <a href="#contact" class="btn btn-secondary">Get in Touch</a>
+          </div>
+        </div>
+        <div class="hero-image">
+          <span>👤</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="businesses">
+    <div class="container">
+      <div class="section-header">
+        <h2>Ventures</h2>
+        <p>Building the future with AI-powered solutions</p>
+      </div>
+      <div class="business-grid">
+        <div class="business-card">
+          <span class="business-icon">🧠</span>
+          <h3>SelfNVest AI</h3>
+          <p>AI-powered personal development and investment platform helping people grow smarter about their future.</p>
+          <a href="https://www.selfnvestai.com/" target="_blank" class="business-link">
+            Visit Site →
+          </a>
+        </div>
+        <div class="business-card">
+          <span class="business-icon">🎵</span>
+          <h3>TourSync AI</h3>
+          <p>Revolutionizing music tour management with intelligent scheduling and coordination tools.</p>
+          <a href="https://www.instagram.com/toursyncai/" target="_blank" class="business-link">
+            Learn More →
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects">
+    <div class="container">
+      <div class="section-header">
+        <h2>Projects</h2>
+        <p>Building at the intersection of tech, health, and creativity</p>
+      </div>
+      <div class="projects-grid">
+        <div class="project-card">
+          <h3>HRV Detector</h3>
+          <p>Camera-based heart rate variability detection using photoplethysmography. No wearables required - just your phone camera.</p>
+          <div class="project-tags">
+            <span class="tag">JavaScript</span>
+            <span class="tag">Signal Processing</span>
+            <span class="tag">Health Tech</span>
+          </div>
+          <a href="https://github.com/anafe03/hrv-detector" target="_blank" class="project-link">
+            View Project →
+          </a>
+        </div>
+        <div class="project-card">
+          <h3>HDC EEG Classifier</h3>
+          <p>Hyperdimensional computing for real-time brain signal classification. Efficient mental state detection from EEG data.</p>
+          <div class="project-tags">
+            <span class="tag">Python</span>
+            <span class="tag">Neuroscience</span>
+            <span class="tag">HDC</span>
+          </div>
+          <a href="https://github.com/anafe03/hdc-eeg-classifier" target="_blank" class="project-link">
+            View Project →
+          </a>
+        </div>
+        <div class="project-card">
+          <h3>Synesthesia Engine</h3>
+          <p>Audio-visual synesthesia generator that creates personalized visualizations from sound. Train your own synesthetic mappings.</p>
+          <div class="project-tags">
+            <span class="tag">JavaScript</span>
+            <span class="tag">WebGL</span>
+            <span class="tag">Audio Processing</span>
+          </div>
+          <a href="https://github.com/anafe03/synesthesia-engine" target="_blank" class="project-link">
+            View Project →
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="personal-projects">
+    <div class="container">
+      <div class="section-header">
+        <h2>Personal Projects</h2>
+        <p>Quick experiments, weekend hacks, and creative explorations</p>
+      </div>
+      <div class="personal-projects-grid">
+        <div class="personal-project-card">
+          <span class="project-emoji">🎨</span>
+          <h4>Generative Art Studio</h4>
+          <p>Creating visual art with code. Experimenting with algorithms and randomness.</p>
+          <span class="project-status">In Progress</span>
+        </div>
+        <div class="personal-project-card">
+          <span class="project-emoji">🧠</span>
+          <h4>Focus Timer with Binaural Beats</h4>
+          <p>Pomodoro timer that generates binaural beats to enhance concentration.</p>
+          <span class="project-status">Completed</span>
+        </div>
+        <div class="personal-project-card">
+          <span class="project-emoji">📊</span>
+          <h4>Habit Streak Tracker</h4>
+          <p>Minimal habit tracker with beautiful visualizations and streak counting.</p>
+          <span class="project-status">In Progress</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="blog">
+    <div class="container">
+      <div class="section-header">
+        <h2>Blog & Writing</h2>
+        <p>Documenting my journey, sharing insights, and exploring ideas</p>
+      </div>
+      
+      <div class="blog-categories">
+        <button class="category-btn active" onclick="filterBlog('all')">All Posts</button>
+        <button class="category-btn" onclick="filterBlog('technical')">Technical</button>
+        <button class="category-btn" onclick="filterBlog('health')">Health & Wellness</button>
+        <button class="category-btn" onclick="filterBlog('creative')">Creative</button>
+        <button class="category-btn" onclick="filterBlog('thoughts')">Thoughts</button>
+      </div>
+
+      <div class="blog-grid">
+        <article class="blog-card" data-category="technical">
+          <div class="blog-date">Week 1 - In Progress</div>
+          <h3>Building an HRV Detector with JavaScript</h3>
+          <p>Exploring photoplethysmography and signal processing to detect heart rate variability using just a phone camera.</p>
+          <div class="blog-tags">
+            <span class="blog-tag">Signal Processing</span>
+            <span class="blog-tag">JavaScript</span>
+          </div>
+          <a href="#" class="blog-link">Read More →</a>
+        </article>
+
+        <article class="blog-card" data-category="health">
+          <div class="blog-date">Coming Soon</div>
+          <h3>Why HRV Matters for Performance</h3>
+          <p>Understanding heart rate variability and what it tells us about stress, recovery, and overall health.</p>
+          <div class="blog-tags">
+            <span class="blog-tag">Biometrics</span>
+            <span class="blog-tag">Wellness</span>
+          </div>
+          <a href="#" class="blog-link">Read More →</a>
+        </article>
+
+        <article class="blog-card" data-category="technical">
+          <div class="blog-date">Coming Soon</div>
+          <h3>Hyperdimensional Computing for Brain Signals</h3>
+          <p>How HDC offers an efficient alternative to deep learning for real-time EEG classification.</p>
+          <div class="blog-tags">
+            <span class="blog-tag">Neuroscience</span>
+            <span class="blog-tag">ML</span>
+          </div>
+          <a href="#" class="blog-link">Read More →</a>
+        </article>
+
+        <article class="blog-card" data-category="creative">
+          <div class="blog-date">Coming Soon</div>
+          <h3>Building a Synesthesia Engine</h3>
+          <p>Creating personalized audio-visual experiences that mimic synesthetic perception using signal processing and visual generation.</p>
+          <div class="blog-tags">
+            <span class="blog-tag">Audio</span>
+            <span class="blog-tag">Visuals</span>
+            <span class="blog-tag">Neuroscience</span>
+          </div>
+          <a href="#" class="blog-link">Read More →</a>
+        </article>
+
+        <article class="blog-card" data-category="creative">
+          <div class="blog-date">Coming Soon</div>
+          <h3>Music Production as a Developer</h3>
+          <p>Finding creative flow between code and music, and how they inform each other.</p>
+          <div class="blog-tags">
+            <span class="blog-tag">Music</span>
+            <span class="blog-tag">Creativity</span>
+          </div>
+          <a href="#" class="blog-link">Read More →</a>
+        </article>
+
+        <article class="blog-card" data-category="thoughts">
+          <div class="blog-date">Coming Soon</div>
+          <h3>Building at the Intersection</h3>
+          <p>Thoughts on creating at the boundary of technology, health, and creativity.</p>
+          <div class="blog-tags">
+            <span class="blog-tag">Career</span>
+            <span class="blog-tag">Philosophy</span>
+          </div>
+          <a href="#" class="blog-link">Read More →</a>
+        </article>
+
+        <article class="blog-card" data-category="technical">
+          <div class="blog-date">Coming Soon</div>
+          <h3>Signal Processing Fundamentals</h3>
+          <p>A practical guide to filtering, peak detection, and working with physiological signals.</p>
+          <div class="blog-tags">
+            <span class="blog-tag">Tutorial</span>
+            <span class="blog-tag">DSP</span>
+          </div>
+          <a href="#" class="blog-link">Read More →</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="music">
+    <div class="container">
+      <div class="section-header">
+        <h2>Music & Sound</h2>
+        <p>Creating audio experiences and exploring sonic landscapes</p>
+      </div>
+      <div class="music-grid">
+        <div class="music-card">
+          <iframe 
+            class="music-embed"
+            scrolling="no" 
+            frameborder="no" 
+            allow="autoplay" 
+            src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/user-611195779&color=%23ff6b6b&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false">
+          </iframe>
+          <div class="music-info">
+            <p>Check out my latest tracks and audio experiments on SoundCloud</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="contact">
+    <div class="container">
+      <div class="section-header">
+        <h2>Let's Connect</h2>
+        <p>Always open to new opportunities and collaborations</p>
+      </div>
+      <div class="contact-grid">
+        <a href="mailto:austinnafe@aol.com" class="contact-link">
+          <span class="contact-icon">📧</span>
+          <span class="contact-label">Email</span>
+          <span class="contact-detail">austinnafe@aol.com</span>
+        </a>
+        <a href="https://www.linkedin.com/in/austinnafe/" target="_blank" class="contact-link">
+          <span class="contact-icon">💼</span>
+          <span class="contact-label">LinkedIn</span>
+          <span class="contact-detail">@austinnafe</span>
+        </a>
+        <a href="https://github.com/anafe03" target="_blank" class="contact-link">
+          <span class="contact-icon">💻</span>
+          <span class="contact-label">GitHub</span>
+          <span class="contact-detail">@anafe03</span>
+        </a>
+        <a href="https://soundcloud.com/user-611195779" target="_blank" class="contact-link">
+          <span class="contact-icon">🎵</span>
+          <span class="contact-label">SoundCloud</span>
+          <span class="contact-detail">Listen Now</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 Austin Nafe. Built with Astro and passion.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Custom cursor
+    const cursor = document.querySelector('.cursor');
+    const interactiveElements = document.querySelectorAll('a, button, .business-card, .project-card, .music-card, .personal-project-card, .blog-card');
+
+    document.addEventListener('mousemove', (e) => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+    });
+
+    interactiveElements.forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+    });
+
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    // Blog filter functionality
+    window.filterBlog = function(category) {
+      const cards = document.querySelectorAll('.blog-card');
+      const buttons = document.querySelectorAll('.category-btn');
+      
+      // Update active button
+      buttons.forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      // Filter cards
+      cards.forEach(card => {
+        if (category === 'all' || card.dataset.category === category) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+    };
+
+    // Intersection Observer for animations
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -100px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.business-card, .project-card, .personal-project-card, .blog-card, .music-card').forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(30px)';
+      el.style.transition = 'opacity 0.6s, transform 0.6s';
+      observer.observe(el);
+    });
+  </script>
+</body>
+</html>
