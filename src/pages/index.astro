@@ -41,27 +41,6 @@
       padding: 0 2rem;
     }
 
-    body {
-      cursor: none;
-    }
-
-    .cursor {
-      width: 20px;
-      height: 20px;
-      border: 2px solid var(--coral);
-      border-radius: 50%;
-      position: fixed;
-      pointer-events: none;
-      z-index: 9999;
-      transition: transform 0.15s ease, border-color 0.3s;
-      mix-blend-mode: difference;
-    }
-
-    .cursor.hover {
-      transform: scale(2);
-      border-color: var(--ocean);
-    }
-
     nav {
       padding: 1.5rem 0;
       position: fixed;
@@ -193,7 +172,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 8rem;
       animation: float 6s infinite ease-in-out;
       box-shadow: 0 20px 60px rgba(0, 119, 190, 0.4);
       position: relative;
@@ -211,6 +189,85 @@
     .hero-image span {
       position: relative;
       z-index: 1;
+      font-size: 4rem;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      background: linear-gradient(135deg, var(--forest), var(--ocean), var(--coral));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .open-to-work {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 1rem;
+      background: rgba(45, 80, 22, 0.15);
+      border: 1px solid var(--forest);
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #6fcf97;
+      margin-bottom: 1.25rem;
+      animation: slideUp 0.8s ease-out;
+    }
+
+    .open-to-work::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #6fcf97;
+      box-shadow: 0 0 10px #6fcf97;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .now-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .now-card {
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 1.75rem;
+      transition: all 0.3s;
+    }
+
+    .now-card:hover {
+      border-color: var(--ocean);
+      transform: translateY(-4px);
+    }
+
+    .now-card .now-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--coral);
+      margin-bottom: 0.5rem;
+    }
+
+    .now-card h4 {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    .now-card p {
+      font-size: 0.95rem;
+      color: var(--text-dim);
+      line-height: 1.6;
     }
 
     .hero h1 {
@@ -877,14 +934,6 @@
         font-size: 2.5rem;
       }
 
-      body {
-        cursor: auto;
-      }
-
-      .cursor {
-        display: none;
-      }
-
       .contact-grid {
         grid-template-columns: 1fr;
       }
@@ -892,8 +941,6 @@
   </style>
 </head>
 <body>
-  <div class="cursor"></div>
-
   <div class="floating-shape shape-1"></div>
   <div class="floating-shape shape-2"></div>
   <div class="floating-shape shape-3"></div>
@@ -902,10 +949,11 @@
     <div class="container">
       <a href="#" class="logo">AN</a>
       <ul>
-        <li><a href="#businesses">Businesses</a></li>
+        <li><a href="#now">Now</a></li>
+        <li><a href="#businesses">Ventures</a></li>
         <li><a href="#projects">Projects</a></li>
-        <li><a href="#blog">Blog</a></li>
         <li><a href="#music">Music</a></li>
+        <li><a href="/RESUME_2026.pdf" target="_blank">Resume</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
     </div>
@@ -915,18 +963,50 @@
     <div class="container">
       <div class="hero-content">
         <div class="hero-text">
+          <span class="open-to-work">Open to work — AI Engineer / Research</span>
           <h1>Austin Nafe</h1>
-          <p class="subtitle">Builder. Creator. Innovator.</p>
+          <p class="subtitle">AI Engineer. Founder. Pre-Med.</p>
           <p class="bio">
-            Building AI-powered businesses, crafting code, creating music, and exploring the intersection of technology and creativity.
+            I build production AI agents in Python, FastAPI, and LangGraph. Currently looking for roles in AI agents, healthcare tech, and AI research — while shadowing physicians and starting post-bacc chemistry on the path toward medicine.
           </p>
           <div class="cta-buttons">
-            <a href="#projects" class="btn btn-primary">View My Work</a>
+            <a href="/RESUME_2026.pdf" target="_blank" class="btn btn-primary">Download Resume</a>
             <a href="#contact" class="btn btn-secondary">Get in Touch</a>
           </div>
         </div>
         <div class="hero-image">
-          <span>👤</span>
+          <span>AN</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="now">
+    <div class="container">
+      <div class="section-header">
+        <h2>Now</h2>
+        <p>What I'm focused on this season</p>
+      </div>
+      <div class="now-grid">
+        <div class="now-card">
+          <div class="now-label">Building</div>
+          <h4>AI agents for real workflows</h4>
+          <p>Shipping LangGraph + FastAPI agents with persistent memory, schema-mapping, and SMS-based UX.</p>
+        </div>
+        <div class="now-card">
+          <div class="now-label">Pre-Med</div>
+          <h4>Shadowing &amp; chemistry</h4>
+          <p>Shadowing physicians and starting post-bacc chemistry coursework on the path toward medical school.</p>
+        </div>
+        <div class="now-card">
+          <div class="now-label">Researching</div>
+          <h4>Hyperdimensional computing</h4>
+          <p>Exploring HDC for cross-modal integration. Presented at the Science of Consciousness Conference (July 2025).</p>
+        </div>
+        <div class="now-card">
+          <div class="now-label">Looking for</div>
+          <h4>AI / healthcare / research roles</h4>
+          <p>Open to AI engineering, healthcare tech, and AI research positions. Remote or Denver-based preferred.</p>
         </div>
       </div>
     </div>
@@ -936,23 +1016,21 @@
     <div class="container">
       <div class="section-header">
         <h2>Ventures</h2>
-        <p>Building the future with AI-powered solutions</p>
+        <p>Production AI products I've built and shipped</p>
       </div>
       <div class="business-grid">
         <div class="business-card">
-          <span class="business-icon">🧠</span>
-          <h3>SelfNVest AI</h3>
-          <p>AI-powered personal development and investment platform helping people grow smarter about their future.</p>
-          <a href="https://www.selfnvestai.com/" target="_blank" class="business-link">
-            Visit Site →
-          </a>
+          <span class="business-icon">🚐</span>
+          <h3>TM Go</h3>
+          <p>AI-powered tour management platform (formerly TourSync). Python + FastAPI + LangGraph backend with stateful memory, group SMS coordination, and a schema-mapping engine that adapts to any user data format. Deployed on Render with Supabase + Stripe.</p>
+          <span class="business-link" style="color: var(--text-dim);">Site coming soon →</span>
         </div>
         <div class="business-card">
-          <span class="business-icon">🎵</span>
-          <h3>TourSync AI</h3>
-          <p>Revolutionizing music tour management with intelligent scheduling and coordination tools.</p>
-          <a href="https://www.instagram.com/toursyncai/" target="_blank" class="business-link">
-            Learn More →
+          <span class="business-icon">🏠</span>
+          <h3>SelfNVest AI</h3>
+          <p>Full-stack FSBO real estate platform. React + FastAPI + Supabase + Stripe with a LangGraph AI backend handling property inquiries, showing scheduling, and negotiation support with persistent per-user memory.</p>
+          <a href="https://www.selfnvestai.com/" target="_blank" class="business-link">
+            Visit Site →
           </a>
         </div>
       </div>
@@ -968,7 +1046,7 @@
       <div class="projects-grid">
         <div class="project-card">
           <h3>HRV Detector</h3>
-          <p>Camera-based heart rate variability detection using photoplethysmography. No wearables required - just your phone camera.</p>
+          <p>Camera-based heart rate variability detection using photoplethysmography. No wearables required — just your phone camera.</p>
           <div class="project-tags">
             <span class="tag">JavaScript</span>
             <span class="tag">Signal Processing</span>
@@ -980,7 +1058,7 @@
         </div>
         <div class="project-card">
           <h3>HDC EEG Classifier</h3>
-          <p>Hyperdimensional computing for real-time brain signal classification. Efficient mental state detection from EEG data.</p>
+          <p>Hyperdimensional computing for real-time brain signal classification. Efficient mental state detection from EEG data — basis for my Science of Consciousness 2025 talk.</p>
           <div class="project-tags">
             <span class="tag">Python</span>
             <span class="tag">Neuroscience</span>
@@ -1002,132 +1080,17 @@
             View Project →
           </a>
         </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="personal-projects">
-    <div class="container">
-      <div class="section-header">
-        <h2>Personal Projects</h2>
-        <p>Quick experiments, weekend hacks, and creative explorations</p>
-      </div>
-      <div class="personal-projects-grid">
-        <div class="personal-project-card">
-          <span class="project-emoji">🎨</span>
-          <h4>Generative Art Studio</h4>
-          <p>Creating visual art with code. Experimenting with algorithms and randomness.</p>
-          <span class="project-status">In Progress</span>
+        <div class="project-card">
+          <h3>PwC Innovation Hub</h3>
+          <p>Shipped 5+ production AI plugins end-to-end as Senior Associate AI Engineer — including an RFP generator, internal knowledge base connector, and EDGAR search. Spearheaded the AI Factory upskilling program for the data science team.</p>
+          <div class="project-tags">
+            <span class="tag">Python</span>
+            <span class="tag">Azure</span>
+            <span class="tag">LLMs</span>
+            <span class="tag">Enterprise</span>
+          </div>
+          <span class="project-link" style="color: var(--text-dim);">2023 – 2024</span>
         </div>
-        <div class="personal-project-card">
-          <span class="project-emoji">🧠</span>
-          <h4>Focus Timer with Binaural Beats</h4>
-          <p>Pomodoro timer that generates binaural beats to enhance concentration.</p>
-          <span class="project-status">Completed</span>
-        </div>
-        <div class="personal-project-card">
-          <span class="project-emoji">📊</span>
-          <h4>Habit Streak Tracker</h4>
-          <p>Minimal habit tracker with beautiful visualizations and streak counting.</p>
-          <span class="project-status">In Progress</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="blog">
-    <div class="container">
-      <div class="section-header">
-        <h2>Blog & Writing</h2>
-        <p>Documenting my journey, sharing insights, and exploring ideas</p>
-      </div>
-      
-      <div class="blog-categories">
-        <button class="category-btn active" onclick="filterBlog('all')">All Posts</button>
-        <button class="category-btn" onclick="filterBlog('technical')">Technical</button>
-        <button class="category-btn" onclick="filterBlog('health')">Health & Wellness</button>
-        <button class="category-btn" onclick="filterBlog('creative')">Creative</button>
-        <button class="category-btn" onclick="filterBlog('thoughts')">Thoughts</button>
-      </div>
-
-      <div class="blog-grid">
-        <article class="blog-card" data-category="technical">
-          <div class="blog-date">Week 1 - In Progress</div>
-          <h3>Building an HRV Detector with JavaScript</h3>
-          <p>Exploring photoplethysmography and signal processing to detect heart rate variability using just a phone camera.</p>
-          <div class="blog-tags">
-            <span class="blog-tag">Signal Processing</span>
-            <span class="blog-tag">JavaScript</span>
-          </div>
-          <a href="#" class="blog-link">Read More →</a>
-        </article>
-
-        <article class="blog-card" data-category="health">
-          <div class="blog-date">Coming Soon</div>
-          <h3>Why HRV Matters for Performance</h3>
-          <p>Understanding heart rate variability and what it tells us about stress, recovery, and overall health.</p>
-          <div class="blog-tags">
-            <span class="blog-tag">Biometrics</span>
-            <span class="blog-tag">Wellness</span>
-          </div>
-          <a href="#" class="blog-link">Read More →</a>
-        </article>
-
-        <article class="blog-card" data-category="technical">
-          <div class="blog-date">Coming Soon</div>
-          <h3>Hyperdimensional Computing for Brain Signals</h3>
-          <p>How HDC offers an efficient alternative to deep learning for real-time EEG classification.</p>
-          <div class="blog-tags">
-            <span class="blog-tag">Neuroscience</span>
-            <span class="blog-tag">ML</span>
-          </div>
-          <a href="#" class="blog-link">Read More →</a>
-        </article>
-
-        <article class="blog-card" data-category="creative">
-          <div class="blog-date">Coming Soon</div>
-          <h3>Building a Synesthesia Engine</h3>
-          <p>Creating personalized audio-visual experiences that mimic synesthetic perception using signal processing and visual generation.</p>
-          <div class="blog-tags">
-            <span class="blog-tag">Audio</span>
-            <span class="blog-tag">Visuals</span>
-            <span class="blog-tag">Neuroscience</span>
-          </div>
-          <a href="#" class="blog-link">Read More →</a>
-        </article>
-
-        <article class="blog-card" data-category="creative">
-          <div class="blog-date">Coming Soon</div>
-          <h3>Music Production as a Developer</h3>
-          <p>Finding creative flow between code and music, and how they inform each other.</p>
-          <div class="blog-tags">
-            <span class="blog-tag">Music</span>
-            <span class="blog-tag">Creativity</span>
-          </div>
-          <a href="#" class="blog-link">Read More →</a>
-        </article>
-
-        <article class="blog-card" data-category="thoughts">
-          <div class="blog-date">Coming Soon</div>
-          <h3>Building at the Intersection</h3>
-          <p>Thoughts on creating at the boundary of technology, health, and creativity.</p>
-          <div class="blog-tags">
-            <span class="blog-tag">Career</span>
-            <span class="blog-tag">Philosophy</span>
-          </div>
-          <a href="#" class="blog-link">Read More →</a>
-        </article>
-
-        <article class="blog-card" data-category="technical">
-          <div class="blog-date">Coming Soon</div>
-          <h3>Signal Processing Fundamentals</h3>
-          <p>A practical guide to filtering, peak detection, and working with physiological signals.</p>
-          <div class="blog-tags">
-            <span class="blog-tag">Tutorial</span>
-            <span class="blog-tag">DSP</span>
-          </div>
-          <a href="#" class="blog-link">Read More →</a>
-        </article>
       </div>
     </div>
   </section>
@@ -1188,25 +1151,11 @@
 
   <footer>
     <div class="container">
-      <p>&copy; 2025 Austin Nafe. Built with Astro and passion.</p>
+      <p>&copy; 2026 Austin Nafe. Built with Astro.</p>
     </div>
   </footer>
 
   <script>
-    // Custom cursor
-    const cursor = document.querySelector('.cursor');
-    const interactiveElements = document.querySelectorAll('a, button, .business-card, .project-card, .music-card, .personal-project-card, .blog-card');
-
-    document.addEventListener('mousemove', (e) => {
-      cursor.style.left = e.clientX + 'px';
-      cursor.style.top = e.clientY + 'px';
-    });
-
-    interactiveElements.forEach(el => {
-      el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
-      el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
-    });
-
     // Smooth scroll
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function (e) {
@@ -1218,41 +1167,18 @@
       });
     });
 
-    // Blog filter functionality
-    window.filterBlog = function(category) {
-      const cards = document.querySelectorAll('.blog-card');
-      const buttons = document.querySelectorAll('.category-btn');
-      
-      // Update active button
-      buttons.forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
-      
-      // Filter cards
-      cards.forEach(card => {
-        if (category === 'all' || card.dataset.category === category) {
-          card.classList.remove('hidden');
-        } else {
-          card.classList.add('hidden');
-        }
-      });
-    };
-
-    // Intersection Observer for animations
-    const observerOptions = {
-      threshold: 0.1,
-      rootMargin: '0px 0px -100px 0px'
-    };
-
+    // Intersection Observer for fade-in
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          entry.target.style.opacity = '1';
-          entry.target.style.transform = 'translateY(0)';
+          const target = entry.target as HTMLElement;
+          target.style.opacity = '1';
+          target.style.transform = 'translateY(0)';
         }
       });
-    }, observerOptions);
+    }, { threshold: 0.1, rootMargin: '0px 0px -100px 0px' });
 
-    document.querySelectorAll('.business-card, .project-card, .personal-project-card, .blog-card, .music-card').forEach(el => {
+    document.querySelectorAll<HTMLElement>('.business-card, .project-card, .now-card, .music-card').forEach(el => {
       el.style.opacity = '0';
       el.style.transform = 'translateY(30px)';
       el.style.transition = 'opacity 0.6s, transform 0.6s';
