@@ -578,6 +578,31 @@
       gap: 1rem;
     }
 
+    .wip-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.25rem 0.7rem;
+      background: rgba(255, 107, 107, 0.12);
+      border: 1px solid var(--coral);
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--coral);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.75rem;
+    }
+
+    .wip-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--coral);
+      animation: pulse 2s infinite;
+    }
+
     .personal-projects-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -1007,7 +1032,9 @@
           <span class="business-icon">🚐</span>
           <h3>TM Go</h3>
           <p>AI-powered tour management platform (formerly TourSync). Python + FastAPI + LangGraph backend with stateful memory, group SMS coordination, and a schema-mapping engine that adapts to any user data format. Deployed on Render with Supabase + Stripe.</p>
-          <span class="business-link" style="color: var(--text-dim);">Site coming soon →</span>
+          <a href="https://toursync-deploy.vercel.app/" target="_blank" class="business-link">
+            Visit Site →
+          </a>
         </div>
         <div class="business-card">
           <span class="business-icon">🏠</span>
@@ -1063,6 +1090,36 @@
           <a href="https://github.com/anafe03/synesthesia-engine" target="_blank" class="project-link">
             View Project →
           </a>
+        </div>
+        <div class="project-card">
+          <span class="wip-badge">In Progress</span>
+          <h3>RecSys Engine</h3>
+          <p>From-scratch recommender system exploring collaborative filtering, content-based, and hybrid approaches — with a focus on cold-start handling and explainability.</p>
+          <div class="project-tags">
+            <span class="tag">Python</span>
+            <span class="tag">ML</span>
+            <span class="tag">Recommender Systems</span>
+          </div>
+        </div>
+        <div class="project-card">
+          <span class="wip-badge">In Progress</span>
+          <h3>Music Recommender</h3>
+          <p>Audio-feature-driven music recommendation engine. Uses spectral and embedding-based similarity to surface tracks beyond what mainstream platforms suggest.</p>
+          <div class="project-tags">
+            <span class="tag">Python</span>
+            <span class="tag">Audio ML</span>
+            <span class="tag">Embeddings</span>
+          </div>
+        </div>
+        <div class="project-card">
+          <span class="wip-badge">In Progress</span>
+          <h3>Dating Game</h3>
+          <p>An interactive dating game with AI-driven characters and dynamic dialogue — exploring agent personality consistency and player-driven narrative branching.</p>
+          <div class="project-tags">
+            <span class="tag">LangGraph</span>
+            <span class="tag">LLMs</span>
+            <span class="tag">Game Design</span>
+          </div>
         </div>
         <div class="project-card">
           <h3>PwC Innovation Hub</h3>
