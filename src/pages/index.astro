@@ -12,6 +12,9 @@
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <script is:inline src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Fraunces:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Lora:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Serif:wght@400;700&family=IBM+Plex+Mono:wght@400;700&family=JetBrains+Mono:wght@400;700&family=Caveat:wght@400;700&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
@@ -31,6 +34,9 @@
       --text-dim: #8b95b0;
       --border: #2d3557;
       --nav-bg: rgba(10, 14, 39, 0.8);
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
     }
 
     [data-theme="cream"] {
@@ -44,6 +50,7 @@
       --text-dim: #6b5d4a;
       --border: #e3d6b8;
       --nav-bg: rgba(245, 239, 224, 0.85);
+      --font-heading: 'Caveat', cursive;
     }
 
     [data-theme="healthcare"] {
@@ -57,6 +64,7 @@
       --text-dim: #5a7080;
       --border: #d6e3ea;
       --nav-bg: rgba(240, 247, 250, 0.85);
+      --font-heading: 'IBM Plex Serif', Georgia, serif;
     }
 
     [data-theme="adventure"] {
@@ -70,6 +78,7 @@
       --text-dim: #a8b09e;
       --border: #4a5d47;
       --nav-bg: rgba(26, 36, 25, 0.85);
+      --font-heading: 'Lora', Georgia, serif;
     }
 
     [data-theme="creative"] {
@@ -83,6 +92,7 @@
       --text-dim: #b39ddb;
       --border: #4a2b7a;
       --nav-bg: rgba(26, 11, 46, 0.85);
+      --font-heading: 'Space Grotesk', 'Inter', sans-serif;
     }
 
     [data-theme="agents"] {
@@ -96,6 +106,8 @@
       --text-dim: #6b8aae;
       --border: #1f2d50;
       --nav-bg: rgba(5, 8, 23, 0.85);
+      --font-heading: 'JetBrains Mono', ui-monospace, monospace;
+      --font-mono: 'JetBrains Mono', ui-monospace, monospace;
     }
 
     [data-theme="cyber"] {
@@ -109,6 +121,8 @@
       --text-dim: #6b8c6b;
       --border: #2a3a2a;
       --nav-bg: rgba(10, 15, 10, 0.85);
+      --font-body: 'IBM Plex Mono', ui-monospace, monospace;
+      --font-heading: 'IBM Plex Mono', ui-monospace, monospace;
     }
 
     [data-theme="finance"] {
@@ -135,14 +149,19 @@
       --text-dim: #525252;
       --border: #e5e5e5;
       --nav-bg: rgba(255, 255, 255, 0.9);
+      --font-heading: 'Fraunces', Georgia, serif;
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: var(--font-body);
       line-height: 1.6;
       color: var(--text);
       background: var(--bg);
       overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4, .section-header h2, .hero h1 {
+      font-family: var(--font-heading);
     }
 
     .container {
@@ -377,7 +396,7 @@
     }
 
     .business-card.boundless h3 {
-      font-family: var(--font-serif, Georgia, serif);
+      font-family: var(--font-heading);
       font-size: 2rem;
       letter-spacing: -0.02em;
     }
