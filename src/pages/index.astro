@@ -703,8 +703,49 @@
       height: 480px;
       border-radius: 16px;
       border: 2px solid var(--border);
-      margin-bottom: 2.5rem;
+      margin-bottom: 1rem;
       background: var(--bg-light);
+    }
+
+    .path-legend {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 2.5rem;
+      justify-content: center;
+    }
+
+    .legend-year {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.4rem 0.85rem;
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .legend-year i {
+      width: 18px;
+      height: 3px;
+      border-radius: 2px;
+      background: var(--year-color, var(--forest));
+      display: inline-block;
+    }
+
+    .legend-year:hover {
+      transform: translateY(-1px);
+      border-color: var(--year-color, var(--ocean));
+    }
+
+    .legend-year.dim {
+      opacity: 0.35;
     }
 
     .adventure-map .leaflet-popup-content-wrapper {
@@ -2356,6 +2397,7 @@
         <div class="travel-stat current"><span class="travel-stat-num" id="statCurrent">📍 —</span><span class="travel-stat-label">Currently</span></div>
       </div>
       <div id="adventureMap" class="adventure-map"></div>
+      <div class="path-legend" id="pathLegend"></div>
       <div class="places-guide">
         <h3 class="places-guide-title">Pinned places</h3>
         <p class="places-guide-sub">If you're in these cities, here's what I'd actually do.</p>
@@ -2644,16 +2686,34 @@
         maxZoom: 19
       }).addTo(mapInstance);
 
+      // Year palette for the route polyline + legend
+      const yearColors: Record<number, string> = {
+        2019: '#94a3b8', 2020: '#94a3b8', 2021: '#94a3b8', 2022: '#94a3b8',
+        2023: '#6b8e4e',
+        2024: '#d4a574',
+        2025: '#e85d4a',
+        2026: '#dc2626'
+      };
+      const getYear = (d: string): number => {
+        const m = d.match(/\d{4}/);
+        return m ? parseInt(m[0]) : 2023;
+      };
+
+      // Markers
+      const markerByYear: Record<number, any[]> = {};
       placesData.forEach(p => {
         const songs = (p.songs || []).map(id => tracksData.find(t => t.id === id)?.title).filter(Boolean);
         const isCurrent = p.current;
+        const year = getYear(p.date);
+        const color = isCurrent ? '#e85d4a' : (yearColors[year] || '#6b8e4e');
         const icon = L.divIcon({
           className: 'map-pin' + (isCurrent ? ' current' : ''),
           html: `<div style="
-            width:${isCurrent ? 18 : 14}px; height:${isCurrent ? 18 : 14}px;
+            width:${isCurrent ? 18 : 12}px; height:${isCurrent ? 18 : 12}px;
             border-radius:50%;
-            background: ${isCurrent ? '#e85d4a' : '#6b8e4e'};
-            box-shadow: 0 0 0 4px rgba(232,93,74,${isCurrent ? '0.25' : '0'}), 0 2px 8px rgba(0,0,0,0.4);
+            background: ${color};
+            box-shadow: 0 0 0 4px rgba(232,93,74,${isCurrent ? '0.25' : '0'}), 0 2px 6px rgba(0,0,0,0.4);
+            border: 2px solid rgba(255,255,255,0.6);
             ${isCurrent ? 'animation: mapPulse 2s infinite;' : ''}
           "></div>`,
           iconSize: [20, 20],
@@ -2670,7 +2730,50 @@
           <div class="map-popup-note">${p.note}</div>
           ${tagsHtml ? `<div class="map-popup-tags">${tagsHtml}</div>` : ''}
         `);
+        (markerByYear[year] ||= []).push(marker);
       });
+
+      // Route polyline — connect pins in their array order (chronological).
+      // One segment per consecutive pair, colored by destination year.
+      const segmentsByYear: Record<number, any[]> = {};
+      for (let i = 0; i < placesData.length - 1; i++) {
+        const a = placesData[i];
+        const b = placesData[i + 1];
+        const year = getYear(b.date);
+        const seg = L.polyline([a.coords, b.coords], {
+          color: yearColors[year] || '#888',
+          weight: 2,
+          opacity: 0.45,
+          dashArray: '6 8'
+        }).addTo(mapInstance);
+        (segmentsByYear[year] ||= []).push(seg);
+      }
+
+      // Render the year legend below the map. Clicking a year isolates it.
+      const legendEl = document.getElementById('pathLegend');
+      if (legendEl) {
+        const years = Object.keys(yearColors).map(Number).filter(y => segmentsByYear[y] || markerByYear[y]).sort();
+        let activeYear: number | null = null;
+        const render = () => {
+          legendEl.innerHTML = [
+            `<button class="legend-year ${activeYear === null ? '' : 'dim'}" data-year="all" style="--year-color: var(--text-dim)"><i></i>All</button>`,
+            ...years.map(y => `<button class="legend-year ${activeYear !== null && activeYear !== y ? 'dim' : ''}" data-year="${y}" style="--year-color: ${yearColors[y]}"><i></i>${y}</button>`)
+          ].join('');
+          legendEl.querySelectorAll<HTMLButtonElement>('.legend-year').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const v = btn.dataset.year;
+              activeYear = v === 'all' ? null : parseInt(v || '0');
+              years.forEach(y => {
+                const visible = activeYear === null || activeYear === y;
+                (segmentsByYear[y] || []).forEach((s: any) => s.setStyle({ opacity: visible ? 0.55 : 0 }));
+                (markerByYear[y] || []).forEach((m: any) => m.setOpacity(visible ? 1 : 0.15));
+              });
+              render();
+            });
+          });
+        };
+        render();
+      }
     }
 
     // ─── Render: catalog ─────────────────────────────────────────────
