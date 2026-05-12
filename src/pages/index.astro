@@ -1273,7 +1273,7 @@
                 <div class="theme-name">Founder</div>
               </button>
             </div>
-            <p class="settings-note">Themes only swap colors right now. Section reordering and "vibes" framing coming next.</p>
+            <p class="settings-note">Each theme reframes the whole portfolio — colors, hero copy, and section order — for a different audience. Try a few.</p>
           </div>
         </li>
       </ul>
@@ -1284,10 +1284,10 @@
     <div class="container">
       <div class="hero-content">
         <div class="hero-text">
-          <span class="open-to-work">Open to work — AI Engineer / Research</span>
+          <span class="open-to-work" id="openToWork">Open to work — AI Engineer / Research</span>
           <h1>Austin Nafe</h1>
-          <p class="subtitle">AI Engineer. Founder. Researcher.</p>
-          <p class="bio">
+          <p class="subtitle" id="heroSubtitle">AI Engineer. Founder. Researcher.</p>
+          <p class="bio" id="heroBio">
             I build production AI agents in Python, FastAPI, and LangGraph. Currently looking for roles in AI agents, healthcare tech, and AI research.
           </p>
           <div class="cta-buttons">
@@ -1302,6 +1302,7 @@
     </div>
   </section>
 
+  <main id="layout">
   <section id="now">
     <div class="container">
       <div class="section-header">
@@ -1509,6 +1510,7 @@
       </div>
     </div>
   </section>
+  </main>
 
   <footer>
     <div class="container">
@@ -1523,20 +1525,113 @@
 
 
   <script>
-    // Theme switcher
+    // ─── Theme configuration ─────────────────────────────────────────
+    // Each theme defines: section order, hero copy, optional hidden sections.
+    interface ThemeConfig {
+      order: string[];
+      subtitle: string;
+      bio: string;
+      badge: string;
+      hidden?: string[];
+    }
+
+    const themes: Record<string, ThemeConfig> = {
+      midnight: {
+        order: ['now', 'businesses', 'projects', 'music', 'contact'],
+        subtitle: 'AI Engineer. Founder. Researcher.',
+        bio: 'I build production AI agents in Python, FastAPI, and LangGraph. Currently looking for roles in AI agents, healthcare tech, and AI research.',
+        badge: 'Open to work — AI Engineer / Research'
+      },
+      cream: {
+        order: ['music', 'now', 'businesses', 'projects', 'contact'],
+        subtitle: 'Builder. Maker. Tinkerer.',
+        bio: 'I build things. AI agents, music, side projects, startups. This is a slower, warmer corner of the internet — poke around.',
+        badge: 'Open to interesting conversations'
+      },
+      healthcare: {
+        order: ['now', 'projects', 'businesses', 'contact', 'music'],
+        subtitle: 'AI Engineer building healthcare technology.',
+        bio: 'Production AI agents for clinical workflows. Background spans PwC enterprise AI, real-time biosignal processing, and shadowing clinicians — focused on tools that actually fit how medicine is practiced.',
+        badge: 'Open to work — Healthcare AI / Clinical Tech'
+      },
+      adventure: {
+        order: ['now', 'music', 'businesses', 'projects', 'contact'],
+        subtitle: 'Builder. Wanderer. Storyteller.',
+        bio: 'I build software between trail miles and time zones. The best ideas tend to show up somewhere with no service — these are the ones I brought back.',
+        badge: 'Currently — building from the road'
+      },
+      creative: {
+        order: ['music', 'projects', 'businesses', 'now', 'contact'],
+        subtitle: 'Producer. Engineer. Artist.',
+        bio: 'I make music and the tools to make music with. Audio ML, generative systems, and live performance — the rest of the stack is in service of that.',
+        badge: 'Open to creative collaborations'
+      },
+      agents: {
+        order: ['projects', 'now', 'businesses', 'contact', 'music'],
+        subtitle: 'AI Agent Engineer.',
+        bio: 'I ship production multi-step agents — LangGraph, FastAPI, persistent memory, evaluation harnesses, adversarial testing. I care about reliability more than demos.',
+        badge: 'Open to work — Agent Infrastructure / Platform'
+      },
+      cyber: {
+        order: ['projects', 'now', 'businesses', 'contact'],
+        subtitle: 'AI Security Researcher.',
+        bio: 'I red-team AI agents. Octagon explores RL-driven attack policies against agent stacks. PwC background in compliance and risk assessment underwrites the rigor.',
+        badge: 'Open to work — AI Security / Red Team',
+        hidden: ['music']
+      },
+      finance: {
+        order: ['now', 'projects', 'businesses', 'contact'],
+        subtitle: 'AI Engineer. Quant-Curious. Former PwC.',
+        bio: 'Finance + CS undergrad, PwC Innovation Hub alum building AI for banking clients. Comfortable shipping production systems against regulated environments and senior-stakeholder review cycles.',
+        badge: 'Open to work — AI in Financial Services',
+        hidden: ['music']
+      },
+      founder: {
+        order: ['businesses', 'now', 'projects', 'contact'],
+        subtitle: 'Founder. Builder. Operator.',
+        bio: 'Two AI startups in production: TM Go (tour management) and SelfNVest AI (FSBO real estate). Full-stack, from schema to UI to DNS. I prefer shipping over pitching.',
+        badge: 'Open to founder / co-founder conversations',
+        hidden: ['music']
+      }
+    };
+
+    const layout = document.getElementById('layout');
+    const subtitleEl = document.getElementById('heroSubtitle');
+    const bioEl = document.getElementById('heroBio');
+    const badgeEl = document.getElementById('openToWork');
+
+    function applyTheme(theme: string) {
+      const config = themes[theme] || themes.midnight;
+      document.body.setAttribute('data-theme', theme);
+
+      if (subtitleEl) subtitleEl.textContent = config.subtitle;
+      if (bioEl) bioEl.textContent = config.bio;
+      if (badgeEl) badgeEl.textContent = config.badge;
+
+      if (layout) {
+        // Reorder + show/hide sections
+        const all = ['now', 'businesses', 'projects', 'music', 'contact'];
+        all.forEach(id => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          el.style.display = config.hidden?.includes(id) ? 'none' : '';
+        });
+        config.order.forEach(id => {
+          const el = document.getElementById(id);
+          if (el && !config.hidden?.includes(id)) layout.appendChild(el);
+        });
+      }
+
+      document.querySelectorAll<HTMLElement>('.theme-option').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.setTheme === theme);
+      });
+    }
+
     const savedTheme = localStorage.getItem('theme') || 'midnight';
-    document.body.setAttribute('data-theme', savedTheme);
+    applyTheme(savedTheme);
 
     const settingsBtn = document.getElementById('settingsBtn');
     const settingsPanel = document.getElementById('settingsPanel');
-
-    function syncActiveTheme() {
-      const current = document.body.getAttribute('data-theme');
-      document.querySelectorAll<HTMLElement>('.theme-option').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.setTheme === current);
-      });
-    }
-    syncActiveTheme();
 
     settingsBtn?.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -1553,9 +1648,8 @@
       btn.addEventListener('click', () => {
         const theme = btn.dataset.setTheme;
         if (!theme) return;
-        document.body.setAttribute('data-theme', theme);
         localStorage.setItem('theme', theme);
-        syncActiveTheme();
+        applyTheme(theme);
       });
     });
 
