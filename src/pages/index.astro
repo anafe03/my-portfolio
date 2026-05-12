@@ -8,6 +8,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Austin Nafe - Builder & Creator</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script is:inline src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
   <style>
     * {
       margin: 0;
@@ -653,6 +657,328 @@
 
     .studio-cat li:last-child {
       border-bottom: none;
+    }
+
+    /* ─── Journey / Map (Adventure only) ────────────────── */
+    .travel-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+    }
+
+    .travel-stat {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      text-align: center;
+    }
+
+    .travel-stat-num {
+      font-family: 'Lora', Georgia, serif;
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .travel-stat.current .travel-stat-num {
+      color: var(--coral);
+      font-size: 1.25rem;
+    }
+
+    .travel-stat-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-dim);
+      font-weight: 700;
+    }
+
+    .adventure-map {
+      width: 100%;
+      height: 480px;
+      border-radius: 16px;
+      border: 2px solid var(--border);
+      margin-bottom: 2.5rem;
+      background: var(--bg-light);
+    }
+
+    .adventure-map .leaflet-popup-content-wrapper {
+      background: var(--bg-card);
+      color: var(--text);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .adventure-map .leaflet-popup-content {
+      margin: 0.75rem 1rem;
+      font-family: inherit;
+    }
+
+    .adventure-map .leaflet-popup-tip {
+      background: var(--bg-card);
+    }
+
+    .map-popup-city {
+      font-family: 'Lora', Georgia, serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 0.1rem;
+    }
+
+    .map-popup-date {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      font-style: italic;
+      margin-bottom: 0.4rem;
+    }
+
+    .map-popup-note {
+      font-size: 0.85rem;
+      line-height: 1.4;
+      margin-bottom: 0.4rem;
+    }
+
+    .map-popup-tags {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      margin-top: 0.4rem;
+    }
+
+    .map-popup-tag {
+      font-size: 0.7rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 10px;
+      background: var(--bg-light);
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+    }
+
+    .places-guide-title {
+      font-family: 'Lora', Georgia, serif;
+      font-size: 1.6rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .places-guide-sub {
+      color: var(--text-dim);
+      font-style: italic;
+      margin-bottom: 1.5rem;
+    }
+
+    .places-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .place-card {
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      transition: all 0.3s;
+    }
+
+    .place-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--forest);
+    }
+
+    .place-card h4 {
+      font-family: 'Lora', Georgia, serif;
+      font-size: 1.15rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .place-card p {
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
+    /* ─── Catalog / Tracks (Creative only) ──────────────── */
+    .track-filters {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+      justify-content: center;
+    }
+
+    .track-filter {
+      padding: 0.45rem 1rem;
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      color: var(--text-dim);
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .track-filter:hover {
+      border-color: var(--ocean);
+      color: var(--text);
+    }
+
+    .track-filter.active {
+      background: linear-gradient(135deg, var(--forest), var(--ocean));
+      color: white;
+      border-color: transparent;
+    }
+
+    .tracks-list {
+      display: grid;
+      gap: 0.75rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .track-row {
+      display: grid;
+      grid-template-columns: 50px 1fr auto;
+      gap: 1rem;
+      align-items: center;
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      transition: all 0.2s;
+    }
+
+    .track-row:hover {
+      border-color: var(--coral);
+      transform: translateX(4px);
+    }
+
+    .track-num {
+      font-family: 'IBM Plex Mono', monospace;
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      text-align: center;
+    }
+
+    .track-main {
+      min-width: 0;
+    }
+
+    .track-title {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+    }
+
+    .track-meta {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+
+    .track-meta-tag {
+      padding: 0.15rem 0.55rem;
+      border-radius: 10px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+    }
+
+    .track-meta-tag.place {
+      color: var(--coral);
+      border-color: var(--coral);
+      cursor: pointer;
+    }
+
+    .track-actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .track-play {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--coral);
+      color: var(--bg);
+      border: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    .track-play:hover {
+      transform: scale(1.1);
+    }
+
+    .track-status {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      padding: 0.25rem 0.6rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    /* ─── Videos (Creative only) ────────────────────────── */
+    .videos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .video-card {
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .video-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--ocean);
+    }
+
+    .video-thumb {
+      aspect-ratio: 16 / 9;
+      background: linear-gradient(135deg, var(--bg-card), var(--bg));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-dim);
+      font-size: 2.5rem;
+      position: relative;
+    }
+
+    .video-thumb iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    .video-info {
+      padding: 1rem 1.25rem;
+    }
+
+    .video-title {
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .video-date {
+      font-size: 0.8rem;
+      color: var(--text-dim);
     }
 
     .hero h1 {
@@ -2016,6 +2342,48 @@
       </div>
     </div>
   </section>
+
+  <section id="journey">
+    <div class="container">
+      <div class="section-header">
+        <h2>Journey</h2>
+        <p>Where I've been, where I'm at, what got made along the way</p>
+      </div>
+      <div class="travel-stats">
+        <div class="travel-stat"><span class="travel-stat-num" id="statStates">—</span><span class="travel-stat-label">States</span></div>
+        <div class="travel-stat"><span class="travel-stat-num" id="statCountries">—</span><span class="travel-stat-label">Countries</span></div>
+        <div class="travel-stat"><span class="travel-stat-num" id="statPlaces">—</span><span class="travel-stat-label">Pinned</span></div>
+        <div class="travel-stat current"><span class="travel-stat-num" id="statCurrent">📍 —</span><span class="travel-stat-label">Currently</span></div>
+      </div>
+      <div id="adventureMap" class="adventure-map"></div>
+      <div class="places-guide">
+        <h3 class="places-guide-title">Pinned places</h3>
+        <p class="places-guide-sub">If you're in these cities, here's what I'd actually do.</p>
+        <div class="places-grid" id="placesGrid"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="tracks">
+    <div class="container">
+      <div class="section-header">
+        <h2>Catalog</h2>
+        <p>Every track. Tagged by mood, BPM, and where it was made.</p>
+      </div>
+      <div class="track-filters" id="trackFilters"></div>
+      <div class="tracks-list" id="tracksList"></div>
+    </div>
+  </section>
+
+  <section id="videos">
+    <div class="container">
+      <div class="section-header">
+        <h2>Video</h2>
+        <p>Sessions, performances, experiments</p>
+      </div>
+      <div class="videos-grid" id="videosGrid"></div>
+    </div>
+  </section>
   </main>
 
   <footer>
@@ -2031,6 +2399,237 @@
 
 
   <script>
+    // ─── Adventure / Creative data ───────────────────────────────────
+    // Swap this for your real data later. Place IDs are the join key
+    // between map pins and tracks/projects.
+    interface Place {
+      id: string;
+      city: string;
+      coords: [number, number];
+      date: string;
+      note: string;
+      country?: string;
+      current?: boolean;
+      songs?: string[];
+      projects?: string[];
+      guide?: string; // local recommendation
+    }
+    interface Track {
+      id: string;
+      title: string;
+      bpm?: number;
+      musicalKey?: string;
+      tags: string[];
+      placeId?: string;
+      soundcloudUrl?: string;
+      status?: 'released' | 'unreleased' | 'sketch';
+    }
+    interface Video {
+      id: string;
+      title: string;
+      date: string;
+      youtubeId?: string;
+    }
+
+    const placesData: Place[] = [
+      { id: 'denver', city: 'Denver, CO', coords: [39.7392, -104.9903], date: '2026-05', country: 'USA', current: true,
+        note: 'Currently building from here. Trail running + Boundless Horizons.',
+        guide: 'Coffee at Sweet Bloom. Trail at Mt. Sanitas in Boulder before sunrise.',
+        songs: ['t1'], projects: ['boundless', 'tm-go'] },
+      { id: 'south-bend', city: 'South Bend, IN', coords: [41.6764, -86.252], date: '2025-07', country: 'USA',
+        note: 'TM Go from a kitchen table. First customers using the platform live.',
+        guide: 'Studebaker for the bourbon list. Tippy Creek for the paddleboarding.',
+        songs: ['t2'], projects: ['tm-go'] },
+      { id: 'tucson', city: 'Tucson, AZ', coords: [32.2226, -110.9747], date: '2025-07', country: 'USA',
+        note: 'Presented HDC research at Science of Consciousness. Desert nights.',
+        guide: 'Sky Bar for the telescope nights. Mt. Lemmon for the elevation reset.',
+        songs: ['t3'], projects: ['hdc'] },
+      { id: 'louisville', city: 'Louisville, KY', coords: [38.2527, -85.7585], date: '2025-04', country: 'USA',
+        note: 'SelfNVest summit. Built the auth tier on a hotel desk.',
+        projects: ['selfnvest'] },
+      { id: 'chicago', city: 'Chicago, IL', coords: [41.8781, -87.6298], date: '2023-09', country: 'USA',
+        note: 'PwC Innovation Hub. Built the RFP generator at 2am here.',
+        guide: 'Spacca Napoli pizza. Lakefront trail at any hour.',
+        projects: ['pwc'] },
+      { id: 'bloomington', city: 'Bloomington, IN', coords: [39.1653, -86.5264], date: '2020-05', country: 'USA',
+        note: 'IU undergrad. Finance + CS, AI specialization. Where it started.',
+        guide: 'Crazy Horse for cheap fries. Griffy Lake to actually think.' },
+      { id: 'boulder', city: 'Boulder, CO', coords: [40.015, -105.2705], date: '2026-03', country: 'USA',
+        note: 'Coffee + alt + canyon runs.',
+        guide: 'Boxcar Coffee. Sanitas Valley trail. Avery for the IPAs.' }
+    ];
+
+    const tracksData: Track[] = [
+      { id: 't1', title: 'Mountain Time', bpm: 128, musicalKey: 'Am', tags: ['synthwave', 'released'], placeId: 'denver', status: 'released' },
+      { id: 't2', title: 'Kitchen Table Beats', bpm: 95, musicalKey: 'Cm', tags: ['lo-fi', 'sketch'], placeId: 'south-bend', status: 'sketch' },
+      { id: 't3', title: 'Hyperdimensional', bpm: 140, musicalKey: 'Em', tags: ['ambient', 'released'], placeId: 'tucson', status: 'released' },
+      { id: 't4', title: 'After Hours', bpm: 110, musicalKey: 'Gm', tags: ['house', 'released'], status: 'released' },
+      { id: 't5', title: 'Trail Run', bpm: 174, musicalKey: 'F#m', tags: ['dnb', 'released'], status: 'released' },
+      { id: 't6', title: 'PwC Sessions', bpm: 90, musicalKey: 'Dm', tags: ['lo-fi', 'unreleased'], placeId: 'chicago', status: 'unreleased' },
+      { id: 't7', title: 'Desert Drift', bpm: 122, musicalKey: 'F', tags: ['ambient', 'sketch'], placeId: 'tucson', status: 'sketch' }
+    ];
+
+    const videosData: Video[] = [
+      { id: 'v1', title: 'Studio session — Mountain Time', date: '2026 · Denver' },
+      { id: 'v2', title: 'Live patch demo', date: '2025 · South Bend' },
+      { id: 'v3', title: 'HDC research talk', date: '2025 · Tucson' }
+    ];
+
+    // ─── Render: travel stats ────────────────────────────────────────
+    function renderTravelStats() {
+      const states = new Set(placesData.filter(p => p.country === 'USA').map(p => p.city.split(',')[1]?.trim())).size;
+      const countries = new Set(placesData.map(p => p.country).filter(Boolean)).size;
+      const current = placesData.find(p => p.current);
+      const set = (id: string, val: string) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = val;
+      };
+      set('statStates', String(states));
+      set('statCountries', String(countries));
+      set('statPlaces', String(placesData.length));
+      set('statCurrent', current ? `📍 ${current.city.split(',')[0]}` : '📍 —');
+    }
+
+    // ─── Render: places guide ────────────────────────────────────────
+    function renderPlacesGuide() {
+      const grid = document.getElementById('placesGrid');
+      if (!grid) return;
+      const withGuide = placesData.filter(p => p.guide);
+      grid.innerHTML = withGuide.map(p => `
+        <div class="place-card">
+          <h4>${p.city}</h4>
+          <p>${p.guide}</p>
+        </div>
+      `).join('');
+    }
+
+    // ─── Render: map ─────────────────────────────────────────────────
+    let mapInstance: any = null;
+    function initMap() {
+      const container = document.getElementById('adventureMap');
+      if (!container || typeof (window as any).L === 'undefined') return;
+      if (mapInstance) {
+        mapInstance.invalidateSize();
+        return;
+      }
+      const L = (window as any).L;
+      mapInstance = L.map(container, { scrollWheelZoom: false, zoomControl: true })
+        .setView([39.5, -98.35], 4);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap &copy; CARTO',
+        subdomains: 'abcd',
+        maxZoom: 19
+      }).addTo(mapInstance);
+
+      placesData.forEach(p => {
+        const songs = (p.songs || []).map(id => tracksData.find(t => t.id === id)?.title).filter(Boolean);
+        const isCurrent = p.current;
+        const icon = L.divIcon({
+          className: 'map-pin' + (isCurrent ? ' current' : ''),
+          html: `<div style="
+            width:${isCurrent ? 18 : 14}px; height:${isCurrent ? 18 : 14}px;
+            border-radius:50%;
+            background: ${isCurrent ? '#e85d4a' : '#6b8e4e'};
+            box-shadow: 0 0 0 4px rgba(232,93,74,${isCurrent ? '0.25' : '0'}), 0 2px 8px rgba(0,0,0,0.4);
+            ${isCurrent ? 'animation: mapPulse 2s infinite;' : ''}
+          "></div>`,
+          iconSize: [20, 20],
+          iconAnchor: [10, 10]
+        });
+        const marker = L.marker(p.coords, { icon }).addTo(mapInstance);
+        const tagsHtml = [
+          ...(songs.length ? [`🎵 ${songs.length} track${songs.length > 1 ? 's' : ''}`] : []),
+          ...(p.projects?.length ? [`🛠 ${p.projects.length} project${p.projects.length > 1 ? 's' : ''}`] : [])
+        ].map(t => `<span class="map-popup-tag">${t}</span>`).join('');
+        marker.bindPopup(`
+          <div class="map-popup-city">${p.city}${isCurrent ? ' · here now' : ''}</div>
+          <div class="map-popup-date">${p.date}</div>
+          <div class="map-popup-note">${p.note}</div>
+          ${tagsHtml ? `<div class="map-popup-tags">${tagsHtml}</div>` : ''}
+        `);
+      });
+    }
+
+    // ─── Render: catalog ─────────────────────────────────────────────
+    let activeFilter = 'all';
+
+    function renderTrackFilters() {
+      const wrap = document.getElementById('trackFilters');
+      if (!wrap) return;
+      const allTags = new Set<string>(['all']);
+      tracksData.forEach(t => t.tags.forEach(tag => allTags.add(tag)));
+      wrap.innerHTML = Array.from(allTags).map(tag => `
+        <button class="track-filter ${tag === activeFilter ? 'active' : ''}" data-filter="${tag}">${tag}</button>
+      `).join('');
+      wrap.querySelectorAll<HTMLButtonElement>('.track-filter').forEach(btn => {
+        btn.addEventListener('click', () => {
+          activeFilter = btn.dataset.filter || 'all';
+          renderTrackFilters();
+          renderTracks();
+        });
+      });
+    }
+
+    function renderTracks() {
+      const list = document.getElementById('tracksList');
+      if (!list) return;
+      const filtered = activeFilter === 'all'
+        ? tracksData
+        : tracksData.filter(t => t.tags.includes(activeFilter));
+      list.innerHTML = filtered.map((t, i) => {
+        const place = t.placeId ? placesData.find(p => p.id === t.placeId) : null;
+        const placeTag = place ? `<span class="track-meta-tag place">📍 ${place.city.split(',')[0]}</span>` : '';
+        const bpmTag = t.bpm ? `<span class="track-meta-tag">${t.bpm} BPM</span>` : '';
+        const keyTag = t.musicalKey ? `<span class="track-meta-tag">${t.musicalKey}</span>` : '';
+        const tagPills = t.tags.map(tag => `<span class="track-meta-tag">${tag}</span>`).join('');
+        const status = t.status ? `<span class="track-status">${t.status}</span>` : '';
+        return `
+          <div class="track-row">
+            <div class="track-num">${String(i + 1).padStart(2, '0')}</div>
+            <div class="track-main">
+              <div class="track-title">${t.title}</div>
+              <div class="track-meta">${bpmTag}${keyTag}${placeTag}${tagPills}</div>
+            </div>
+            <div class="track-actions">
+              ${status}
+              <button class="track-play" aria-label="Play ${t.title}">▶</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ─── Render: videos ──────────────────────────────────────────────
+    function renderVideos() {
+      const grid = document.getElementById('videosGrid');
+      if (!grid) return;
+      grid.innerHTML = videosData.map(v => `
+        <div class="video-card">
+          <div class="video-thumb">
+            ${v.youtubeId
+              ? `<iframe src="https://www.youtube.com/embed/${v.youtubeId}" allowfullscreen></iframe>`
+              : `🎬`}
+          </div>
+          <div class="video-info">
+            <div class="video-title">${v.title}</div>
+            <div class="video-date">${v.date}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Render everything that's data-driven once at load
+    renderTravelStats();
+    renderPlacesGuide();
+    renderTrackFilters();
+    renderTracks();
+    renderVideos();
+
+    // Map pulse keyframe (injected once)
+    const styleEl = document.createElement('style');
+    styleEl.textContent = '@keyframes mapPulse { 0%,100% { box-shadow: 0 0 0 4px rgba(232,93,74,0.25), 0 2px 8px rgba(0,0,0,0.4); } 50% { box-shadow: 0 0 0 12px rgba(232,93,74,0); 0 2px 8px rgba(0,0,0,0.4); } }';
+    document.head.appendChild(styleEl);
+
     // ─── Theme configuration ─────────────────────────────────────────
     // Each theme defines: section order, hero copy, optional hidden sections.
     interface ThemeConfig {
@@ -2041,7 +2640,7 @@
     }
 
     // Section IDs that may be present. Visibility is driven entirely by config.order.
-    const ALL_SECTIONS = ['now', 'businesses', 'projects', 'music', 'contact', 'picks', 'portfolio', 'dispatches', 'studio'];
+    const ALL_SECTIONS = ['now', 'businesses', 'projects', 'music', 'contact', 'picks', 'portfolio', 'dispatches', 'studio', 'journey', 'tracks', 'videos'];
 
     const themes: Record<string, ThemeConfig> = {
       midnight: {
@@ -2063,13 +2662,13 @@
         badge: 'Open to work — Healthcare AI / Clinical Tech'
       },
       adventure: {
-        order: ['now', 'dispatches', 'music', 'businesses', 'projects', 'contact'],
+        order: ['journey', 'now', 'dispatches', 'music', 'businesses', 'projects', 'contact'],
         subtitle: 'Builder. Wanderer. Storyteller.',
         bio: 'I build software between trail miles and time zones. The best ideas tend to show up somewhere with no service — these are the ones I brought back.',
         badge: 'Currently — building from the road'
       },
       creative: {
-        order: ['music', 'studio', 'projects', 'businesses', 'now', 'contact'],
+        order: ['music', 'tracks', 'videos', 'studio', 'projects', 'businesses', 'now', 'contact'],
         subtitle: 'Producer. Engineer. Artist.',
         bio: 'I make music and the tools to make music with. Audio ML, generative systems, and live performance — the rest of the stack is in service of that.',
         badge: 'Open to creative collaborations'
@@ -2137,6 +2736,11 @@
       document.querySelectorAll<HTMLElement>('.theme-option').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.setTheme === theme);
       });
+
+      // Adventure map needs init/resize once its container becomes visible.
+      if (theme === 'adventure') {
+        requestAnimationFrame(() => initMap());
+      }
     }
 
     const savedTheme = localStorage.getItem('theme') || 'midnight';
