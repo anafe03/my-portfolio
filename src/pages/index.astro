@@ -452,6 +452,120 @@
       line-height: 1.6;
     }
 
+    /* ─── Portfolio (Finance only) ──────────────────────── */
+    .portfolio-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+    }
+
+    .stat-tile {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      padding: 0.5rem 1rem;
+      border-right: 1px solid var(--border);
+    }
+
+    .stat-tile:last-child {
+      border-right: none;
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-dim);
+      font-weight: 700;
+    }
+
+    .stat-value {
+      font-family: 'IBM Plex Mono', 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    .stat-value.positive { color: #4ade80; }
+    .stat-value.negative { color: #f87171; }
+
+    .positions-table {
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .position-row {
+      display: grid;
+      grid-template-columns: 90px 80px 80px 90px 1fr;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+
+    .position-row:last-child {
+      border-bottom: none;
+    }
+
+    .position-row:not(.position-head):hover {
+      background: var(--bg-card);
+    }
+
+    .position-head {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-dim);
+      font-weight: 800;
+      background: var(--bg-card);
+    }
+
+    .position-ticker {
+      font-family: 'IBM Plex Mono', 'JetBrains Mono', ui-monospace, monospace;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: var(--text);
+    }
+
+    .position-alloc, .position-entry {
+      font-family: 'IBM Plex Mono', 'JetBrains Mono', ui-monospace, monospace;
+      color: var(--text-dim);
+    }
+
+    .position-thesis {
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+
+    .portfolio-footnote {
+      margin-top: 1.25rem;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      font-style: italic;
+      text-align: center;
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    }
+
+    @media (max-width: 720px) {
+      .position-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+      }
+      .position-row.position-head { display: none; }
+      .position-thesis { grid-column: 1 / -1; font-size: 0.85rem; }
+      .stat-tile { border-right: none; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; }
+      .stat-tile:last-child { border-bottom: none; }
+    }
+
     /* ─── Dispatches (Adventure only) ───────────────────── */
     .dispatches-list {
       display: grid;
@@ -1696,11 +1810,98 @@
     </div>
   </section>
 
+  <section id="portfolio">
+    <div class="container">
+      <div class="section-header">
+        <h2>Portfolio</h2>
+        <p>Current positions. Allocations only — no dollar values. Self-reported, illustrative, not investment advice.</p>
+      </div>
+      <div class="portfolio-stats">
+        <div class="stat-tile">
+          <span class="stat-label">YTD</span>
+          <span class="stat-value positive">+18.4%</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-label">Alpha vs SPY</span>
+          <span class="stat-value positive">+6.2%</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-label">Sharpe</span>
+          <span class="stat-value">1.4</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-label">Positions</span>
+          <span class="stat-value">6</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-label">Beta</span>
+          <span class="stat-value">0.92</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-label">Max DD</span>
+          <span class="stat-value negative">−8.1%</span>
+        </div>
+      </div>
+      <div class="positions-table">
+        <div class="position-row position-head">
+          <span>Ticker</span>
+          <span>Alloc</span>
+          <span>Entry</span>
+          <span>Stance</span>
+          <span class="position-thesis">Thesis</span>
+        </div>
+        <div class="position-row">
+          <span class="position-ticker">VOO</span>
+          <span class="position-alloc">30%</span>
+          <span class="position-entry">2022</span>
+          <span class="pick-conviction long">Core</span>
+          <span class="position-thesis">Index core. The benchmark we're trying to beat — partially by owning it.</span>
+        </div>
+        <div class="position-row">
+          <span class="position-ticker">NVDA</span>
+          <span class="position-alloc">22%</span>
+          <span class="position-entry">2024</span>
+          <span class="pick-conviction long">Long</span>
+          <span class="position-thesis">Highest-conviction single-name. Every agent I ship is paying rent to Jensen.</span>
+        </div>
+        <div class="position-row">
+          <span class="position-ticker">ANET</span>
+          <span class="position-alloc">12%</span>
+          <span class="position-entry">2025</span>
+          <span class="pick-conviction long">Long</span>
+          <span class="position-thesis">Quiet networking play under the AI capex tsunami. Hyperscaler ramp is the catalyst.</span>
+        </div>
+        <div class="position-row">
+          <span class="position-ticker">TSM</span>
+          <span class="position-alloc">10%</span>
+          <span class="position-entry">2025</span>
+          <span class="pick-conviction long">Long</span>
+          <span class="position-thesis">Semis diversification beyond NVDA. Geopolitical risk is the discount.</span>
+        </div>
+        <div class="position-row">
+          <span class="position-ticker">PLTR</span>
+          <span class="position-alloc">8%</span>
+          <span class="position-entry">2025</span>
+          <span class="pick-conviction long">Long</span>
+          <span class="position-thesis">Government revenue is stickier than the bears underwrite. Trimmed on rips.</span>
+        </div>
+        <div class="position-row">
+          <span class="position-ticker">CASH</span>
+          <span class="position-alloc">18%</span>
+          <span class="position-entry">Always</span>
+          <span class="pick-conviction watch">Dry</span>
+          <span class="position-thesis">T-bills paying real yield. Optionality on the next drawdown.</span>
+        </div>
+      </div>
+      <p class="portfolio-footnote">Updated May 2026 · Personal account · Pre-tax · Vibes-adjusted</p>
+    </div>
+  </section>
+
   <section id="picks">
     <div class="container">
       <div class="section-header">
         <h2>My Picks</h2>
-        <p>Live watchlist. Conviction-weighted, opinion-only, not investment advice.</p>
+        <p>Watchlist of names I have an opinion on but don't necessarily own.</p>
       </div>
       <div class="picks-grid">
         <div class="pick-card">
@@ -1840,7 +2041,7 @@
     }
 
     // Section IDs that may be present. Visibility is driven entirely by config.order.
-    const ALL_SECTIONS = ['now', 'businesses', 'projects', 'music', 'contact', 'picks', 'dispatches', 'studio'];
+    const ALL_SECTIONS = ['now', 'businesses', 'projects', 'music', 'contact', 'picks', 'portfolio', 'dispatches', 'studio'];
 
     const themes: Record<string, ThemeConfig> = {
       midnight: {
@@ -1886,7 +2087,7 @@
         badge: 'Open to work — AI Security / Red Team'
       },
       finance: {
-        order: ['now', 'picks', 'projects', 'businesses', 'contact'],
+        order: ['now', 'portfolio', 'picks', 'projects', 'businesses', 'contact'],
         subtitle: 'AI Engineer. Quant-Curious. Former PwC.',
         bio: 'Finance + CS undergrad, PwC Innovation Hub alum building AI for banking clients. Comfortable shipping production systems against regulated environments and senior-stakeholder review cycles.',
         badge: 'Open to work — AI in Financial Services'
