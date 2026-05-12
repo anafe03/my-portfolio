@@ -362,6 +362,185 @@
       line-height: 1.6;
     }
 
+    /* ─── Boundless Horizons (Founder only) ─────────────── */
+    .business-card.boundless {
+      background: linear-gradient(135deg, var(--bg-light), var(--bg-card));
+      position: relative;
+    }
+
+    .business-card.boundless::before {
+      transform: scaleX(1);
+    }
+
+    .business-card.boundless h3 {
+      font-family: var(--font-serif, Georgia, serif);
+      font-size: 2rem;
+      letter-spacing: -0.02em;
+    }
+
+    /* ─── My Picks (Finance only) ───────────────────────── */
+    .picks-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .pick-card {
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      transition: all 0.3s;
+    }
+
+    .pick-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--forest);
+    }
+
+    .pick-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .pick-ticker {
+      font-family: 'IBM Plex Mono', 'JetBrains Mono', ui-monospace, monospace;
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: 0.05em;
+      color: var(--text);
+    }
+
+    .pick-conviction {
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+    }
+
+    .pick-conviction.long {
+      background: rgba(45, 134, 89, 0.15);
+      color: #4ade80;
+      border: 1px solid #4ade80;
+    }
+
+    .pick-conviction.watch {
+      background: rgba(212, 175, 55, 0.15);
+      color: #d4af37;
+      border: 1px solid #d4af37;
+    }
+
+    .pick-conviction.avoid {
+      background: rgba(220, 38, 38, 0.15);
+      color: #f87171;
+      border: 1px solid #f87171;
+    }
+
+    .pick-card h4 {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    .pick-card p {
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    /* ─── Dispatches (Adventure only) ───────────────────── */
+    .dispatches-list {
+      display: grid;
+      gap: 1.5rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .dispatch {
+      background: var(--bg-light);
+      border-left: 4px solid var(--forest);
+      border-radius: 4px 16px 16px 4px;
+      padding: 1.5rem 2rem;
+      transition: all 0.3s;
+    }
+
+    .dispatch:hover {
+      transform: translateX(6px);
+      border-left-color: var(--coral);
+    }
+
+    .dispatch-meta {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      margin-bottom: 0.5rem;
+      font-family: 'Lora', Georgia, serif;
+      font-style: italic;
+    }
+
+    .dispatch-date {
+      font-weight: 700;
+      color: var(--coral);
+    }
+
+    .dispatch h4 {
+      font-family: 'Lora', Georgia, serif;
+      font-size: 1.4rem;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    .dispatch p {
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+
+    /* ─── Studio (Creative only) ────────────────────────── */
+    .studio-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .studio-cat {
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+    }
+
+    .studio-cat h4 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--coral);
+      margin-bottom: 1rem;
+      font-weight: 800;
+    }
+
+    .studio-cat ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .studio-cat li {
+      padding: 0.4rem 0;
+      color: var(--text-dim);
+      border-bottom: 1px dashed var(--border);
+      font-size: 0.95rem;
+    }
+
+    .studio-cat li:last-child {
+      border-bottom: none;
+    }
+
     .hero h1 {
       font-size: 5rem;
       font-weight: 900;
@@ -1336,6 +1515,12 @@
         <p>Production AI products I've built and shipped</p>
       </div>
       <div class="business-grid">
+        <div class="business-card boundless" data-theme-only="founder">
+          <span class="business-icon">∞</span>
+          <h3>Boundless Horizons</h3>
+          <p><em>We use AI to make your dream a reality.</em> An AI-native creation engine that turns intention into outcome — businesses, songs, careers, lives. Stealth. Pre-Seed. Hiring exceptional individuals.</p>
+          <span class="business-link" style="color: var(--text-dim);">Stealth — by invitation →</span>
+        </div>
         <div class="business-card">
           <span class="business-icon">🚐</span>
           <h3>TM Go</h3>
@@ -1510,6 +1695,126 @@
       </div>
     </div>
   </section>
+
+  <section id="picks">
+    <div class="container">
+      <div class="section-header">
+        <h2>My Picks</h2>
+        <p>Live watchlist. Conviction-weighted, opinion-only, not investment advice.</p>
+      </div>
+      <div class="picks-grid">
+        <div class="pick-card">
+          <div class="pick-head">
+            <span class="pick-ticker">NVDA</span>
+            <span class="pick-conviction long">Long</span>
+          </div>
+          <h4>Picks &amp; shovels of the agent era</h4>
+          <p>Every agent I ship pays rent to Jensen. Customer concentration risk in any other name; here it's the bull thesis.</p>
+        </div>
+        <div class="pick-card">
+          <div class="pick-head">
+            <span class="pick-ticker">PLTR</span>
+            <span class="pick-conviction long">Long</span>
+          </div>
+          <h4>Quietly shipping while everyone argues</h4>
+          <p>Valuation is rich, execution is real, government revenue is sticky in a way the bears keep underweighting.</p>
+        </div>
+        <div class="pick-card">
+          <div class="pick-head">
+            <span class="pick-ticker">COIN</span>
+            <span class="pick-conviction watch">Watch</span>
+          </div>
+          <h4>Toll booth on digital scarcity</h4>
+          <p>Custody moat is real; derivatives ramp is underappreciated. Waiting on a cleaner technical setup.</p>
+        </div>
+        <div class="pick-card">
+          <div class="pick-head">
+            <span class="pick-ticker">"GPT-for-X"</span>
+            <span class="pick-conviction avoid">Avoid</span>
+          </div>
+          <h4>Wrapper SaaS without a moat</h4>
+          <p>Gross margin disappears the day OpenAI ships the equivalent feature. Most aren't deep enough in workflow to defend it.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="dispatches">
+    <div class="container">
+      <div class="section-header">
+        <h2>Dispatches</h2>
+        <p>Field notes from the road</p>
+      </div>
+      <div class="dispatches-list">
+        <article class="dispatch">
+          <div class="dispatch-meta">
+            <span class="dispatch-date">May 2026</span>
+            <span class="dispatch-loc">📍 Denver, CO</span>
+          </div>
+          <h4>Trailhead debugging</h4>
+          <p>Twelve miles before opening the laptop. The best line of code I wrote all week showed up at mile nine. The trail does what coffee can't.</p>
+        </article>
+        <article class="dispatch">
+          <div class="dispatch-meta">
+            <span class="dispatch-date">Apr 2026</span>
+            <span class="dispatch-loc">📍 South Bend, IN</span>
+          </div>
+          <h4>TM Go beta from a kitchen table</h4>
+          <p>First customers using the platform live. Every product decision is closer to the user than it's ever been — and the map on the wall keeps growing.</p>
+        </article>
+        <article class="dispatch">
+          <div class="dispatch-meta">
+            <span class="dispatch-date">Jul 2025</span>
+            <span class="dispatch-loc">📍 Tucson, AZ</span>
+          </div>
+          <h4>Presenting HDC research</h4>
+          <p>Science of Consciousness Conference. Spoke about hyperdimensional computing as a substrate for cross-modal cognition. Left with more questions than answers — the right ratio.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="studio">
+    <div class="container">
+      <div class="section-header">
+        <h2>Studio</h2>
+        <p>What I use to make sound</p>
+      </div>
+      <div class="studio-grid">
+        <div class="studio-cat">
+          <h4>DAW</h4>
+          <ul>
+            <li>Ableton Live</li>
+            <li>Logic Pro</li>
+          </ul>
+        </div>
+        <div class="studio-cat">
+          <h4>Synthesis</h4>
+          <ul>
+            <li>Serum</li>
+            <li>Vital</li>
+            <li>Diva</li>
+          </ul>
+        </div>
+        <div class="studio-cat">
+          <h4>Hardware</h4>
+          <ul>
+            <li>Push 2</li>
+            <li>SM7B</li>
+            <li>UAD Apollo</li>
+          </ul>
+        </div>
+        <div class="studio-cat">
+          <h4>Process</h4>
+          <ul>
+            <li>Voice memos first</li>
+            <li>One take per session</li>
+            <li>Ship before you tweak</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
   </main>
 
   <footer>
@@ -1532,8 +1837,10 @@
       subtitle: string;
       bio: string;
       badge: string;
-      hidden?: string[];
     }
+
+    // Section IDs that may be present. Visibility is driven entirely by config.order.
+    const ALL_SECTIONS = ['now', 'businesses', 'projects', 'music', 'contact', 'picks', 'dispatches', 'studio'];
 
     const themes: Record<string, ThemeConfig> = {
       midnight: {
@@ -1551,47 +1858,44 @@
       healthcare: {
         order: ['now', 'projects', 'businesses', 'contact', 'music'],
         subtitle: 'AI Engineer building healthcare technology.',
-        bio: 'Production AI agents for clinical workflows. Background spans PwC enterprise AI, real-time biosignal processing, and shadowing clinicians — focused on tools that actually fit how medicine is practiced.',
+        bio: 'Production AI agents for clinical workflows. Background spans PwC enterprise AI, real-time biosignal processing, and time in clinical settings — focused on tools that fit how medicine is actually practiced.',
         badge: 'Open to work — Healthcare AI / Clinical Tech'
       },
       adventure: {
-        order: ['now', 'music', 'businesses', 'projects', 'contact'],
+        order: ['now', 'dispatches', 'music', 'businesses', 'projects', 'contact'],
         subtitle: 'Builder. Wanderer. Storyteller.',
         bio: 'I build software between trail miles and time zones. The best ideas tend to show up somewhere with no service — these are the ones I brought back.',
         badge: 'Currently — building from the road'
       },
       creative: {
-        order: ['music', 'projects', 'businesses', 'now', 'contact'],
+        order: ['music', 'studio', 'projects', 'businesses', 'now', 'contact'],
         subtitle: 'Producer. Engineer. Artist.',
         bio: 'I make music and the tools to make music with. Audio ML, generative systems, and live performance — the rest of the stack is in service of that.',
         badge: 'Open to creative collaborations'
       },
       agents: {
-        order: ['projects', 'now', 'businesses', 'contact', 'music'],
+        order: ['projects', 'now', 'businesses', 'contact'],
         subtitle: 'AI Agent Engineer.',
-        bio: 'I ship production multi-step agents — LangGraph, FastAPI, persistent memory, evaluation harnesses, adversarial testing. I care about reliability more than demos.',
+        bio: 'I ship production multi-step agents — LangGraph, FastAPI, persistent memory, evaluation harnesses, adversarial testing. Reliability over demos.',
         badge: 'Open to work — Agent Infrastructure / Platform'
       },
       cyber: {
         order: ['projects', 'now', 'businesses', 'contact'],
         subtitle: 'AI Security Researcher.',
-        bio: 'I red-team AI agents. Octagon explores RL-driven attack policies against agent stacks. PwC background in compliance and risk assessment underwrites the rigor.',
-        badge: 'Open to work — AI Security / Red Team',
-        hidden: ['music']
+        bio: 'I red-team AI agents. Octagon explores RL-driven attack policies against agent stacks. PwC background in compliance and risk underwrites the rigor.',
+        badge: 'Open to work — AI Security / Red Team'
       },
       finance: {
-        order: ['now', 'projects', 'businesses', 'contact'],
+        order: ['now', 'picks', 'projects', 'businesses', 'contact'],
         subtitle: 'AI Engineer. Quant-Curious. Former PwC.',
         bio: 'Finance + CS undergrad, PwC Innovation Hub alum building AI for banking clients. Comfortable shipping production systems against regulated environments and senior-stakeholder review cycles.',
-        badge: 'Open to work — AI in Financial Services',
-        hidden: ['music']
+        badge: 'Open to work — AI in Financial Services'
       },
       founder: {
         order: ['businesses', 'now', 'projects', 'contact'],
         subtitle: 'Founder. Builder. Operator.',
-        bio: 'Two AI startups in production: TM Go (tour management) and SelfNVest AI (FSBO real estate). Full-stack, from schema to UI to DNS. I prefer shipping over pitching.',
-        badge: 'Open to founder / co-founder conversations',
-        hidden: ['music']
+        bio: 'Three ventures in motion — Boundless Horizons (stealth), TM Go (tour management), SelfNVest AI (FSBO real estate). Full-stack, from schema to UI to DNS. I ship.',
+        badge: 'Open to founder / co-founder conversations'
       }
     };
 
@@ -1609,18 +1913,25 @@
       if (badgeEl) badgeEl.textContent = config.badge;
 
       if (layout) {
-        // Reorder + show/hide sections
-        const all = ['now', 'businesses', 'projects', 'music', 'contact'];
-        all.forEach(id => {
+        // Hide every section by default — config.order is the source of truth for what's shown.
+        ALL_SECTIONS.forEach(id => {
           const el = document.getElementById(id);
-          if (!el) return;
-          el.style.display = config.hidden?.includes(id) ? 'none' : '';
+          if (el) el.style.display = 'none';
         });
         config.order.forEach(id => {
           const el = document.getElementById(id);
-          if (el && !config.hidden?.includes(id)) layout.appendChild(el);
+          if (el) {
+            el.style.display = '';
+            layout.appendChild(el);
+          }
         });
       }
+
+      // Per-card visibility: data-theme-only="founder,finance" shows only on those themes.
+      document.querySelectorAll<HTMLElement>('[data-theme-only]').forEach(el => {
+        const list = (el.dataset.themeOnly || '').split(',').map(s => s.trim());
+        el.style.display = list.includes(theme) ? '' : 'none';
+      });
 
       document.querySelectorAll<HTMLElement>('.theme-option').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.setTheme === theme);
