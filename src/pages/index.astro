@@ -15,7 +15,8 @@
       box-sizing: border-box;
     }
 
-    :root {
+    :root,
+    [data-theme="midnight"] {
       --forest: #2d5016;
       --ocean: #0077be;
       --coral: #ff6b6b;
@@ -25,6 +26,111 @@
       --text: #e8eef7;
       --text-dim: #8b95b0;
       --border: #2d3557;
+      --nav-bg: rgba(10, 14, 39, 0.8);
+    }
+
+    [data-theme="cream"] {
+      --forest: #c4621a;
+      --ocean: #e8651c;
+      --coral: #d94a0f;
+      --bg: #f5efe0;
+      --bg-light: #faf6ec;
+      --bg-card: #ffffff;
+      --text: #2a1f10;
+      --text-dim: #6b5d4a;
+      --border: #e3d6b8;
+      --nav-bg: rgba(245, 239, 224, 0.85);
+    }
+
+    [data-theme="healthcare"] {
+      --forest: #14b8a6;
+      --ocean: #0ea5e9;
+      --coral: #f87171;
+      --bg: #f0f7fa;
+      --bg-light: #ffffff;
+      --bg-card: #ffffff;
+      --text: #0f2740;
+      --text-dim: #5a7080;
+      --border: #d6e3ea;
+      --nav-bg: rgba(240, 247, 250, 0.85);
+    }
+
+    [data-theme="adventure"] {
+      --forest: #6b8e4e;
+      --ocean: #d4a574;
+      --coral: #e85d4a;
+      --bg: #1a2419;
+      --bg-light: #2a3a28;
+      --bg-card: #354733;
+      --text: #f5f1e8;
+      --text-dim: #a8b09e;
+      --border: #4a5d47;
+      --nav-bg: rgba(26, 36, 25, 0.85);
+    }
+
+    [data-theme="creative"] {
+      --forest: #ec4899;
+      --ocean: #8b5cf6;
+      --coral: #fbbf24;
+      --bg: #1a0b2e;
+      --bg-light: #2d1457;
+      --bg-card: #3d1f6b;
+      --text: #faf3ff;
+      --text-dim: #b39ddb;
+      --border: #4a2b7a;
+      --nav-bg: rgba(26, 11, 46, 0.85);
+    }
+
+    [data-theme="agents"] {
+      --forest: #00d9b2;
+      --ocean: #3b82f6;
+      --coral: #c084fc;
+      --bg: #050817;
+      --bg-light: #0e1530;
+      --bg-card: #161e3d;
+      --text: #e2f3ff;
+      --text-dim: #6b8aae;
+      --border: #1f2d50;
+      --nav-bg: rgba(5, 8, 23, 0.85);
+    }
+
+    [data-theme="cyber"] {
+      --forest: #00ff41;
+      --ocean: #ff003c;
+      --coral: #ffb700;
+      --bg: #0a0f0a;
+      --bg-light: #131a13;
+      --bg-card: #1a241a;
+      --text: #d8ffd8;
+      --text-dim: #6b8c6b;
+      --border: #2a3a2a;
+      --nav-bg: rgba(10, 15, 10, 0.85);
+    }
+
+    [data-theme="finance"] {
+      --forest: #d4af37;
+      --ocean: #2d8659;
+      --coral: #b08d57;
+      --bg: #0c1419;
+      --bg-light: #16222b;
+      --bg-card: #1e2d39;
+      --text: #f0e9d2;
+      --text-dim: #8a9aa8;
+      --border: #2a3d4d;
+      --nav-bg: rgba(12, 20, 25, 0.85);
+    }
+
+    [data-theme="founder"] {
+      --forest: #dc2626;
+      --ocean: #0a0a0a;
+      --coral: #f59e0b;
+      --bg: #ffffff;
+      --bg-light: #fafafa;
+      --bg-card: #ffffff;
+      --text: #0a0a0a;
+      --text-dim: #525252;
+      --border: #e5e5e5;
+      --nav-bg: rgba(255, 255, 255, 0.9);
     }
 
     body {
@@ -47,7 +153,7 @@
       top: 0;
       left: 0;
       right: 0;
-      background: rgba(10, 14, 39, 0.8);
+      background: var(--nav-bg);
       backdrop-filter: blur(20px);
       z-index: 100;
       border-bottom: 1px solid var(--border);
@@ -915,6 +1021,118 @@
       color: var(--text-dim);
     }
 
+    .settings-btn {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      z-index: 200;
+      transition: all 0.3s;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    }
+
+    .settings-btn:hover {
+      transform: rotate(45deg) scale(1.05);
+      border-color: var(--ocean);
+    }
+
+    .settings-panel {
+      position: fixed;
+      bottom: 6.5rem;
+      right: 2rem;
+      width: 360px;
+      max-height: calc(100vh - 8rem);
+      overflow-y: auto;
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      padding: 1.5rem;
+      z-index: 199;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
+      pointer-events: none;
+      transition: opacity 0.3s, transform 0.3s;
+    }
+
+    .settings-panel.open {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .settings-panel h4 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      margin-bottom: 0.75rem;
+      font-weight: 700;
+    }
+
+    .theme-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.6rem;
+      margin-bottom: 1rem;
+    }
+
+    .theme-option {
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 0.6rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+      color: var(--text);
+      font-family: inherit;
+    }
+
+    .theme-option:hover {
+      border-color: var(--ocean);
+    }
+
+    .theme-option.active {
+      border-color: var(--coral);
+      box-shadow: 0 0 0 1px var(--coral);
+    }
+
+    .theme-swatch {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 0.5rem;
+    }
+
+    .theme-swatch span {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+    }
+
+    .theme-option .theme-name {
+      font-size: 0.75rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .settings-note {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      line-height: 1.4;
+    }
+
     @media (max-width: 768px) {
       .hero h1 {
         font-size: 3rem;
@@ -1204,7 +1422,123 @@
     </div>
   </footer>
 
+  <button class="settings-btn" id="settingsBtn" aria-label="Open settings">⚙</button>
+  <div class="settings-panel" id="settingsPanel" role="dialog" aria-label="Settings">
+    <h4>Theme</h4>
+    <div class="theme-options">
+      <button class="theme-option" data-set-theme="midnight">
+        <div class="theme-swatch">
+          <span style="background: #0a0e27"></span>
+          <span style="background: #0077be"></span>
+          <span style="background: #ff6b6b"></span>
+        </div>
+        <div class="theme-name">Midnight</div>
+      </button>
+      <button class="theme-option" data-set-theme="cream">
+        <div class="theme-swatch">
+          <span style="background: #f5efe0"></span>
+          <span style="background: #e8651c"></span>
+          <span style="background: #c4621a"></span>
+        </div>
+        <div class="theme-name">Cream</div>
+      </button>
+      <button class="theme-option" data-set-theme="healthcare">
+        <div class="theme-swatch">
+          <span style="background: #f0f7fa"></span>
+          <span style="background: #0ea5e9"></span>
+          <span style="background: #14b8a6"></span>
+        </div>
+        <div class="theme-name">Healthcare</div>
+      </button>
+      <button class="theme-option" data-set-theme="adventure">
+        <div class="theme-swatch">
+          <span style="background: #1a2419"></span>
+          <span style="background: #6b8e4e"></span>
+          <span style="background: #e85d4a"></span>
+        </div>
+        <div class="theme-name">Adventure</div>
+      </button>
+      <button class="theme-option" data-set-theme="creative">
+        <div class="theme-swatch">
+          <span style="background: #1a0b2e"></span>
+          <span style="background: #ec4899"></span>
+          <span style="background: #fbbf24"></span>
+        </div>
+        <div class="theme-name">Creative</div>
+      </button>
+      <button class="theme-option" data-set-theme="agents">
+        <div class="theme-swatch">
+          <span style="background: #050817"></span>
+          <span style="background: #00d9b2"></span>
+          <span style="background: #3b82f6"></span>
+        </div>
+        <div class="theme-name">AI Agents</div>
+      </button>
+      <button class="theme-option" data-set-theme="cyber">
+        <div class="theme-swatch">
+          <span style="background: #0a0f0a"></span>
+          <span style="background: #00ff41"></span>
+          <span style="background: #ff003c"></span>
+        </div>
+        <div class="theme-name">Cyber Risk</div>
+      </button>
+      <button class="theme-option" data-set-theme="finance">
+        <div class="theme-swatch">
+          <span style="background: #0c1419"></span>
+          <span style="background: #d4af37"></span>
+          <span style="background: #2d8659"></span>
+        </div>
+        <div class="theme-name">Finance</div>
+      </button>
+      <button class="theme-option" data-set-theme="founder">
+        <div class="theme-swatch">
+          <span style="background: #ffffff"></span>
+          <span style="background: #dc2626"></span>
+          <span style="background: #f59e0b"></span>
+        </div>
+        <div class="theme-name">Founder</div>
+      </button>
+    </div>
+    <p class="settings-note">Themes only swap colors right now. Section reordering and "vibes" framing coming next.</p>
+  </div>
+
   <script>
+    // Theme switcher
+    const savedTheme = localStorage.getItem('theme') || 'midnight';
+    document.body.setAttribute('data-theme', savedTheme);
+
+    const settingsBtn = document.getElementById('settingsBtn');
+    const settingsPanel = document.getElementById('settingsPanel');
+
+    function syncActiveTheme() {
+      const current = document.body.getAttribute('data-theme');
+      document.querySelectorAll<HTMLElement>('.theme-option').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.setTheme === current);
+      });
+    }
+    syncActiveTheme();
+
+    settingsBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      settingsPanel?.classList.toggle('open');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!settingsPanel?.contains(e.target as Node) && e.target !== settingsBtn) {
+        settingsPanel?.classList.remove('open');
+      }
+    });
+
+    document.querySelectorAll<HTMLElement>('.theme-option').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const theme = btn.dataset.setTheme;
+        if (!theme) return;
+        document.body.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+        syncActiveTheme();
+      });
+    });
+
     // Smooth scroll
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function (e) {
