@@ -2443,6 +2443,89 @@
       color: var(--text-dim);
     }
 
+    /* ─── Creative music-poster ─────────────────────────── */
+    [data-theme="creative"] .hero {
+      padding-top: 8rem;
+    }
+
+    [data-theme="creative"] .hero h1 {
+      font-family: var(--font-heading);
+      font-size: clamp(4rem, 11vw, 9rem);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 0.85;
+      text-transform: uppercase;
+      background: none;
+      -webkit-text-fill-color: var(--text);
+      color: var(--text);
+      text-shadow:
+        3px 3px 0 var(--coral),
+        6px 6px 0 var(--forest),
+        9px 9px 0 var(--ocean);
+    }
+
+    [data-theme="creative"] .hero .subtitle {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: 0.95rem;
+    }
+
+    [data-theme="creative"] .section-header h2 {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+    }
+
+    /* Halftone grain overlay (Creative only) */
+    [data-theme="creative"] body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+      opacity: 0.35;
+      mix-blend-mode: overlay;
+    }
+
+    /* Equalizer bars at the bottom of track rows */
+    [data-theme="creative"] .track-row {
+      position: relative;
+      overflow: hidden;
+    }
+
+    [data-theme="creative"] .track-row::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background-image:
+        repeating-linear-gradient(90deg,
+          var(--coral) 0 6px,
+          transparent 6px 14px);
+      opacity: 0.6;
+    }
+
+    /* Project / business cards lean into the neon */
+    [data-theme="creative"] .project-card:hover,
+    [data-theme="creative"] .business-card:hover {
+      box-shadow:
+        0 0 0 1px var(--coral),
+        0 0 30px rgba(251, 191, 36, 0.4),
+        0 0 60px rgba(236, 72, 153, 0.25);
+    }
+
+    [data-theme="creative"] .floating-shape {
+      opacity: 0.5;
+      filter: blur(80px);
+    }
+
     /* ─── AI Agents terminal ────────────────────────────── */
     [data-theme="agents"] .hero h1 {
       font-family: var(--font-mono);
