@@ -2879,6 +2879,20 @@
       transform: scale(1.1);
     }
 
+    .track-row-wrap {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .track-embed {
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .track-embed:empty {
+      display: none;
+    }
+
     .track-status {
       font-size: 0.7rem;
       text-transform: uppercase;
@@ -6077,6 +6091,8 @@
       tags: string[];
       placeId?: string;
       soundcloudUrl?: string;
+      youtubeId?: string;
+      coverArt?: string;
       status?: 'released' | 'unreleased' | 'sketch';
     }
     interface Video {
@@ -6183,6 +6199,7 @@
     const ROUTINES_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/1o6R_to7wVQAndivz3In-eirSRvWI6-enMbG-8BbO98o/gviz/tq?tqx=out:csv';
     const NOTEBOOK_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/1DaOwzQCLs8GkE0U6zqUb1rfI-AmZLA84ooYTggGdPA0/gviz/tq?tqx=out:csv';
     const PHOTOS_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/1uGSQM-TjzktzoqBhSsgeh7peNZJNlkkKMqLnTnIzzO4/gviz/tq?tqx=out:csv';
+    const TRACKS_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/11LrsaEV5jS6V8MUJLyHt1pr5pplqXy1Aa0-wEQSS2mI/gviz/tq?tqx=out:csv';
 
     async function fetchSheet(url: string): Promise<Record<string, string>[]> {
       if (!url) return [];
@@ -7150,25 +7167,76 @@
         : tracksData.filter(t => t.tags.includes(activeFilter));
       list.innerHTML = filtered.map((t, i) => {
         const place = t.placeId ? placesData.find(p => p.id === t.placeId) : null;
-        const placeTag = place ? `<span class="track-meta-tag place">📍 ${place.city.split(',')[0]}</span>` : '';
+        const placeTag = place ? `<span class="track-meta-tag place">📍 ${escapeHTML(place.city.split(',')[0])}</span>` : '';
         const bpmTag = t.bpm ? `<span class="track-meta-tag">${t.bpm} BPM</span>` : '';
-        const keyTag = t.musicalKey ? `<span class="track-meta-tag">${t.musicalKey}</span>` : '';
-        const tagPills = t.tags.map(tag => `<span class="track-meta-tag">${tag}</span>`).join('');
-        const status = t.status ? `<span class="track-status">${t.status}</span>` : '';
+        const keyTag = t.musicalKey ? `<span class="track-meta-tag">${escapeHTML(t.musicalKey)}</span>` : '';
+        const tagPills = t.tags.map(tag => `<span class="track-meta-tag">${escapeHTML(tag)}</span>`).join('');
+        const status = t.status ? `<span class="track-status">${escapeHTML(t.status)}</span>` : '';
+        const scBtn = t.soundcloudUrl ? `<button class="track-play" data-toggle="sc" data-track="${escapeHTML(t.id)}" aria-label="Play SoundCloud">▶</button>` : '';
+        const ytBtn = t.youtubeId ? `<button class="track-play yt" data-toggle="yt" data-track="${escapeHTML(t.id)}" aria-label="Watch video">📺</button>` : '';
         return `
-          <div class="track-row">
-            <div class="track-num">${String(i + 1).padStart(2, '0')}</div>
-            <div class="track-main">
-              <div class="track-title">${t.title}</div>
-              <div class="track-meta">${bpmTag}${keyTag}${placeTag}${tagPills}</div>
+          <div class="track-row-wrap" data-track-id="${escapeHTML(t.id)}">
+            <div class="track-row">
+              <div class="track-num">${String(i + 1).padStart(2, '0')}</div>
+              <div class="track-main">
+                <div class="track-title">${escapeHTML(t.title)}</div>
+                <div class="track-meta">${bpmTag}${keyTag}${placeTag}${tagPills}</div>
+              </div>
+              <div class="track-actions">
+                ${status}
+                ${scBtn}
+                ${ytBtn}
+              </div>
             </div>
-            <div class="track-actions">
-              ${status}
-              <button class="track-play" aria-label="Play ${t.title}">▶</button>
-            </div>
+            <div class="track-embed" data-embed-type=""></div>
           </div>
         `;
       }).join('');
+
+      list.querySelectorAll<HTMLElement>('[data-toggle]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const wrap = btn.closest('.track-row-wrap') as HTMLElement | null;
+          if (!wrap) return;
+          const embed = wrap.querySelector('.track-embed') as HTMLElement | null;
+          if (!embed) return;
+          const trackId = wrap.dataset.trackId;
+          const t = tracksData.find(x => x.id === trackId);
+          if (!t) return;
+          const type = btn.dataset.toggle;
+          if (embed.dataset.embedType === type) {
+            embed.innerHTML = '';
+            embed.dataset.embedType = '';
+            return;
+          }
+          if (type === 'sc' && t.soundcloudUrl) {
+            const url = encodeURIComponent(t.soundcloudUrl);
+            embed.innerHTML = `<iframe scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=${url}&color=%23ec4899&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false" style="width:100%;height:120px;border:0;border-radius:0 0 12px 12px;display:block;"></iframe>`;
+            embed.dataset.embedType = 'sc';
+          } else if (type === 'yt' && t.youtubeId) {
+            embed.innerHTML = `<iframe src="https://www.youtube.com/embed/${encodeURIComponent(t.youtubeId)}" allow="autoplay; encrypted-media" allowfullscreen style="width:100%;aspect-ratio:16/9;border:0;border-radius:0 0 12px 12px;display:block;"></iframe>`;
+            embed.dataset.embedType = 'yt';
+          }
+        });
+      });
+    }
+
+    async function syncTracks() {
+      const rows = await fetchSheet(TRACKS_SHEET_CSV);
+      if (!rows.length) return;
+      tracksData = rows.map(r => ({
+        id: r.id || '',
+        title: r.title || '',
+        bpm: r.bpm ? parseInt(r.bpm) : undefined,
+        musicalKey: r.musicalKey || '',
+        tags: (r.tags || '').split(',').map(t => t.trim()).filter(Boolean),
+        placeId: r.placeId || undefined,
+        soundcloudUrl: r.soundcloudUrl || undefined,
+        youtubeId: r.youtubeId || undefined,
+        coverArt: normalizePhotoUrl(r.coverArt || ''),
+        status: (r.status as Track['status']) || undefined
+      })).filter(t => t.id && t.title);
+      renderTrackFilters();
+      renderTracks();
     }
 
     // ─── Render: videos ──────────────────────────────────────────────
@@ -7220,6 +7288,7 @@
     syncRoutines();
     syncNotebook();
     syncPhotos();
+    syncTracks();
 
     // Map pulse keyframe (injected once)
     const styleEl = document.createElement('style');
