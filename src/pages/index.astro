@@ -15,6 +15,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Fraunces:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Lora:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Serif:wght@400;700&family=IBM+Plex+Mono:wght@400;700&family=JetBrains+Mono:wght@400;700&family=Caveat:wght@400;700&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- Vercel Web Analytics — auto-enabled once you flip the toggle in your Vercel project's Analytics tab. No token needed. -->
+  <script is:inline defer src="/_vercel/insights/script.js"></script>
+
+  <!-- Cloudflare Web Analytics — paste your beacon token below to enable.
+       Get one at https://www.cloudflare.com/web-analytics/
+       <script is:inline defer src="https://static.cloudflareinsights.com/beacon.min.js"
+         data-cf-beacon='{"token": "PASTE_TOKEN_HERE"}'></script>
+  -->
   <style>
     * {
       margin: 0;
@@ -7500,6 +7509,12 @@
         const url = new URL(window.location.href);
         url.searchParams.set('theme', theme);
         history.replaceState({}, '', url.toString());
+      } catch {}
+
+      // Track theme switches for analytics (Vercel + Cloudflare both pick up va())
+      try {
+        const va = (window as any).va;
+        if (typeof va === 'function') va('event', { name: 'theme:' + theme });
       } catch {}
 
       if (subtitleEl) subtitleEl.textContent = config.subtitle;
