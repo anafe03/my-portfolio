@@ -1231,6 +1231,35 @@
       border-radius: 16px;
       padding: 1.5rem;
       transition: all 0.3s;
+      overflow: hidden;
+    }
+
+    .pick-photo {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: linear-gradient(135deg, var(--bg-card), var(--bg));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      border: 1px solid var(--border);
+    }
+
+    .pick-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .pick-photo-fallback {
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      letter-spacing: 0.05em;
     }
 
     .pick-card:hover {
@@ -1884,6 +1913,38 @@
       font-size: 1.5rem;
     }
 
+    .fest-photo {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--bg-card);
+    }
+
+    .fest-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .fest-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-top: 0.5rem;
+    }
+
+    .fest-tag {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.2rem 0.55rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text-dim);
+    }
+
     .fest-name {
       font-family: var(--font-heading);
       font-size: 1.2rem;
@@ -1915,33 +1976,69 @@
       background: var(--bg-light);
       border: 2px solid var(--border);
       border-radius: 16px;
-      padding: 1.75rem;
+      overflow: hidden;
+      padding: 0;
       position: relative;
       transition: all 0.3s;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
     }
 
     .bucket-card:hover {
-      transform: translateY(-4px);
+      transform: translateY(-5px);
       border-color: var(--coral);
+      box-shadow: 0 16px 36px rgba(232, 93, 74, 0.2);
+    }
+
+    .bucket-photo {
+      aspect-ratio: 16 / 10;
+      background: linear-gradient(135deg, var(--bg-card), var(--bg));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bucket-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .bucket-photo-emoji {
+      font-size: 4rem;
+      opacity: 0.45;
     }
 
     .bucket-num {
+      position: absolute;
+      top: 0.85rem;
+      right: 1rem;
       font-family: var(--font-heading);
       font-style: italic;
       font-size: 2rem;
-      color: var(--coral);
-      opacity: 0.5;
-      position: absolute;
-      top: 0.85rem;
-      right: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+      line-height: 1;
+    }
+
+    .bucket-body {
+      padding: 1.25rem 1.5rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
     }
 
     .bucket-card h4 {
       font-family: var(--font-heading);
-      font-size: 1.4rem;
-      margin-bottom: 0.25rem;
+      font-size: 1.35rem;
+      margin: 0;
       color: var(--text);
-      padding-right: 3rem;
+      line-height: 1.15;
     }
 
     .bucket-where {
@@ -2544,58 +2641,20 @@
       color: var(--text-dim) !important;
     }
 
-    /* Custom pin styling — concentric dot + ring */
+    /* Pin styling — kill Leaflet's default white box around divIcons */
     .map-pin {
       background: transparent !important;
       border: none !important;
     }
 
-    .pin-wrap {
-      position: relative;
-      width: 28px;
-      height: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .map-pin:hover > div {
+      transform: scale(1.18);
+      transition: transform 0.15s ease-out;
     }
 
-    .pin-wrap::before {
-      content: "";
-      position: absolute;
-      width: calc(var(--dot) + var(--ring) * 2);
-      height: calc(var(--dot) + var(--ring) * 2);
-      border-radius: 50%;
-      background: var(--c);
-      opacity: 0.18;
-      transition: transform 0.2s, opacity 0.2s;
-    }
-
-    .pin-wrap::after {
-      content: "";
-      position: absolute;
-      width: var(--dot);
-      height: var(--dot);
-      border-radius: 50%;
-      background: var(--c);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.55), inset 0 0 0 1.5px rgba(255, 255, 255, 0.4);
-    }
-
-    .pin-wrap:hover::before {
-      transform: scale(1.3);
-      opacity: 0.4;
-    }
-
-    .pin-wrap.is-current {
-      animation: pinPulseRing 2s infinite;
-    }
-
-    @keyframes pinPulseRing {
-      0%, 100% {
-        filter: drop-shadow(0 0 0 transparent);
-      }
-      50% {
-        filter: drop-shadow(0 0 8px var(--coral));
-      }
+    @keyframes pinPulseDot {
+      0%, 100% { box-shadow: 0 0 0 10px rgba(232, 93, 74, 0.35), 0 2px 6px rgba(0, 0, 0, 0.55); }
+      50% { box-shadow: 0 0 0 22px rgba(232, 93, 74, 0), 0 2px 6px rgba(0, 0, 0, 0.55); }
     }
 
     /* Animated dashes on route segments */
@@ -6146,16 +6205,24 @@
       if (!rows.length) return;
       const list = document.querySelector('#fests .fests-list');
       if (!list) return;
-      list.innerHTML = rows.map(r => `
-        <div class="fest">
-          <div class="fest-icon">${escapeHTML(r.icon || '🎶')}</div>
-          <div class="fest-body">
-            <div class="fest-name">${escapeHTML(r.name || '')}</div>
-            <div class="fest-meta">${escapeHTML([r.location, r.year].filter(Boolean).join(' · '))}</div>
-            ${r.note ? `<p class="fest-note">${escapeHTML(r.note)}</p>` : ''}
+      list.innerHTML = rows.map(r => {
+        const photo = normalizePhotoUrl(r.photo || '');
+        const tags = (r.tags || '').split(',').map(s => s.trim()).filter(Boolean);
+        const photoHtml = photo
+          ? `<div class="fest-photo"><img src="${escapeHTML(photo)}" alt="${escapeHTML(r.name || '')}" loading="lazy"></div>`
+          : `<div class="fest-icon">${escapeHTML(r.icon || '🎶')}</div>`;
+        return `
+          <div class="fest">
+            ${photoHtml}
+            <div class="fest-body">
+              <div class="fest-name">${escapeHTML(r.name || '')}</div>
+              <div class="fest-meta">${escapeHTML([r.location, r.year].filter(Boolean).join(' · '))}</div>
+              ${r.note ? `<p class="fest-note">${escapeHTML(r.note)}</p>` : ''}
+              ${tags.length ? `<div class="fest-tags">${tags.map(t => `<span class="fest-tag">${escapeHTML(t)}</span>`).join('')}</div>` : ''}
+            </div>
           </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     async function syncParks() {
@@ -6174,20 +6241,90 @@
       if (sub) sub.textContent = `${rows.length} of 63 · climbing slowly`;
     }
 
+    interface BucketItem {
+      priority: string;
+      name: string;
+      where: string;
+      why: string;
+      when: string;
+      photo: string;
+      details: string;
+    }
+    let bucketData: BucketItem[] = [];
+
     async function syncBucket() {
       const rows = await fetchSheet(BUCKET_SHEET_CSV);
       if (!rows.length) return;
+      bucketData = rows.map(r => ({
+        priority: r.priority || '',
+        name: r.name || '',
+        where: r.where || '',
+        why: r.why || '',
+        when: r.when || '',
+        photo: normalizePhotoUrl(r.photo || ''),
+        details: r.details || ''
+      }));
       const grid = document.querySelector('#bucket .bucket-grid');
       if (!grid) return;
-      grid.innerHTML = rows.map(r => `
-        <div class="bucket-card">
-          <span class="bucket-num">${escapeHTML(r.priority || '')}</span>
-          <h4>${escapeHTML(r.name || '')}</h4>
-          <p class="bucket-where">${escapeHTML(r.where || '')}</p>
-          <p class="bucket-why">${escapeHTML(r.why || '')}</p>
-          <span class="bucket-when">${escapeHTML(r.when || '')}</span>
-        </div>
-      `).join('');
+      grid.innerHTML = bucketData.map(b => {
+        const padded = String(b.priority).padStart(2, '0');
+        const photoHtml = b.photo
+          ? `<img src="${escapeHTML(b.photo)}" alt="${escapeHTML(b.name)}" loading="lazy">`
+          : `<span class="bucket-photo-emoji">🌍</span>`;
+        return `
+          <div class="bucket-card" data-priority="${escapeHTML(b.priority)}">
+            <div class="bucket-photo">
+              ${photoHtml}
+              <span class="bucket-num">${escapeHTML(padded)}</span>
+            </div>
+            <div class="bucket-body">
+              <h4>${escapeHTML(b.name)}</h4>
+              <p class="bucket-where">${escapeHTML(b.where)}</p>
+              <p class="bucket-why">${escapeHTML(b.why)}</p>
+              <span class="bucket-when">${escapeHTML(b.when)}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+      grid.querySelectorAll<HTMLElement>('.bucket-card').forEach(el => {
+        el.addEventListener('click', () => {
+          const p = el.dataset.priority;
+          if (p !== undefined) openBucketModal(p);
+        });
+      });
+    }
+
+    function openBucketModal(priority: string) {
+      const item = bucketData.find(b => b.priority === priority);
+      if (!item) return;
+      const overlay = document.getElementById('pmodalOverlay');
+      const photos = document.getElementById('pmodalPhotos');
+      const meta = document.getElementById('pmodalMeta');
+      const city = document.getElementById('pmodalCity');
+      const note = document.getElementById('pmodalNote');
+      const fields = document.getElementById('pmodalFields');
+
+      if (photos) {
+        photos.innerHTML = item.photo
+          ? `<div class="pmodal-photo" style="grid-column: 1 / -1"><img src="${escapeHTML(item.photo)}" alt="${escapeHTML(item.name)}"></div>`
+          : `<div class="pmodal-photo" style="grid-column: 1 / -1; font-size: 4rem;">🌍</div>`;
+      }
+      if (meta) meta.textContent = `Planned trip · ${item.when}${item.where ? ' · ' + item.where : ''}`;
+      if (city) city.textContent = item.name;
+      if (note) note.textContent = item.why;
+      if (fields) {
+        const entries: Array<{ icon: string; label: string; value: string }> = [];
+        if (item.where) entries.push({ icon: '📍', label: 'Where', value: item.where });
+        if (item.when) entries.push({ icon: '📅', label: 'Target', value: item.when });
+        if (item.details) entries.push({ icon: '🗺', label: 'Plan', value: item.details });
+        fields.innerHTML = entries.map(e => `
+          <div class="pmodal-field">
+            <div class="pmodal-field-label">${e.icon} ${e.label}</div>
+            <div class="pmodal-field-value">${escapeHTML(e.value)}</div>
+          </div>
+        `).join('');
+      }
+      overlay?.classList.add('open');
     }
 
     async function syncFinance() {
@@ -6230,8 +6367,13 @@
       if (picksGrid && pickRows.length) {
         picksGrid.innerHTML = pickRows.map(r => {
           const m = pickLabel[r.conviction] || pickLabel.long;
+          const photo = normalizePhotoUrl(r.photo || '');
+          const photoHtml = photo
+            ? `<img src="${escapeHTML(photo)}" alt="${escapeHTML(r.ticker || '')}" loading="lazy">`
+            : `<span class="pick-photo-fallback">${escapeHTML((r.ticker || '?').slice(0, 4))}</span>`;
           return `
             <div class="pick-card">
+              <div class="pick-photo">${photoHtml}</div>
               <div class="pick-head">
                 <span class="pick-ticker">${escapeHTML(r.ticker || '')}</span>
                 <span class="pick-conviction ${m.cls}">${m.label}</span>
@@ -6676,17 +6818,23 @@
         const isCurrent = p.current;
         const year = getYear(p.date);
         const color = isCurrent ? '#e85d4a' : (yearColors[year] || '#6b8e4e');
-        const ring = isCurrent ? 8 : 5;
-        const dot = isCurrent ? 14 : 10;
+        const dot = isCurrent ? 16 : 12;
+        const haloColor = isCurrent ? '232, 93, 74' : '255, 255, 255';
+        const haloAlpha = isCurrent ? '0.35' : '0.15';
+        const haloSize = isCurrent ? 10 : 6;
         const icon = L.divIcon({
           className: 'map-pin' + (isCurrent ? ' current' : ''),
-          html: `<div class="pin-wrap${isCurrent ? ' is-current' : ''}" style="
-            --c: ${color};
-            --dot: ${dot}px;
-            --ring: ${ring}px;
+          html: `<div style="
+            width:${dot}px;
+            height:${dot}px;
+            background:${color};
+            border-radius:50%;
+            border:2px solid rgba(255,255,255,0.85);
+            box-shadow: 0 0 0 ${haloSize}px rgba(${haloColor}, ${haloAlpha}), 0 2px 6px rgba(0, 0, 0, 0.55);
+            ${isCurrent ? 'animation: pinPulseDot 2s infinite;' : ''}
           "></div>`,
-          iconSize: [28, 28],
-          iconAnchor: [14, 14]
+          iconSize: [dot + haloSize * 2, dot + haloSize * 2],
+          iconAnchor: [(dot + haloSize * 2) / 2, (dot + haloSize * 2) / 2]
         });
         const marker = L.marker(p.coords, { icon, riseOnHover: true }).addTo(mapInstance);
         marker.on('click', () => openPlaceModal(p.id));
