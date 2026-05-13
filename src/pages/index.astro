@@ -6929,6 +6929,31 @@
       }
     });
 
+    // ─── Project filter (Midnight only — other themes hide the filter UI) ──
+    // Defined BEFORE applyTheme is called so the in-applyTheme call doesn't throw.
+    let activeProjectFilter = 'all';
+
+    function applyProjectFilter(category: string) {
+      activeProjectFilter = category;
+      const theme = document.body.getAttribute('data-theme') || 'midnight';
+      document.querySelectorAll<HTMLElement>('#projects .project-card').forEach(card => {
+        const cats = (card.dataset.category || '').split(',').map(s => s.trim());
+        const themes = card.dataset.themeOnly ? card.dataset.themeOnly.split(',').map(s => s.trim()) : null;
+        const themeOk = !themes || themes.includes(theme);
+        const catOk = category === 'all' || cats.includes(category);
+        card.style.display = (themeOk && catOk) ? '' : 'none';
+      });
+      document.querySelectorAll<HTMLElement>('#projectFilters .project-filter').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === category);
+      });
+    }
+
+    document.querySelectorAll<HTMLElement>('#projectFilters .project-filter').forEach(btn => {
+      btn.addEventListener('click', () => {
+        applyProjectFilter(btn.dataset.filter || 'all');
+      });
+    });
+
     // Theme resolution priority: URL ?theme=X → localStorage → midnight
     const urlTheme = new URLSearchParams(window.location.search).get('theme');
     const savedTheme = (urlTheme && themes[urlTheme]) ? urlTheme : (localStorage.getItem('theme') || 'midnight');
@@ -6987,29 +7012,7 @@
       observer.observe(el);
     });
 
-    // ─── Project filter (Midnight only — other themes hide the filter UI) ──
-    let activeProjectFilter = 'all';
-
-    function applyProjectFilter(category: string) {
-      activeProjectFilter = category;
-      const theme = document.body.getAttribute('data-theme') || 'midnight';
-      document.querySelectorAll<HTMLElement>('#projects .project-card').forEach(card => {
-        const cats = (card.dataset.category || '').split(',').map(s => s.trim());
-        const themes = card.dataset.themeOnly ? card.dataset.themeOnly.split(',').map(s => s.trim()) : null;
-        const themeOk = !themes || themes.includes(theme);
-        const catOk = category === 'all' || cats.includes(category);
-        card.style.display = (themeOk && catOk) ? '' : 'none';
-      });
-      document.querySelectorAll<HTMLElement>('#projectFilters .project-filter').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.filter === category);
-      });
-    }
-
-    document.querySelectorAll<HTMLElement>('#projectFilters .project-filter').forEach(btn => {
-      btn.addEventListener('click', () => {
-        applyProjectFilter(btn.dataset.filter || 'all');
-      });
-    });
+    // (Project filter logic moved above applyTheme so it's defined when applyTheme first runs.)
 
     // ─── Cmd+K command palette ─────────────────────────────
     interface CmdItem {
