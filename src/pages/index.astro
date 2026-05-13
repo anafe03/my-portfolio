@@ -5579,6 +5579,131 @@
       };
     }
 
+    // Other data-source sheets (same live-link pattern; require "Anyone with link → Viewer")
+    const FESTS_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/1y43xMQ6rw2Xl65bN1tivP5qVqlTYgyxWfLa1hmqFgeA/export?format=csv&gid=0';
+    const PARKS_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/1edRZ9zCUnNHbr35_zaeSsFM5bSWl6h_Z6lLPTDNGw3M/export?format=csv&gid=0';
+    const BUCKET_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/15YLgO7MSVevGKXjptxr1SUr9yW1MD28L5KmMMBznHbU/export?format=csv&gid=0';
+    const FINANCE_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/1df_VtUPsa2YRD9G8jD4tKF36b9QqhliyhbmVlE6J9M8/export?format=csv&gid=0';
+
+    async function fetchSheet(url: string): Promise<Record<string, string>[]> {
+      if (!url) return [];
+      try {
+        const res = await fetch(url, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return parseCSV(await res.text());
+      } catch (e) {
+        console.warn('[sheet] fetch failed:', url, e);
+        return [];
+      }
+    }
+
+    function escapeHTML(s: string): string {
+      return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
+    }
+
+    async function syncFestivals() {
+      const rows = await fetchSheet(FESTS_SHEET_CSV);
+      if (!rows.length) return;
+      const list = document.querySelector('#fests .fests-list');
+      if (!list) return;
+      list.innerHTML = rows.map(r => `
+        <div class="fest">
+          <div class="fest-icon">${escapeHTML(r.icon || '🎶')}</div>
+          <div class="fest-body">
+            <div class="fest-name">${escapeHTML(r.name || '')}</div>
+            <div class="fest-meta">${escapeHTML([r.location, r.year].filter(Boolean).join(' · '))}</div>
+            ${r.note ? `<p class="fest-note">${escapeHTML(r.note)}</p>` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function syncParks() {
+      const rows = await fetchSheet(PARKS_SHEET_CSV);
+      if (!rows.length) return;
+      const grid = document.querySelector('#parks .parks-grid');
+      if (!grid) return;
+      grid.innerHTML = rows.map(r => `
+        <div class="park">
+          <span class="park-emoji">${escapeHTML(r.emoji || '🏞')}</span>
+          <span class="park-name">${escapeHTML(r.name || '')}</span>
+          <span class="park-year">${escapeHTML(r.year || '')}</span>
+        </div>
+      `).join('');
+      const sub = document.querySelector('#parks .section-header p');
+      if (sub) sub.textContent = `${rows.length} of 63 · climbing slowly`;
+    }
+
+    async function syncBucket() {
+      const rows = await fetchSheet(BUCKET_SHEET_CSV);
+      if (!rows.length) return;
+      const grid = document.querySelector('#bucket .bucket-grid');
+      if (!grid) return;
+      grid.innerHTML = rows.map(r => `
+        <div class="bucket-card">
+          <span class="bucket-num">${escapeHTML(r.priority || '')}</span>
+          <h4>${escapeHTML(r.name || '')}</h4>
+          <p class="bucket-where">${escapeHTML(r.where || '')}</p>
+          <p class="bucket-why">${escapeHTML(r.why || '')}</p>
+          <span class="bucket-when">${escapeHTML(r.when || '')}</span>
+        </div>
+      `).join('');
+    }
+
+    async function syncFinance() {
+      const rows = await fetchSheet(FINANCE_SHEET_CSV);
+      if (!rows.length) return;
+      const portfolioRows = rows.filter(r => r.type === 'portfolio');
+      const pickRows = rows.filter(r => r.type === 'pick');
+
+      const portfolioLabel: Record<string, { cls: string; label: string }> = {
+        core: { cls: 'long', label: 'Core' },
+        long: { cls: 'long', label: 'Long' },
+        watch: { cls: 'watch', label: 'Dry' },
+        avoid: { cls: 'avoid', label: 'Avoid' }
+      };
+      const pickLabel: Record<string, { cls: string; label: string }> = {
+        long: { cls: 'long', label: 'Long' },
+        watch: { cls: 'watch', label: 'Watch' },
+        avoid: { cls: 'avoid', label: 'Avoid' }
+      };
+
+      const tbl = document.querySelector('#portfolio .positions-table');
+      if (tbl && portfolioRows.length) {
+        const head = `<div class="position-row position-head"><span>Ticker</span><span>Alloc</span><span>Entry</span><span>Stance</span><span class="position-thesis">Thesis</span></div>`;
+        const body = portfolioRows.map(r => {
+          const m = portfolioLabel[r.conviction] || portfolioLabel.long;
+          return `
+            <div class="position-row">
+              <span class="position-ticker">${escapeHTML(r.ticker || '')}</span>
+              <span class="position-alloc">${escapeHTML(r.alloc || '')}</span>
+              <span class="position-entry">${escapeHTML(r.entry || '')}</span>
+              <span class="pick-conviction ${m.cls}">${m.label}</span>
+              <span class="position-thesis">${escapeHTML(r.thesis || '')}</span>
+            </div>
+          `;
+        }).join('');
+        tbl.innerHTML = head + body;
+      }
+
+      const picksGrid = document.querySelector('#picks .picks-grid');
+      if (picksGrid && pickRows.length) {
+        picksGrid.innerHTML = pickRows.map(r => {
+          const m = pickLabel[r.conviction] || pickLabel.long;
+          return `
+            <div class="pick-card">
+              <div class="pick-head">
+                <span class="pick-ticker">${escapeHTML(r.ticker || '')}</span>
+                <span class="pick-conviction ${m.cls}">${m.label}</span>
+              </div>
+              <h4>${escapeHTML(r.headline || '')}</h4>
+              <p>${escapeHTML(r.thesis || '')}</p>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
     async function loadPlacesFromSheet(): Promise<boolean> {
       if (!PLACES_SHEET_CSV) return false;
       try {
@@ -6056,7 +6181,6 @@
       renderTravelStats();
       renderPlacesGuide();
       if (mapInstance) {
-        // Tear the map down and reinit with fresh data on the next theme activation.
         mapInstance.remove();
         mapInstance = null;
         if (document.body.getAttribute('data-theme') === 'adventure') {
@@ -6064,6 +6188,12 @@
         }
       }
     });
+
+    // Live-sync the other live data sections from their Google Sheets.
+    syncFestivals();
+    syncParks();
+    syncBucket();
+    syncFinance();
 
     // Map pulse keyframe (injected once)
     const styleEl = document.createElement('style');
