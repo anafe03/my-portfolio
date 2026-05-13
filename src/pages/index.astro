@@ -1981,6 +1981,99 @@
       opacity: 0.35;
     }
 
+    .adventure-map .leaflet-control-zoom {
+      border: 1px solid var(--border) !important;
+      border-radius: 8px !important;
+      overflow: hidden;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .adventure-map .leaflet-control-zoom a {
+      background: var(--bg-card) !important;
+      color: var(--text) !important;
+      border-bottom: 1px solid var(--border) !important;
+      font-weight: 700;
+    }
+
+    .adventure-map .leaflet-control-zoom a:hover {
+      background: var(--bg-light) !important;
+      color: var(--coral) !important;
+    }
+
+    .adventure-map .leaflet-control-attribution {
+      background: rgba(26, 36, 25, 0.85) !important;
+      color: var(--text-dim) !important;
+      font-size: 9px !important;
+      padding: 2px 6px !important;
+    }
+
+    .adventure-map .leaflet-control-attribution a {
+      color: var(--text-dim) !important;
+    }
+
+    /* Custom pin styling — concentric dot + ring */
+    .map-pin {
+      background: transparent !important;
+      border: none !important;
+    }
+
+    .pin-wrap {
+      position: relative;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pin-wrap::before {
+      content: "";
+      position: absolute;
+      width: calc(var(--dot) + var(--ring) * 2);
+      height: calc(var(--dot) + var(--ring) * 2);
+      border-radius: 50%;
+      background: var(--c);
+      opacity: 0.18;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+
+    .pin-wrap::after {
+      content: "";
+      position: absolute;
+      width: var(--dot);
+      height: var(--dot);
+      border-radius: 50%;
+      background: var(--c);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.55), inset 0 0 0 1.5px rgba(255, 255, 255, 0.4);
+    }
+
+    .pin-wrap:hover::before {
+      transform: scale(1.3);
+      opacity: 0.4;
+    }
+
+    .pin-wrap.is-current {
+      animation: pinPulseRing 2s infinite;
+    }
+
+    @keyframes pinPulseRing {
+      0%, 100% {
+        filter: drop-shadow(0 0 0 transparent);
+      }
+      50% {
+        filter: drop-shadow(0 0 8px var(--coral));
+      }
+    }
+
+    /* Animated dashes on route segments */
+    .adventure-map .route-segment {
+      animation: dashFlow 40s linear infinite;
+    }
+
+    @keyframes dashFlow {
+      to { stroke-dashoffset: -240; }
+    }
+
     .adventure-map .leaflet-popup-content-wrapper {
       background: var(--bg-card);
       color: var(--text);
@@ -5051,6 +5144,110 @@
 
     // Ordered to match the Notion travel log "Big Bend Depart" → current.
     // Repeat visits to the same city consolidated into one pin.
+    // ─── Google Sheets integration ─────────────────────────
+    //
+    // To swap the hardcoded places below for a live Google Sheet:
+    //
+    // 1. Make a sheet with these columns (header row, exact spelling):
+    //    id · city · lat · lng · date · country · current · note · guide
+    //    songs · projects · photos · eat · drink · coffee · move · stay
+    //    hiddenGem · skip · strangest · verdict
+    //
+    // 2. File → Share → Publish to web → choose "Comma-separated values (.csv)"
+    //    Copy the URL it gives you.
+    //
+    // 3. Paste it into PLACES_SHEET_CSV below. Save. Deploy.
+    //    The site fetches it on load, falls back to hardcoded if it fails.
+    //
+    //    `current` is "true"/"1" for the pin to pulse coral.
+    //    `songs` / `projects` / `photos` are comma-separated values within the cell.
+    //
+    const PLACES_SHEET_CSV = ''; // <- paste your published-CSV URL here
+
+    function parseCSVLine(line: string): string[] {
+      const out: string[] = [];
+      let cur = '';
+      let inQuote = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (inQuote) {
+          if (ch === '"' && line[i + 1] === '"') { cur += '"'; i++; }
+          else if (ch === '"') inQuote = false;
+          else cur += ch;
+        } else {
+          if (ch === ',') { out.push(cur); cur = ''; }
+          else if (ch === '"') inQuote = true;
+          else cur += ch;
+        }
+      }
+      out.push(cur);
+      return out;
+    }
+
+    function parseCSV(text: string): Record<string, string>[] {
+      const lines = text.split(/\r?\n/).filter(l => l.trim());
+      if (lines.length < 2) return [];
+      const headers = parseCSVLine(lines[0]).map(h => h.trim());
+      return lines.slice(1).map(line => {
+        const vals = parseCSVLine(line);
+        const row: Record<string, string> = {};
+        headers.forEach((h, i) => row[h] = (vals[i] || '').trim());
+        return row;
+      });
+    }
+
+    function rowToPlace(row: Record<string, string>): Place | null {
+      const lat = parseFloat(row.lat);
+      const lng = parseFloat(row.lng);
+      if (!row.id || isNaN(lat) || isNaN(lng)) return null;
+      const splitList = (v: string) =>
+        v ? v.split(',').map(s => s.trim()).filter(Boolean) : undefined;
+      const truthy = (v: string) =>
+        ['true', '1', 'yes', 'y'].includes((v || '').toLowerCase());
+      return {
+        id: row.id,
+        city: row.city || row.id,
+        coords: [lat, lng],
+        date: row.date || '',
+        note: row.note || '',
+        country: row.country || undefined,
+        current: truthy(row.current),
+        guide: row.guide || undefined,
+        songs: splitList(row.songs),
+        projects: splitList(row.projects),
+        photos: splitList(row.photos),
+        eat: row.eat || undefined,
+        drink: row.drink || undefined,
+        coffee: row.coffee || undefined,
+        move: row.move || undefined,
+        stay: row.stay || undefined,
+        hiddenGem: row.hiddenGem || undefined,
+        skip: row.skip || undefined,
+        strangest: row.strangest || undefined,
+        verdict: row.verdict || undefined
+      };
+    }
+
+    async function loadPlacesFromSheet(): Promise<boolean> {
+      if (!PLACES_SHEET_CSV) return false;
+      try {
+        const res = await fetch(PLACES_SHEET_CSV, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const text = await res.text();
+        const rows = parseCSV(text);
+        const fresh = rows.map(rowToPlace).filter((p): p is Place => p !== null);
+        if (fresh.length > 0) {
+          placesData.length = 0;
+          fresh.forEach(p => placesData.push(p));
+          return true;
+        }
+        return false;
+      } catch (e) {
+        console.warn('[places] Sheet load failed, using hardcoded fallback:', e);
+        return false;
+      }
+    }
+
     const placesData: Place[] = [
       // 2023 — Big Bend Depart loop
       { id: 'big-bend', city: 'Big Bend NP, TX', coords: [29.1275, -103.2425], date: '2023', country: 'USA',
@@ -5322,12 +5519,22 @@
         return;
       }
       const L = (window as any).L;
-      mapInstance = L.map(container, { scrollWheelZoom: false, zoomControl: true })
-        .setView([39.5, -98.35], 4);
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      mapInstance = L.map(container, {
+        scrollWheelZoom: false,
+        zoomControl: true,
+        worldCopyJump: true,
+        minZoom: 2
+      }).setView([20, 0], 2);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
         attribution: '&copy; OpenStreetMap &copy; CARTO',
         subdomains: 'abcd',
         maxZoom: 19
+      }).addTo(mapInstance);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png', {
+        attribution: '',
+        subdomains: 'abcd',
+        maxZoom: 19,
+        pane: 'shadowPane'
       }).addTo(mapInstance);
 
       // Year palette for the route polyline + legend
@@ -5349,26 +5556,24 @@
         const isCurrent = p.current;
         const year = getYear(p.date);
         const color = isCurrent ? '#e85d4a' : (yearColors[year] || '#6b8e4e');
+        const ring = isCurrent ? 8 : 5;
+        const dot = isCurrent ? 14 : 10;
         const icon = L.divIcon({
           className: 'map-pin' + (isCurrent ? ' current' : ''),
-          html: `<div style="
-            width:${isCurrent ? 18 : 12}px; height:${isCurrent ? 18 : 12}px;
-            border-radius:50%;
-            background: ${color};
-            box-shadow: 0 0 0 4px rgba(232,93,74,${isCurrent ? '0.25' : '0'}), 0 2px 6px rgba(0,0,0,0.4);
-            border: 2px solid rgba(255,255,255,0.6);
-            ${isCurrent ? 'animation: mapPulse 2s infinite;' : ''}
+          html: `<div class="pin-wrap${isCurrent ? ' is-current' : ''}" style="
+            --c: ${color};
+            --dot: ${dot}px;
+            --ring: ${ring}px;
           "></div>`,
-          iconSize: [20, 20],
-          iconAnchor: [10, 10]
+          iconSize: [28, 28],
+          iconAnchor: [14, 14]
         });
-        const marker = L.marker(p.coords, { icon }).addTo(mapInstance);
+        const marker = L.marker(p.coords, { icon, riseOnHover: true }).addTo(mapInstance);
         marker.on('click', () => openPlaceModal(p.id));
         (markerByYear[year] ||= []).push(marker);
       });
 
       // Route polyline — connect pins in their array order (chronological).
-      // One segment per consecutive pair, colored by destination year.
       const segmentsByYear: Record<number, any[]> = {};
       for (let i = 0; i < placesData.length - 1; i++) {
         const a = placesData[i];
@@ -5376,11 +5581,19 @@
         const year = getYear(b.date);
         const seg = L.polyline([a.coords, b.coords], {
           color: yearColors[year] || '#888',
-          weight: 2,
-          opacity: 0.45,
-          dashArray: '6 8'
+          weight: 1.8,
+          opacity: 0.55,
+          dashArray: '5 7',
+          className: 'route-segment',
+          smoothFactor: 1
         }).addTo(mapInstance);
         (segmentsByYear[year] ||= []).push(seg);
+      }
+
+      // Fit the view to all pins so the world view shows on first load.
+      const allCoords = placesData.map(p => p.coords);
+      if (allCoords.length > 0) {
+        mapInstance.fitBounds(allCoords, { padding: [30, 30], maxZoom: 6 });
       }
 
       // Render the year legend below the map. Clicking a year isolates it.
@@ -5484,6 +5697,22 @@
     renderTrackFilters();
     renderTracks();
     renderVideos();
+
+    // Try to pull fresher places from the Google Sheet (if configured).
+    // If successful, re-render stats + guide and rebuild map markers.
+    loadPlacesFromSheet().then(loaded => {
+      if (!loaded) return;
+      renderTravelStats();
+      renderPlacesGuide();
+      if (mapInstance) {
+        // Tear the map down and reinit with fresh data on the next theme activation.
+        mapInstance.remove();
+        mapInstance = null;
+        if (document.body.getAttribute('data-theme') === 'adventure') {
+          requestAnimationFrame(() => initMap());
+        }
+      }
+    });
 
     // Map pulse keyframe (injected once)
     const styleEl = document.createElement('style');
