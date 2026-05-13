@@ -152,6 +152,20 @@
       --font-heading: 'Fraunces', Georgia, serif;
     }
 
+    [data-theme="garden"] {
+      --forest: #6b8e23;
+      --ocean: #c97b4c;
+      --coral: #d4a017;
+      --bg: #faf5e6;
+      --bg-light: #f1ead4;
+      --bg-card: #ffffff;
+      --text: #2d3220;
+      --text-dim: #6b7355;
+      --border: #d4cea8;
+      --nav-bg: rgba(250, 245, 230, 0.88);
+      --font-heading: 'Fraunces', Georgia, serif;
+    }
+
     body {
       font-family: var(--font-body);
       line-height: 1.6;
@@ -676,6 +690,82 @@
 
     .studio-cat li:last-child {
       border-bottom: none;
+    }
+
+    /* ─── Garden (Garden theme only) ────────────────────── */
+    .garden-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .plant-card {
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      transition: all 0.3s;
+      position: relative;
+    }
+
+    .plant-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--forest);
+      box-shadow: 0 12px 32px rgba(107, 142, 35, 0.15);
+    }
+
+    .plant-icon {
+      font-size: 2.5rem;
+      display: block;
+      margin-bottom: 0.75rem;
+    }
+
+    .plant-name {
+      font-family: var(--font-heading);
+      font-size: 1.4rem;
+      font-weight: 700;
+      line-height: 1.1;
+      color: var(--text);
+    }
+
+    .plant-variety {
+      font-style: italic;
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .plant-status {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 0.25rem 0.7rem;
+      border-radius: 10px;
+      margin-bottom: 0.85rem;
+      border: 1px solid;
+    }
+
+    .plant-status.seedling { background: rgba(132, 204, 22, 0.15); color: #65a30d; border-color: #65a30d; }
+    .plant-status.growing { background: rgba(107, 142, 35, 0.15); color: #6b8e23; border-color: #6b8e23; }
+    .plant-status.flowering { background: rgba(236, 72, 153, 0.15); color: #db2777; border-color: #db2777; }
+    .plant-status.harvesting { background: rgba(201, 123, 76, 0.18); color: #b85c2a; border-color: #b85c2a; }
+    .plant-status.established { background: rgba(212, 160, 23, 0.18); color: #b88b1a; border-color: #b88b1a; }
+    .plant-status.dormant { background: rgba(120, 113, 108, 0.18); color: #78716c; border-color: #78716c; }
+
+    .plant-note {
+      color: var(--text-dim);
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+
+    .garden-footnote {
+      margin-top: 2rem;
+      text-align: center;
+      font-style: italic;
+      color: var(--text-dim);
+      font-size: 0.8rem;
     }
 
     /* ─── Journey / Map (Adventure only) ────────────────── */
@@ -1951,6 +2041,14 @@
                 </div>
                 <div class="theme-name">Founder</div>
               </button>
+              <button class="theme-option" data-set-theme="garden">
+                <div class="theme-swatch">
+                  <span style="background: #faf5e6"></span>
+                  <span style="background: #6b8e23"></span>
+                  <span style="background: #c97b4c"></span>
+                </div>
+                <div class="theme-name">Garden</div>
+              </button>
             </div>
             <p class="settings-note">Each theme reframes the whole portfolio — colors, hero copy, and section order — for a different audience. Try a few.</p>
           </div>
@@ -2400,6 +2498,60 @@
           </ul>
         </div>
       </div>
+    </div>
+  </section>
+
+  <section id="garden">
+    <div class="container">
+      <div class="section-header">
+        <h2>The Garden</h2>
+        <p>Slow projects. Planted, watered, observed.</p>
+      </div>
+      <div class="garden-grid">
+        <div class="plant-card">
+          <span class="plant-icon">🍅</span>
+          <div class="plant-name">Tomato</div>
+          <div class="plant-variety">San Marzano</div>
+          <div class="plant-status growing">Growing</div>
+          <p class="plant-note">Started indoors in March. Transplanted after last frost. First trusses setting fruit.</p>
+        </div>
+        <div class="plant-card">
+          <span class="plant-icon">🌿</span>
+          <div class="plant-name">Basil</div>
+          <div class="plant-variety">Genovese</div>
+          <div class="plant-status harvesting">Harvesting</div>
+          <p class="plant-note">Pinch the flowers, pinch the flowers, pinch the flowers. Pesto every Sunday.</p>
+        </div>
+        <div class="plant-card">
+          <span class="plant-icon">🫛</span>
+          <div class="plant-name">Sugar Snap Peas</div>
+          <div class="plant-variety">Cascadia</div>
+          <div class="plant-status harvesting">Harvesting</div>
+          <p class="plant-note">Trellised against the south fence. Eat raw, standing in the dirt, no shame.</p>
+        </div>
+        <div class="plant-card">
+          <span class="plant-icon">🌶</span>
+          <div class="plant-name">Padron Pepper</div>
+          <div class="plant-variety">Spanish heirloom</div>
+          <div class="plant-status flowering">Flowering</div>
+          <p class="plant-note">One in ten is spicy. The rest are perfect blistered with sea salt.</p>
+        </div>
+        <div class="plant-card">
+          <span class="plant-icon">🌱</span>
+          <div class="plant-name">Kale</div>
+          <div class="plant-variety">Lacinato (dinosaur)</div>
+          <div class="plant-status growing">Growing</div>
+          <p class="plant-note">Cold-tolerant workhorse. Sweeter after a frost.</p>
+        </div>
+        <div class="plant-card">
+          <span class="plant-icon">💜</span>
+          <div class="plant-name">Lavender</div>
+          <div class="plant-variety">French (Provence)</div>
+          <div class="plant-status established">Established</div>
+          <p class="plant-note">Third year. Drought-tolerant once rooted. Bees in love with it.</p>
+        </div>
+      </div>
+      <p class="garden-footnote">USDA zone 5b · Denver, CO · April–October growing window · Updated May 2026</p>
     </div>
   </section>
 
@@ -2885,7 +3037,7 @@
     }
 
     // Section IDs that may be present. Visibility is driven entirely by config.order.
-    const ALL_SECTIONS = ['now', 'businesses', 'projects', 'music', 'contact', 'picks', 'portfolio', 'dispatches', 'studio', 'journey', 'tracks', 'videos'];
+    const ALL_SECTIONS = ['now', 'businesses', 'projects', 'music', 'contact', 'picks', 'portfolio', 'dispatches', 'studio', 'journey', 'tracks', 'videos', 'garden'];
 
     const themes: Record<string, ThemeConfig> = {
       midnight: {
@@ -2941,6 +3093,12 @@
         subtitle: 'Founder. Builder. Operator.',
         bio: 'Three ventures in motion — Boundless Horizons (stealth), TM Go (tour management), SelfNVest AI (FSBO real estate). Full-stack, from schema to UI to DNS. I ship.',
         badge: 'Open to founder / co-founder conversations'
+      },
+      garden: {
+        order: ['garden', 'now', 'projects', 'businesses', 'contact'],
+        subtitle: 'Gardener. Grower. Patient about it.',
+        bio: 'Slow projects. Plants, compost, observation. The garden teaches you to plan in seasons, not sprints — every other project I work on borrows that rhythm.',
+        badge: 'Currently — tending the plot'
       }
     };
 
