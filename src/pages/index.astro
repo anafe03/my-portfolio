@@ -327,6 +327,48 @@
       display: block;
     }
 
+    .now-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+      animation: slideUp 0.8s ease-out 0.1s backwards;
+    }
+
+    .now-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.8rem 0.35rem 0.5rem;
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 0.8rem;
+      max-width: 100%;
+      overflow: hidden;
+    }
+
+    .now-emoji {
+      font-size: 0.95rem;
+    }
+
+    .now-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-dim);
+      font-weight: 800;
+    }
+
+    .now-value {
+      color: var(--text);
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 240px;
+    }
+
     .open-to-work {
       display: inline-flex;
       align-items: center;
@@ -1929,6 +1971,225 @@
       color: var(--text-dim);
     }
 
+    /* ─── Cmd+K command palette ─────────────────────────── */
+    .cmdk-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      display: none;
+      z-index: 300;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 12vh;
+      backdrop-filter: blur(8px);
+    }
+
+    .cmdk-overlay.open { display: flex; }
+
+    .cmdk {
+      width: min(560px, 90vw);
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+    }
+
+    .cmdk-input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 1.25rem 1.5rem;
+      font-size: 1.05rem;
+      color: var(--text);
+      font-family: inherit;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .cmdk-list {
+      max-height: 50vh;
+      overflow-y: auto;
+      padding: 0.5rem 0;
+    }
+
+    .cmdk-item {
+      display: grid;
+      grid-template-columns: 28px 1fr auto;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1.5rem;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+
+    .cmdk-item.active,
+    .cmdk-item:hover {
+      background: var(--bg-card);
+    }
+
+    .cmdk-item-icon {
+      font-size: 1rem;
+      opacity: 0.75;
+      text-align: center;
+    }
+
+    .cmdk-item-title {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .cmdk-item-kind {
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 800;
+    }
+
+    .cmdk-foot {
+      padding: 0.6rem 1.5rem;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 1.25rem;
+      font-family: var(--font-mono);
+    }
+
+    /* ─── Place detail modal ────────────────────────────── */
+    .pmodal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      display: none;
+      z-index: 300;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      backdrop-filter: blur(8px);
+    }
+
+    .pmodal-overlay.open { display: flex; }
+
+    .pmodal {
+      width: min(720px, 100%);
+      max-height: 90vh;
+      overflow-y: auto;
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      position: relative;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+    }
+
+    .pmodal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 1.3rem;
+      line-height: 1;
+      z-index: 2;
+    }
+
+    .pmodal-close:hover {
+      background: var(--coral);
+      color: white;
+    }
+
+    .pmodal-photos {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      aspect-ratio: 16 / 7;
+      background: var(--bg-card);
+    }
+
+    .pmodal-photo {
+      background: linear-gradient(135deg, var(--bg-card), var(--bg));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-dim);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .pmodal-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .pmodal-body {
+      padding: 2rem;
+    }
+
+    .pmodal-meta {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--text-dim);
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+
+    .pmodal-city {
+      font-family: var(--font-heading);
+      font-size: 2.25rem;
+      line-height: 1.1;
+      margin-bottom: 0.75rem;
+    }
+
+    .pmodal-note {
+      color: var(--text-dim);
+      font-size: 1.05rem;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .pmodal-fields {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .pmodal-field {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.85rem 1.1rem;
+    }
+
+    .pmodal-field-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--text-dim);
+      font-weight: 800;
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .pmodal-field-value {
+      color: var(--text);
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
     .legal-notice {
       max-width: 720px;
       margin: 1rem auto 0;
@@ -2200,6 +2461,11 @@
       <div class="hero-content">
         <div class="hero-text">
           <span class="open-to-work" id="openToWork">Open to work — AI Engineer / Research</span>
+          <div class="now-bar">
+            <span class="now-chip"><span class="now-emoji">🎧</span><span class="now-label">Listening</span><span class="now-value" id="nowListening">Aphex Twin — Avril 14th</span></span>
+            <span class="now-chip"><span class="now-emoji">📖</span><span class="now-label">Reading</span><span class="now-value" id="nowReading">The Beginning of Infinity — Deutsch</span></span>
+            <span class="now-chip"><span class="now-emoji">📺</span><span class="now-label">Watching</span><span class="now-value" id="nowWatching">Pluribus</span></span>
+          </div>
           <h1>Austin Nafe</h1>
           <p class="subtitle" id="heroSubtitle">AI Engineer. Founder. Researcher.</p>
           <p class="bio" id="heroBio">
@@ -2859,6 +3125,29 @@
   </section>
   </main>
 
+  <!-- Cmd+K command palette -->
+  <div class="cmdk-overlay" id="cmdkOverlay" role="dialog" aria-label="Command palette">
+    <div class="cmdk">
+      <input class="cmdk-input" id="cmdkInput" placeholder="Search themes, sections, actions…" autocomplete="off" />
+      <div class="cmdk-list" id="cmdkList"></div>
+      <div class="cmdk-foot"><span>↑↓ navigate</span><span>↵ select</span><span>esc close</span></div>
+    </div>
+  </div>
+
+  <!-- Place detail modal (used by Adventure map + place cards) -->
+  <div class="pmodal-overlay" id="pmodalOverlay" role="dialog" aria-label="Place detail">
+    <div class="pmodal">
+      <button class="pmodal-close" id="pmodalClose" aria-label="Close">×</button>
+      <div class="pmodal-photos" id="pmodalPhotos"></div>
+      <div class="pmodal-body">
+        <div class="pmodal-meta" id="pmodalMeta"></div>
+        <h2 class="pmodal-city" id="pmodalCity"></h2>
+        <p class="pmodal-note" id="pmodalNote"></p>
+        <div class="pmodal-fields" id="pmodalFields"></div>
+      </div>
+    </div>
+  </div>
+
   <footer>
     <div class="container">
       <p>&copy; 2026 Austin Nafe. Built with Astro.</p>
@@ -2885,7 +3174,18 @@
       current?: boolean;
       songs?: string[];
       projects?: string[];
-      guide?: string; // local recommendation
+      guide?: string;
+      // Place-modal fields (all optional, fill at your pace or via Sheet later)
+      photos?: string[];
+      eat?: string;
+      drink?: string;
+      coffee?: string;
+      move?: string;
+      stay?: string;
+      hiddenGem?: string;
+      skip?: string;
+      strangest?: string;
+      verdict?: string;
     }
     interface Track {
       id: string;
@@ -3092,12 +3392,80 @@
       if (!grid) return;
       const withGuide = placesData.filter(p => p.guide);
       grid.innerHTML = withGuide.map(p => `
-        <div class="place-card">
+        <div class="place-card" data-place-id="${p.id}">
           <h4>${p.city}</h4>
           <p>${p.guide}</p>
         </div>
       `).join('');
+      grid.querySelectorAll<HTMLElement>('.place-card').forEach(el => {
+        el.addEventListener('click', () => {
+          const id = el.dataset.placeId;
+          if (id) openPlaceModal(id);
+        });
+        el.style.cursor = 'pointer';
+      });
     }
+
+    // ─── Place modal ────────────────────────────────────────────────
+    function openPlaceModal(placeId: string) {
+      const p = placesData.find(x => x.id === placeId);
+      if (!p) return;
+      const overlay = document.getElementById('pmodalOverlay');
+      const photos = document.getElementById('pmodalPhotos');
+      const meta = document.getElementById('pmodalMeta');
+      const city = document.getElementById('pmodalCity');
+      const note = document.getElementById('pmodalNote');
+      const fields = document.getElementById('pmodalFields');
+
+      if (photos) {
+        const imgs = p.photos && p.photos.length
+          ? p.photos.slice(0, 3).map(src => `<div class="pmodal-photo"><img src="${src}" alt="${p.city}"></div>`)
+          : ['', '', ''].map(() => `<div class="pmodal-photo">📷 photo</div>`);
+        photos.innerHTML = imgs.join('');
+      }
+      if (meta) meta.textContent = `${p.date}${p.country ? ' · ' + p.country : ''}${p.current ? ' · here now' : ''}`;
+      if (city) city.textContent = p.city;
+      if (note) note.textContent = p.note;
+
+      const songs = (p.songs || []).map(id => tracksData.find(t => t.id === id)).filter(Boolean) as Track[];
+      const fieldDefs: Array<{ key: keyof Place; label: string; icon: string; value?: string }> = [
+        { key: 'eat', label: 'Eat', icon: '🍴' },
+        { key: 'drink', label: 'Drink', icon: '🍺' },
+        { key: 'coffee', label: 'Coffee', icon: '☕' },
+        { key: 'move', label: 'Move', icon: '🥾' },
+        { key: 'stay', label: 'Stay', icon: '🛏' },
+        { key: 'hiddenGem', label: 'Hidden gem', icon: '🎁' },
+        { key: 'skip', label: 'Skip', icon: '🚫' },
+        { key: 'strangest', label: 'Strangest thing', icon: '🌙' },
+        { key: 'verdict', label: 'Verdict', icon: '🔁' },
+        { key: 'guide', label: 'Local guide', icon: '🗺' }
+      ];
+      const filledFields = fieldDefs.filter(f => p[f.key]);
+      const songsField = songs.length
+        ? `<div class="pmodal-field"><div class="pmodal-field-label">🎵 Made here</div><div class="pmodal-field-value">${songs.map(s => s!.title).join(' · ')}</div></div>`
+        : '';
+      if (fields) {
+        fields.innerHTML = filledFields.map(f => `
+          <div class="pmodal-field">
+            <div class="pmodal-field-label">${f.icon} ${f.label}</div>
+            <div class="pmodal-field-value">${p[f.key]}</div>
+          </div>
+        `).join('') + songsField;
+      }
+      overlay?.classList.add('open');
+    }
+
+    function closePlaceModal() {
+      document.getElementById('pmodalOverlay')?.classList.remove('open');
+    }
+
+    document.getElementById('pmodalClose')?.addEventListener('click', closePlaceModal);
+    document.getElementById('pmodalOverlay')?.addEventListener('click', (e) => {
+      if (e.target === document.getElementById('pmodalOverlay')) closePlaceModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closePlaceModal();
+    });
 
     // ─── Render: map ─────────────────────────────────────────────────
     let mapInstance: any = null;
@@ -3133,7 +3501,6 @@
       // Markers
       const markerByYear: Record<number, any[]> = {};
       placesData.forEach(p => {
-        const songs = (p.songs || []).map(id => tracksData.find(t => t.id === id)?.title).filter(Boolean);
         const isCurrent = p.current;
         const year = getYear(p.date);
         const color = isCurrent ? '#e85d4a' : (yearColors[year] || '#6b8e4e');
@@ -3151,16 +3518,7 @@
           iconAnchor: [10, 10]
         });
         const marker = L.marker(p.coords, { icon }).addTo(mapInstance);
-        const tagsHtml = [
-          ...(songs.length ? [`🎵 ${songs.length} track${songs.length > 1 ? 's' : ''}`] : []),
-          ...(p.projects?.length ? [`🛠 ${p.projects.length} project${p.projects.length > 1 ? 's' : ''}`] : [])
-        ].map(t => `<span class="map-popup-tag">${t}</span>`).join('');
-        marker.bindPopup(`
-          <div class="map-popup-city">${p.city}${isCurrent ? ' · here now' : ''}</div>
-          <div class="map-popup-date">${p.date}</div>
-          <div class="map-popup-note">${p.note}</div>
-          ${tagsHtml ? `<div class="map-popup-tags">${tagsHtml}</div>` : ''}
-        `);
+        marker.on('click', () => openPlaceModal(p.id));
         (markerByYear[year] ||= []).push(marker);
       });
 
@@ -3371,6 +3729,13 @@
       const config = themes[theme] || themes.midnight;
       document.body.setAttribute('data-theme', theme);
 
+      // Keep the URL in sync so the current view is always shareable.
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.set('theme', theme);
+        history.replaceState({}, '', url.toString());
+      } catch {}
+
       if (subtitleEl) subtitleEl.textContent = config.subtitle;
       if (bioEl) bioEl.textContent = config.bio;
       if (badgeEl) badgeEl.textContent = config.badge;
@@ -3406,8 +3771,11 @@
       }
     }
 
-    const savedTheme = localStorage.getItem('theme') || 'midnight';
+    // Theme resolution priority: URL ?theme=X → localStorage → midnight
+    const urlTheme = new URLSearchParams(window.location.search).get('theme');
+    const savedTheme = (urlTheme && themes[urlTheme]) ? urlTheme : (localStorage.getItem('theme') || 'midnight');
     applyTheme(savedTheme);
+    if (urlTheme && themes[urlTheme]) localStorage.setItem('theme', urlTheme);
 
     const settingsBtn = document.getElementById('settingsBtn');
     const settingsPanel = document.getElementById('settingsPanel');
@@ -3459,6 +3827,146 @@
       el.style.transform = 'translateY(30px)';
       el.style.transition = 'opacity 0.6s, transform 0.6s';
       observer.observe(el);
+    });
+
+    // ─── Cmd+K command palette ─────────────────────────────
+    interface CmdItem {
+      id: string;
+      title: string;
+      kind: string;
+      icon: string;
+      exec: () => void;
+    }
+
+    function buildCmdItems(): CmdItem[] {
+      const items: CmdItem[] = [];
+      const themeLabels: Record<string, string> = {
+        midnight: 'Midnight', cream: 'Cream', healthcare: 'Healthcare',
+        adventure: 'Adventure', creative: 'Creative', agents: 'AI Agents',
+        cyber: 'Cyber Risk', finance: 'Finance', founder: 'Founder', garden: 'Garden'
+      };
+      Object.keys(themes).forEach(t => {
+        items.push({
+          id: `theme:${t}`,
+          title: `Switch to ${themeLabels[t] || t}`,
+          kind: 'Theme',
+          icon: '🎨',
+          exec: () => { localStorage.setItem('theme', t); applyTheme(t); }
+        });
+      });
+      const sectionLabels: Record<string, string> = {
+        now: 'Now', businesses: 'Ventures', projects: 'Projects', music: 'Music',
+        contact: 'Contact', picks: 'My Picks', portfolio: 'Portfolio',
+        dispatches: 'Dispatches', studio: 'Studio', journey: 'Journey',
+        tracks: 'Catalog', videos: 'Videos', garden: 'The Garden',
+        calendar: 'Seasonal Calendar', harvest: 'Harvest Log', observations: 'Field Notes'
+      };
+      Object.entries(sectionLabels).forEach(([id, label]) => {
+        items.push({
+          id: `nav:${id}`,
+          title: `Go to ${label}`,
+          kind: 'Navigate',
+          icon: '↓',
+          exec: () => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        });
+      });
+      items.push(
+        { id: 'resume', title: 'Download Resume', kind: 'Action', icon: '📄', exec: () => window.open('/RESUME_2026.pdf', '_blank') },
+        { id: 'github', title: 'Open GitHub', kind: 'Action', icon: '⌗', exec: () => window.open('https://github.com/anafe03', '_blank') },
+        { id: 'linkedin', title: 'Open LinkedIn', kind: 'Action', icon: '⌬', exec: () => window.open('https://www.linkedin.com/in/austinnafe/', '_blank') },
+        { id: 'email', title: 'Email Austin', kind: 'Action', icon: '✉', exec: () => { window.location.href = 'mailto:austinnafe@aol.com'; } },
+        { id: 'soundcloud', title: 'Open SoundCloud', kind: 'Action', icon: '♪', exec: () => window.open('https://soundcloud.com/user-611195779', '_blank') },
+        { id: 'copy-url', title: 'Copy shareable link for current theme', kind: 'Action', icon: '🔗', exec: () => navigator.clipboard.writeText(window.location.href) }
+      );
+      return items;
+    }
+
+    const cmdItems = buildCmdItems();
+    let cmdFilter = '';
+    let cmdIndex = 0;
+    const cmdOverlay = document.getElementById('cmdkOverlay');
+    const cmdInput = document.getElementById('cmdkInput') as HTMLInputElement | null;
+    const cmdList = document.getElementById('cmdkList');
+
+    function cmdFiltered() {
+      const q = cmdFilter.toLowerCase().trim();
+      if (!q) return cmdItems;
+      return cmdItems.filter(i => i.title.toLowerCase().includes(q) || i.kind.toLowerCase().includes(q));
+    }
+
+    function renderCmd() {
+      if (!cmdList) return;
+      const filtered = cmdFiltered();
+      if (filtered.length === 0) {
+        cmdList.innerHTML = `<div class="cmdk-item"><span class="cmdk-item-icon">⊘</span><span class="cmdk-item-title">No matches</span><span class="cmdk-item-kind"></span></div>`;
+        return;
+      }
+      cmdIndex = Math.min(cmdIndex, filtered.length - 1);
+      cmdList.innerHTML = filtered.map((i, idx) => `
+        <div class="cmdk-item ${idx === cmdIndex ? 'active' : ''}" data-cmd="${i.id}">
+          <span class="cmdk-item-icon">${i.icon}</span>
+          <span class="cmdk-item-title">${i.title}</span>
+          <span class="cmdk-item-kind">${i.kind}</span>
+        </div>
+      `).join('');
+      cmdList.querySelectorAll<HTMLElement>('.cmdk-item').forEach(el => {
+        el.addEventListener('click', () => {
+          const id = el.dataset.cmd;
+          const item = cmdItems.find(i => i.id === id);
+          if (item) { item.exec(); closeCmd(); }
+        });
+      });
+    }
+
+    function openCmd() {
+      if (!cmdOverlay) return;
+      cmdOverlay.classList.add('open');
+      cmdFilter = '';
+      cmdIndex = 0;
+      if (cmdInput) { cmdInput.value = ''; setTimeout(() => cmdInput.focus(), 50); }
+      renderCmd();
+    }
+
+    function closeCmd() {
+      cmdOverlay?.classList.remove('open');
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        if (cmdOverlay?.classList.contains('open')) closeCmd();
+        else openCmd();
+        return;
+      }
+      if (!cmdOverlay?.classList.contains('open')) return;
+      if (e.key === 'Escape') { e.preventDefault(); closeCmd(); }
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        const f = cmdFiltered();
+        cmdIndex = (cmdIndex + 1) % Math.max(1, f.length);
+        renderCmd();
+      }
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        const f = cmdFiltered();
+        cmdIndex = (cmdIndex - 1 + f.length) % Math.max(1, f.length);
+        renderCmd();
+      }
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const f = cmdFiltered();
+        if (f[cmdIndex]) { f[cmdIndex].exec(); closeCmd(); }
+      }
+    });
+
+    cmdInput?.addEventListener('input', () => {
+      cmdFilter = cmdInput.value;
+      cmdIndex = 0;
+      renderCmd();
+    });
+
+    cmdOverlay?.addEventListener('click', (e) => {
+      if (e.target === cmdOverlay) closeCmd();
     });
   </script>
 </body>
