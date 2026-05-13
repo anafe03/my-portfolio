@@ -3164,6 +3164,38 @@
       gap: 1rem;
     }
 
+    .project-filters {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .project-filter {
+      padding: 0.5rem 1.1rem;
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      border-radius: 24px;
+      color: var(--text-dim);
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .project-filter:hover {
+      border-color: var(--ocean);
+      color: var(--text);
+    }
+
+    .project-filter.active {
+      background: linear-gradient(135deg, var(--forest), var(--ocean));
+      color: white;
+      border-color: transparent;
+    }
+
     .wip-badge {
       display: inline-flex;
       align-items: center;
@@ -4349,8 +4381,17 @@
         <h2>Projects</h2>
         <p>Building at the intersection of tech, health, and creativity</p>
       </div>
+      <div class="project-filters" id="projectFilters" data-theme-only="midnight">
+        <button class="project-filter active" data-filter="all">All</button>
+        <button class="project-filter" data-filter="ai">AI / Agents</button>
+        <button class="project-filter" data-filter="security">Security</button>
+        <button class="project-filter" data-filter="health">Health</button>
+        <button class="project-filter" data-filter="finance">Finance</button>
+        <button class="project-filter" data-filter="music">Music</button>
+        <button class="project-filter" data-filter="wip">In Progress</button>
+      </div>
       <div class="projects-grid">
-        <div class="project-card">
+        <div class="project-card" data-theme-only="midnight,healthcare,wellness" data-category="health,signal">
           <h3>HRV Detector</h3>
           <p>Camera-based heart rate variability detection using photoplethysmography. No wearables required — just your phone camera.</p>
           <div class="project-tags">
@@ -4358,11 +4399,9 @@
             <span class="tag">Signal Processing</span>
             <span class="tag">Health Tech</span>
           </div>
-          <a href="https://github.com/anafe03/hrv-detector" target="_blank" class="project-link">
-            View Project →
-          </a>
+          <a href="https://github.com/anafe03/hrv-detector" target="_blank" class="project-link">View Project →</a>
         </div>
-        <div class="project-card">
+        <div class="project-card" data-theme-only="midnight,agents,cyber" data-category="ai,multi-agent,rl">
           <h3>Simulacrum — Multi-Agent RL</h3>
           <p>Interactive simulation environment for training and observing multi-agent reinforcement learning policies. Visualizes agent behavior, cooperation, and emergent strategies in real time.</p>
           <div class="project-tags">
@@ -4371,11 +4410,9 @@
             <span class="tag">Simulation</span>
             <span class="tag">Streamlit</span>
           </div>
-          <a href="https://simulacrum-scenes.streamlit.app" target="_blank" class="project-link">
-            View Project →
-          </a>
+          <a href="https://simulacrum-scenes.streamlit.app" target="_blank" class="project-link">View Project →</a>
         </div>
-        <div class="project-card">
+        <div class="project-card" data-theme-only="midnight,agents,cyber" data-category="ai,security">
           <h3>Octagon — AI Agent Red Team</h3>
           <p>Adversarial testing playground for AI agents. Probes agents for prompt-injection, jailbreaks, tool-misuse, and unsafe behavior using reinforcement-learning-driven attack policies.</p>
           <div class="project-tags">
@@ -4384,14 +4421,12 @@
             <span class="tag">AI Security</span>
             <span class="tag">Streamlit</span>
           </div>
-          <a href="https://octagon-redcell.streamlit.app" target="_blank" class="project-link">
-            View Project →
-          </a>
+          <a href="https://octagon-redcell.streamlit.app" target="_blank" class="project-link">View Project →</a>
         </div>
-        <div class="project-card">
+        <div class="project-card" data-theme-only="midnight,agents,cyber" data-category="ai,infra,wip">
           <span class="wip-badge">In Progress</span>
           <h3>LangGraph Eval Harness</h3>
-          <p>Open-source evaluation framework for LangGraph agents. Auto-generates test suites, runs evals against golden outputs, tracks regressions across runs, logs token cost, and visualizes results. Deployed on AWS.</p>
+          <p>Open-source evaluation framework for LangGraph agents. Auto-generates test suites, runs evals against golden outputs, tracks regressions across runs, logs token cost, and visualizes results.</p>
           <div class="project-tags">
             <span class="tag">Python</span>
             <span class="tag">LangGraph</span>
@@ -4399,7 +4434,7 @@
             <span class="tag">AWS</span>
           </div>
         </div>
-        <div class="project-card">
+        <div class="project-card" data-theme-only="midnight,agents,finance" data-category="ai,ml,finance,wip">
           <span class="wip-badge">In Progress</span>
           <h3>RecSys Engine</h3>
           <p>From-scratch recommender system exploring collaborative filtering, content-based, and hybrid approaches — with a focus on cold-start handling and explainability.</p>
@@ -4409,7 +4444,7 @@
             <span class="tag">Recommender Systems</span>
           </div>
         </div>
-        <div class="project-card">
+        <div class="project-card" data-theme-only="midnight,creative,agents" data-category="ai,music,ml,wip">
           <span class="wip-badge">In Progress</span>
           <h3>Music Recommender</h3>
           <p>Audio-feature-driven music recommendation engine. Uses spectral and embedding-based similarity to surface tracks beyond what mainstream platforms suggest.</p>
@@ -4419,7 +4454,7 @@
             <span class="tag">Embeddings</span>
           </div>
         </div>
-        <div class="project-card">
+        <div class="project-card" data-theme-only="midnight,creative,agents" data-category="ai,game,wip">
           <span class="wip-badge">In Progress</span>
           <h3>Dating Game</h3>
           <p>An interactive dating game with AI-driven characters and dynamic dialogue — exploring agent personality consistency and player-driven narrative branching.</p>
@@ -4429,9 +4464,9 @@
             <span class="tag">Game Design</span>
           </div>
         </div>
-        <div class="project-card">
+        <div class="project-card" data-theme-only="midnight,agents,founder,finance" data-category="ai,enterprise">
           <h3>PwC Innovation Hub</h3>
-          <p>Shipped 5+ production AI plugins end-to-end as Senior Associate AI Engineer — including an RFP generator, internal knowledge base connector, and EDGAR search. Spearheaded the AI Factory upskilling program for the data science team.</p>
+          <p>Shipped 5+ production AI plugins end-to-end as Senior Associate AI Engineer — RFP generator, internal knowledge base connector, EDGAR search. Spearheaded the AI Factory upskilling program for the data science team.</p>
           <div class="project-tags">
             <span class="tag">Python</span>
             <span class="tag">Azure</span>
@@ -4885,7 +4920,7 @@
       </div>
       <div class="zoo-grid">
 
-        <div class="agent-card">
+        <div class="agent-card" data-theme-only="midnight,agents,founder,adventure">
           <div class="agent-head">
             <span class="agent-avatar">🚐</span>
             <div>
@@ -4907,7 +4942,7 @@
           <a class="agent-try" href="https://toursync-deploy.vercel.app/" target="_blank">Try it →</a>
         </div>
 
-        <div class="agent-card">
+        <div class="agent-card" data-theme-only="midnight,agents,founder,finance">
           <div class="agent-head">
             <span class="agent-avatar">🏠</span>
             <div>
@@ -4929,7 +4964,7 @@
           <a class="agent-try" href="https://www.selfnvestai.com/" target="_blank">Try it →</a>
         </div>
 
-        <div class="agent-card">
+        <div class="agent-card" data-theme-only="midnight,agents,cyber">
           <div class="agent-head">
             <span class="agent-avatar">🥊</span>
             <div>
@@ -4951,7 +4986,7 @@
           <a class="agent-try" href="https://octagon-redcell.streamlit.app" target="_blank">Try it →</a>
         </div>
 
-        <div class="agent-card">
+        <div class="agent-card" data-theme-only="midnight,agents">
           <div class="agent-head">
             <span class="agent-avatar">🎲</span>
             <div>
@@ -4972,7 +5007,7 @@
           <a class="agent-try" href="https://simulacrum-scenes.streamlit.app" target="_blank">Try it →</a>
         </div>
 
-        <div class="agent-card">
+        <div class="agent-card" data-theme-only="midnight,agents,healthcare,wellness">
           <div class="agent-head">
             <span class="agent-avatar">🩺</span>
             <div>
@@ -4994,7 +5029,7 @@
           <a class="agent-try" href="https://priorauth-assist.streamlit.app" target="_blank">Try it →</a>
         </div>
 
-        <div class="agent-card">
+        <div class="agent-card" data-theme-only="midnight,agents,adventure,creative">
           <div class="agent-head">
             <span class="agent-avatar">🎪</span>
             <div>
@@ -5015,7 +5050,7 @@
           <a class="agent-try" href="https://festival-companion.streamlit.app" target="_blank">Try it →</a>
         </div>
 
-        <div class="agent-card">
+        <div class="agent-card" data-theme-only="midnight,agents,finance">
           <div class="agent-head">
             <span class="agent-avatar">📈</span>
             <div>
@@ -5037,7 +5072,7 @@
           <a class="agent-try" href="https://earnings-inspector.streamlit.app" target="_blank">Try it →</a>
         </div>
 
-        <div class="agent-card">
+        <div class="agent-card" data-theme-only="midnight,agents,healthcare,wellness">
           <div class="agent-head">
             <span class="agent-avatar">📝</span>
             <div>
@@ -5059,7 +5094,7 @@
           <a class="agent-try" href="https://autofill-claims.streamlit.app" target="_blank">Try it →</a>
         </div>
 
-        <div class="agent-card">
+        <div class="agent-card" data-theme-only="midnight,agents,creative">
           <div class="agent-head">
             <span class="agent-avatar">🎚</span>
             <div>
@@ -6722,7 +6757,7 @@
 
     const themes: Record<string, ThemeConfig> = {
       midnight: {
-        order: ['now', 'businesses', 'projects', 'stack', 'nowplaying', 'faq', 'music', 'contact'],
+        order: ['now', 'businesses', 'projects', 'zoo', 'stack', 'nowplaying', 'faq', 'music', 'contact'],
         subtitle: 'AI Engineer. Founder. Researcher.',
         bio: 'I build production AI agents in Python, FastAPI, and LangGraph. Currently looking for roles in AI agents, healthcare tech, and AI research.',
         badge: 'Open to work — AI Engineer / Research'
@@ -6740,13 +6775,13 @@
         badge: 'Open to work — Healthcare AI / Clinical Tech'
       },
       adventure: {
-        order: ['journey', 'rig', 'fests', 'parks', 'bucket', 'album', 'dispatches', 'pack', 'now', 'music', 'businesses', 'projects', 'contact'],
+        order: ['journey', 'rig', 'fests', 'zoo', 'parks', 'bucket', 'album', 'dispatches', 'pack', 'now', 'music', 'businesses', 'projects', 'contact'],
         subtitle: 'Builder. Wanderer. Storyteller.',
         bio: 'I build software between trail miles and time zones. The best ideas tend to show up somewhere with no service — these are the ones I brought back.',
         badge: 'Currently — building from the road'
       },
       creative: {
-        order: ['music', 'tracks', 'nowplaying', 'videos', 'studio', 'projects', 'businesses', 'now', 'contact'],
+        order: ['music', 'tracks', 'nowplaying', 'videos', 'zoo', 'studio', 'projects', 'businesses', 'now', 'contact'],
         subtitle: 'Producer. Engineer. Artist.',
         bio: 'I make music and the tools to make music with. Audio ML, generative systems, and live performance — the rest of the stack is in service of that.',
         badge: 'Open to creative collaborations'
@@ -6758,19 +6793,19 @@
         badge: 'Open to work — Agent Infrastructure / Platform'
       },
       cyber: {
-        order: ['projects', 'stack', 'now', 'businesses', 'faq', 'contact'],
+        order: ['projects', 'zoo', 'stack', 'now', 'businesses', 'faq', 'contact'],
         subtitle: 'AI Security Researcher.',
         bio: 'I red-team AI agents. Octagon explores RL-driven attack policies against agent stacks. PwC background in compliance and risk underwrites the rigor.',
         badge: 'Open to work — AI Security / Red Team'
       },
       finance: {
-        order: ['now', 'portfolio', 'charts', 'letter', 'picks', 'projects', 'businesses', 'faq', 'contact'],
+        order: ['now', 'portfolio', 'charts', 'zoo', 'letter', 'picks', 'projects', 'businesses', 'faq', 'contact'],
         subtitle: 'AI Engineer. Quant-Curious. Former PwC.',
         bio: 'Finance + CS undergrad, PwC Innovation Hub alum building AI for banking clients. Comfortable shipping production systems against regulated environments and senior-stakeholder review cycles.',
         badge: 'Open to work — AI in Financial Services'
       },
       founder: {
-        order: ['businesses', 'numbers', 'press', 'decisions', 'manifesto', 'projects', 'now', 'faq', 'contact'],
+        order: ['businesses', 'numbers', 'press', 'decisions', 'manifesto', 'zoo', 'projects', 'now', 'faq', 'contact'],
         subtitle: 'Founder. Builder. Operator.',
         bio: 'Three ventures in motion — Boundless Horizons (stealth), TM Go (tour management), SelfNVest AI (FSBO real estate). Full-stack, from schema to UI to DNS. I ship.',
         badge: 'Open to founder / co-founder conversations'
@@ -6782,7 +6817,7 @@
         badge: 'Currently — tending the plot'
       },
       wellness: {
-        order: ['practice', 'routines', 'notebook', 'rehab-tech', 'now', 'projects', 'contact'],
+        order: ['practice', 'routines', 'notebook', 'rehab-tech', 'zoo', 'now', 'projects', 'contact'],
         subtitle: 'Practitioner. Teacher. Self-experimenter.',
         bio: "Yoga teacher, alt-medicine-curious, self-trained on my own anatomy. I write about what I try, what works, and what I don't know — empirical wellness, no snake oil.",
         badge: 'Open to teaching + collaborations'
@@ -6829,6 +6864,9 @@
         const list = (el.dataset.themeOnly || '').split(',').map(s => s.trim());
         el.style.display = list.includes(theme) ? '' : 'none';
       });
+
+      // Re-apply current project filter (respects theme-only too).
+      applyProjectFilter(activeProjectFilter);
 
       document.querySelectorAll<HTMLElement>('.theme-option').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.setTheme === theme);
@@ -6947,6 +6985,30 @@
       el.style.transform = 'translateY(30px)';
       el.style.transition = 'opacity 0.6s, transform 0.6s';
       observer.observe(el);
+    });
+
+    // ─── Project filter (Midnight only — other themes hide the filter UI) ──
+    let activeProjectFilter = 'all';
+
+    function applyProjectFilter(category: string) {
+      activeProjectFilter = category;
+      const theme = document.body.getAttribute('data-theme') || 'midnight';
+      document.querySelectorAll<HTMLElement>('#projects .project-card').forEach(card => {
+        const cats = (card.dataset.category || '').split(',').map(s => s.trim());
+        const themes = card.dataset.themeOnly ? card.dataset.themeOnly.split(',').map(s => s.trim()) : null;
+        const themeOk = !themes || themes.includes(theme);
+        const catOk = category === 'all' || cats.includes(category);
+        card.style.display = (themeOk && catOk) ? '' : 'none';
+      });
+      document.querySelectorAll<HTMLElement>('#projectFilters .project-filter').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === category);
+      });
+    }
+
+    document.querySelectorAll<HTMLElement>('#projectFilters .project-filter').forEach(btn => {
+      btn.addEventListener('click', () => {
+        applyProjectFilter(btn.dataset.filter || 'all');
+      });
     });
 
     // ─── Cmd+K command palette ─────────────────────────────
