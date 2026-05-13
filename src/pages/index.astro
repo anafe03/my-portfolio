@@ -606,6 +606,24 @@
       font-family: var(--font-mono);
     }
 
+    .agent-try {
+      align-self: flex-start;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--coral);
+      text-decoration: none;
+      padding: 0.5rem 0.9rem;
+      border: 1px solid var(--coral);
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .agent-try:hover {
+      background: var(--coral);
+      color: var(--bg);
+      transform: translateX(3px);
+    }
+
     /* ─── Stack ─────────────────────────────────────────── */
     .stack-grid {
       display: grid;
@@ -4345,7 +4363,7 @@
           </a>
         </div>
         <div class="project-card">
-          <h3>Multi-Agent RL Simulation</h3>
+          <h3>Simulacrum — Multi-Agent RL</h3>
           <p>Interactive simulation environment for training and observing multi-agent reinforcement learning policies. Visualizes agent behavior, cooperation, and emergent strategies in real time.</p>
           <div class="project-tags">
             <span class="tag">Python</span>
@@ -4353,20 +4371,20 @@
             <span class="tag">Simulation</span>
             <span class="tag">Streamlit</span>
           </div>
-          <a href="https://rl-agents-sim.streamlit.app/" target="_blank" class="project-link">
+          <a href="https://simulacrum-scenes.streamlit.app" target="_blank" class="project-link">
             View Project →
           </a>
         </div>
         <div class="project-card">
-          <h3>Octagon — AI Agent Pentesting</h3>
-          <p>Adversarial testing playground for AI agents. Probes agents for prompt-injection, jailbreaks, tool-misuse, and unsafe behavior using reinforcement-learning-driven attack policies. Live Streamlit demo.</p>
+          <h3>Octagon — AI Agent Red Team</h3>
+          <p>Adversarial testing playground for AI agents. Probes agents for prompt-injection, jailbreaks, tool-misuse, and unsafe behavior using reinforcement-learning-driven attack policies.</p>
           <div class="project-tags">
             <span class="tag">Python</span>
             <span class="tag">RL</span>
             <span class="tag">AI Security</span>
             <span class="tag">Streamlit</span>
           </div>
-          <a href="https://rlagents-octagon.streamlit.app/" target="_blank" class="project-link">
+          <a href="https://octagon-redcell.streamlit.app" target="_blank" class="project-link">
             View Project →
           </a>
         </div>
@@ -4884,11 +4902,9 @@
             <span class="tag">Stripe</span>
           </div>
           <div class="agent-caps">
-            <span title="Persistent memory">🧠 memory</span>
-            <span title="Tool use">🛠 tools</span>
-            <span title="Multi-turn dialogue">💬 multi-turn</span>
-            <span title="SMS coordination">📱 SMS</span>
+            <span>🧠 memory</span><span>🛠 tools</span><span>💬 multi-turn</span><span>📱 SMS</span>
           </div>
+          <a class="agent-try" href="https://toursync-deploy.vercel.app/" target="_blank">Try it →</a>
         </div>
 
         <div class="agent-card">
@@ -4908,11 +4924,9 @@
             <span class="tag">Supabase</span>
           </div>
           <div class="agent-caps">
-            <span title="Per-user persistent memory">🧠 memory</span>
-            <span title="Tool use">🛠 tools</span>
-            <span title="Scheduling">📅 scheduling</span>
-            <span title="Tiered access">🔐 auth</span>
+            <span>🧠 memory</span><span>🛠 tools</span><span>📅 scheduling</span><span>🔐 auth</span>
           </div>
+          <a class="agent-try" href="https://www.selfnvestai.com/" target="_blank">Try it →</a>
         </div>
 
         <div class="agent-card">
@@ -4920,7 +4934,7 @@
             <span class="agent-avatar">🥊</span>
             <div>
               <div class="agent-name">Octagon</div>
-              <div class="agent-role">Adversarial tester · RL-driven attack policies</div>
+              <div class="agent-role">Red-team agent · RL-driven attack policies</div>
             </div>
             <span class="agent-status live">Live demo</span>
           </div>
@@ -4932,18 +4946,17 @@
             <span class="tag">Streamlit</span>
           </div>
           <div class="agent-caps">
-            <span title="Adversarial probing">🎯 adversarial</span>
-            <span title="Evaluation harness">📊 evals</span>
-            <span title="Live demo">🌐 live</span>
+            <span>🎯 adversarial</span><span>📊 evals</span><span>🌐 live</span>
           </div>
+          <a class="agent-try" href="https://octagon-redcell.streamlit.app" target="_blank">Try it →</a>
         </div>
 
         <div class="agent-card">
           <div class="agent-head">
             <span class="agent-avatar">🎲</span>
             <div>
-              <div class="agent-name">Multi-Agent Sim</div>
-              <div class="agent-role">RL researcher · ten thousand agents arguing</div>
+              <div class="agent-name">Simulacrum</div>
+              <div class="agent-role">Multi-agent scene simulator · emergence at scale</div>
             </div>
             <span class="agent-status live">Live demo</span>
           </div>
@@ -4954,10 +4967,9 @@
             <span class="tag">Streamlit</span>
           </div>
           <div class="agent-caps">
-            <span title="Multi-agent simulation">🌀 simulation</span>
-            <span title="Strategy evaluation">📊 evals</span>
-            <span title="Real-time visualization">📺 viz</span>
+            <span>🌀 simulation</span><span>📊 evals</span><span>📺 viz</span>
           </div>
+          <a class="agent-try" href="https://simulacrum-scenes.streamlit.app" target="_blank">Try it →</a>
         </div>
 
         <div class="agent-card">
@@ -4967,7 +4979,7 @@
               <div class="agent-name">Prior Auth Agent</div>
               <div class="agent-role">Healthcare advocate · policies, appeals, citations</div>
             </div>
-            <span class="agent-status building">Building</span>
+            <span class="agent-status live">Live demo</span>
           </div>
           <p class="agent-quote">"I read every page of your insurance policy so the patient doesn't have to. When they deny, I cite the exact CMS reg and file the appeal — with receipts."</p>
           <div class="agent-tags">
@@ -4977,11 +4989,95 @@
             <span class="tag">RAG</span>
           </div>
           <div class="agent-caps">
-            <span title="Policy memory">🧠 memory</span>
-            <span title="Tool use">🛠 tools</span>
-            <span title="Policy retrieval">📚 lookup</span>
-            <span title="Appeals generation">⚖ appeals</span>
+            <span>🧠 memory</span><span>🛠 tools</span><span>📚 lookup</span><span>⚖ appeals</span>
           </div>
+          <a class="agent-try" href="https://priorauth-assist.streamlit.app" target="_blank">Try it →</a>
+        </div>
+
+        <div class="agent-card">
+          <div class="agent-head">
+            <span class="agent-avatar">🎪</span>
+            <div>
+              <div class="agent-name">Festival Companion</div>
+              <div class="agent-role">Festival co-pilot · lineups, lost friends, water reminders</div>
+            </div>
+            <span class="agent-status live">Live demo</span>
+          </div>
+          <p class="agent-quote">"I'll find your friends in a crowd of 80,000, tell you when to drink water, and remind you which stage Bonobo is on. I'm the festival you actually wanted."</p>
+          <div class="agent-tags">
+            <span class="tag">LangGraph</span>
+            <span class="tag">Streamlit</span>
+            <span class="tag">Real-time</span>
+          </div>
+          <div class="agent-caps">
+            <span>🗺 maps</span><span>📅 schedule</span><span>📍 location</span><span>🧠 memory</span>
+          </div>
+          <a class="agent-try" href="https://festival-companion.streamlit.app" target="_blank">Try it →</a>
+        </div>
+
+        <div class="agent-card">
+          <div class="agent-head">
+            <span class="agent-avatar">📈</span>
+            <div>
+              <div class="agent-name">Earnings Inspector</div>
+              <div class="agent-role">Earnings-call analyzer · transcripts, tone, signals</div>
+            </div>
+            <span class="agent-status live">Live demo</span>
+          </div>
+          <p class="agent-quote">"I read every earnings call so you don't have to. I score management tone, flag the CFO dodge, and surface what the press release didn't say."</p>
+          <div class="agent-tags">
+            <span class="tag">LangGraph</span>
+            <span class="tag">NLP</span>
+            <span class="tag">Finance</span>
+            <span class="tag">Streamlit</span>
+          </div>
+          <div class="agent-caps">
+            <span>📚 RAG</span><span>🎙 tone</span><span>📊 signals</span><span>🔍 search</span>
+          </div>
+          <a class="agent-try" href="https://earnings-inspector.streamlit.app" target="_blank">Try it →</a>
+        </div>
+
+        <div class="agent-card">
+          <div class="agent-head">
+            <span class="agent-avatar">📝</span>
+            <div>
+              <div class="agent-name">AutoFill Claims</div>
+              <div class="agent-role">Insurance form filler · for patients, by patients</div>
+            </div>
+            <span class="agent-status live">Live demo</span>
+          </div>
+          <p class="agent-quote">"You spent forty hours fighting insurance last year. I'll do the first thirty-eight."</p>
+          <div class="agent-tags">
+            <span class="tag">LangGraph</span>
+            <span class="tag">FastAPI</span>
+            <span class="tag">Healthcare</span>
+            <span class="tag">Forms</span>
+          </div>
+          <div class="agent-caps">
+            <span>🗂 forms</span><span>🧠 memory</span><span>🔐 auth</span><span>📤 submit</span>
+          </div>
+          <a class="agent-try" href="https://autofill-claims.streamlit.app" target="_blank">Try it →</a>
+        </div>
+
+        <div class="agent-card">
+          <div class="agent-head">
+            <span class="agent-avatar">🎚</span>
+            <div>
+              <div class="agent-name">tunelab</div>
+              <div class="agent-role">Music experiments · open source · pre-release ideas</div>
+            </div>
+            <span class="agent-status archived">Source</span>
+          </div>
+          <p class="agent-quote">"I'm where the songs go before they're songs. Not every experiment is a hit. Most aren't. The point is to try."</p>
+          <div class="agent-tags">
+            <span class="tag">Python</span>
+            <span class="tag">Audio ML</span>
+            <span class="tag">MIDI</span>
+          </div>
+          <div class="agent-caps">
+            <span>🎵 audio</span><span>🧪 experiments</span><span>📂 repo</span>
+          </div>
+          <a class="agent-try" href="https://github.com/anafe03" target="_blank">GitHub →</a>
         </div>
 
       </div>
