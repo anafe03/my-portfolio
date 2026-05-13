@@ -4726,9 +4726,9 @@
         <div class="chart-card">
           <div class="chart-card-head">
             <div class="chart-card-title">YTD by position</div>
-            <div class="chart-card-stat positive">+18.4%</div>
+            <div class="chart-card-stat" data-stat="ytd-mirror">…</div>
           </div>
-          <svg class="chart-svg bars" viewBox="0 0 400 140" preserveAspectRatio="none" aria-label="YTD return by position">
+          <svg class="chart-svg bars" id="ytdBarsChart" viewBox="0 0 400 140" preserveAspectRatio="none" aria-label="YTD return by position">
             <line x1="0" y1="100" x2="400" y2="100" stroke="#2a3d4d" stroke-width="1" />
             <!-- bars (centered at y=100, positive grows up, negative grows down) -->
             <g font-family="IBM Plex Mono, monospace" font-size="9" fill="#8a9aa8">
@@ -4772,27 +4772,27 @@
       <div class="portfolio-stats">
         <div class="stat-tile">
           <span class="stat-label">YTD</span>
-          <span class="stat-value positive">+18.4%</span>
+          <span class="stat-value" data-stat="ytd">…</span>
         </div>
         <div class="stat-tile">
           <span class="stat-label">Alpha vs SPY</span>
-          <span class="stat-value positive">+6.2%</span>
+          <span class="stat-value" data-stat="alpha">…</span>
         </div>
         <div class="stat-tile">
-          <span class="stat-label">Sharpe</span>
-          <span class="stat-value">1.4</span>
+          <span class="stat-label">SPY YTD</span>
+          <span class="stat-value" data-stat="spy">…</span>
         </div>
         <div class="stat-tile">
           <span class="stat-label">Positions</span>
-          <span class="stat-value">6</span>
+          <span class="stat-value" data-stat="positions">…</span>
         </div>
         <div class="stat-tile">
-          <span class="stat-label">Beta</span>
-          <span class="stat-value">0.92</span>
+          <span class="stat-label">Best</span>
+          <span class="stat-value" data-stat="best">…</span>
         </div>
         <div class="stat-tile">
-          <span class="stat-label">Max DD</span>
-          <span class="stat-value negative">−8.1%</span>
+          <span class="stat-label">Worst</span>
+          <span class="stat-value" data-stat="worst">…</span>
         </div>
       </div>
       <div class="positions-table">
@@ -6327,6 +6327,127 @@
       overlay?.classList.add('open');
     }
 
+    // ─── Live price lookup via Yahoo Finance (free, no API key) ────
+    // Yahoo doesn't send CORS headers, so we proxy through corsproxy.io (free).
+    interface PriceYTD { first: number; last: number; }
+    const priceCache: Record<string, PriceYTD | null> = {};
+
+    async function fetchYahooYTD(ticker: string): Promise<PriceYTD | null> {
+      const key = ticker.toUpperCase();
+      if (key in priceCache) return priceCache[key];
+      try {
+        const proxied = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(
+          `https://query1.finance.yahoo.com/v8/finance/chart/${key}?range=ytd&interval=1d`
+        );
+        const res = await fetch(proxied, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        const result = data?.chart?.result?.[0];
+        if (!result) throw new Error('no result');
+        const closes: (number | null)[] = result?.indicators?.quote?.[0]?.close || [];
+        const valid = closes.filter((c): c is number => c !== null && c > 0);
+        if (valid.length < 2) throw new Error('insufficient closes');
+        const first = valid[0];
+        const last = result?.meta?.regularMarketPrice ?? valid[valid.length - 1];
+        const out = { first, last };
+        priceCache[key] = out;
+        return out;
+      } catch (e) {
+        console.warn('[yahoo] fetch failed for', ticker, e);
+        priceCache[key] = null;
+        return null;
+      }
+    }
+
+    function ytdReturnPct(p: PriceYTD | null): number | null {
+      if (!p || p.first === 0) return null;
+      return ((p.last - p.first) / p.first) * 100;
+    }
+
+    function fmtPct(n: number | null, decimals = 1): string {
+      if (n === null || !isFinite(n)) return '—';
+      const sign = n >= 0 ? '+' : '−';
+      return `${sign}${Math.abs(n).toFixed(decimals)}%`;
+    }
+
+    function setStat(name: string, value: string, signed: number | null = null) {
+      document.querySelectorAll<HTMLElement>(`[data-stat="${name}"]`).forEach(el => {
+        el.textContent = value;
+        el.classList.remove('positive', 'negative');
+        if (signed !== null) el.classList.add(signed >= 0 ? 'positive' : 'negative');
+      });
+    }
+
+    async function updateFinanceCharts(portfolioRows: Record<string, string>[]) {
+      const realPositions = portfolioRows.filter(r => r.ticker && r.ticker.toUpperCase() !== 'CASH');
+
+      // Fetch all positions + SPY in parallel
+      const fetches = await Promise.all([
+        ...realPositions.map(r => fetchYahooYTD(r.ticker)),
+        fetchYahooYTD('SPY')
+      ]);
+      const spyPrice = fetches[fetches.length - 1];
+      const spyYtd = ytdReturnPct(spyPrice);
+
+      const results: Array<{ ticker: string; alloc: number; ytd: number }> = [];
+      realPositions.forEach((r, i) => {
+        const ret = ytdReturnPct(fetches[i]);
+        if (ret === null) return;
+        const alloc = parseFloat((r.alloc || '0').replace('%', '')) / 100 || 0;
+        results.push({ ticker: r.ticker.toUpperCase(), alloc, ytd: ret });
+      });
+
+      let weightSum = 0;
+      let weighted = 0;
+      results.forEach(r => { weighted += r.ytd * r.alloc; weightSum += r.alloc; });
+      const portfolioYtd = weightSum > 0 ? weighted / weightSum : null;
+      const alpha = (portfolioYtd !== null && spyYtd !== null) ? portfolioYtd - spyYtd : null;
+
+      // Stat tiles
+      setStat('ytd', fmtPct(portfolioYtd), portfolioYtd);
+      setStat('alpha', fmtPct(alpha), alpha);
+      setStat('spy', fmtPct(spyYtd), spyYtd);
+      setStat('positions', String(portfolioRows.length));
+
+      if (results.length) {
+        const best = results.reduce((a, b) => a.ytd > b.ytd ? a : b);
+        const worst = results.reduce((a, b) => a.ytd < b.ytd ? a : b);
+        setStat('best', `${best.ticker} ${fmtPct(best.ytd, 0)}`, best.ytd);
+        setStat('worst', `${worst.ticker} ${fmtPct(worst.ytd, 0)}`, worst.ytd);
+      }
+      setStat('ytd-mirror', fmtPct(portfolioYtd), portfolioYtd);
+
+      // Bar chart — redraw from real data
+      const chart = document.getElementById('ytdBarsChart');
+      if (chart) {
+        const sorted = results.slice().sort((a, b) => b.ytd - a.ytd);
+        const W = 400;
+        const H = 140;
+        const barCount = sorted.length;
+        const barWidth = 40;
+        const gap = (W - barWidth * barCount) / (barCount + 1);
+        const baseline = 100;
+        const maxAbs = Math.max(10, ...sorted.map(r => Math.abs(r.ytd)));
+        const scale = 60 / maxAbs;
+
+        let svg = `<line x1="0" y1="${baseline}" x2="${W}" y2="${baseline}" stroke="#2a3d4d" stroke-width="1" />`;
+        svg += `<g font-family="IBM Plex Mono, monospace" font-size="9" fill="#8a9aa8">`;
+        sorted.forEach((r, i) => {
+          const x = gap + i * (barWidth + gap);
+          const h = Math.abs(r.ytd) * scale;
+          const y = r.ytd >= 0 ? baseline - h : baseline;
+          const color = r.ytd >= 0 ? '#2d8659' : '#b85c2a';
+          const labelColor = r.ytd >= 0 ? '#d4af37' : '#b85c2a';
+          const labelY = r.ytd >= 0 ? y - 6 : y + h + 12;
+          svg += `<rect x="${x}" y="${y}" width="${barWidth}" height="${h}" fill="${color}" />`;
+          svg += `<text x="${x + barWidth / 2}" y="${baseline + 18}" text-anchor="middle">${r.ticker}</text>`;
+          svg += `<text x="${x + barWidth / 2}" y="${labelY}" text-anchor="middle" fill="${labelColor}">${fmtPct(r.ytd, 0)}</text>`;
+        });
+        svg += `</g>`;
+        chart.innerHTML = svg;
+      }
+    }
+
     async function syncFinance() {
       const rows = await fetchSheet(FINANCE_SHEET_CSV);
       if (!rows.length) return;
@@ -6362,6 +6483,9 @@
         }).join('');
         tbl.innerHTML = head + body;
       }
+
+      // Kick off live price lookup + chart refresh (non-blocking)
+      updateFinanceCharts(portfolioRows);
 
       const picksGrid = document.querySelector('#picks .picks-grid');
       if (picksGrid && pickRows.length) {
