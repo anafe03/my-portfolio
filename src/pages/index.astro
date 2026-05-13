@@ -152,6 +152,20 @@
       --font-heading: 'Fraunces', Georgia, serif;
     }
 
+    [data-theme="wellness"] {
+      --forest: #6b9ba0;
+      --ocean: #b56b6b;
+      --coral: #d4a942;
+      --bg: #f5ede3;
+      --bg-light: #faf5ed;
+      --bg-card: #ffffff;
+      --text: #3a2e1f;
+      --text-dim: #7a6a55;
+      --border: #e0d3bf;
+      --nav-bg: rgba(245, 237, 227, 0.88);
+      --font-heading: 'Fraunces', Georgia, serif;
+    }
+
     [data-theme="garden"] {
       --forest: #6b8e23;
       --ocean: #c97b4c;
@@ -1369,6 +1383,248 @@
 
     .chart-card-legend.allocs {
       font-family: var(--font-mono);
+    }
+
+    /* ─── Wellness: Practice ────────────────────────────── */
+    .practice-card {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+    }
+
+    .practice-photo {
+      width: 220px;
+      height: 220px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--bg-card), var(--bg));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 5rem;
+    }
+
+    .practice-cred {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--coral);
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+
+    .practice-body h3 {
+      font-family: var(--font-heading);
+      font-size: 1.6rem;
+      margin-bottom: 0.75rem;
+      color: var(--text);
+    }
+
+    .practice-body p {
+      color: var(--text-dim);
+      line-height: 1.65;
+      margin-bottom: 0.85rem;
+    }
+
+    .practice-where {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+      margin-top: 1.25rem;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      align-items: center;
+    }
+
+    .practice-book {
+      margin-left: auto;
+      color: var(--ocean);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    @media (max-width: 720px) {
+      .practice-card { grid-template-columns: 1fr; }
+      .practice-photo { width: 100%; height: 160px; }
+    }
+
+    /* ─── Wellness: Routines ────────────────────────────── */
+    .routines-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .routine-card {
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      position: relative;
+      transition: all 0.3s;
+    }
+
+    .routine-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--ocean);
+    }
+
+    .routine-duration {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      padding: 0.3rem 0.7rem;
+      border-radius: 8px;
+      background: rgba(107, 155, 160, 0.15);
+      color: var(--forest);
+      border: 1px solid var(--forest);
+      margin-bottom: 0.85rem;
+    }
+
+    .routine-card h4 {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      line-height: 1.15;
+      margin-bottom: 0.35rem;
+      color: var(--text);
+    }
+
+    .routine-target {
+      font-size: 0.8rem;
+      color: var(--coral);
+      font-style: italic;
+      margin-bottom: 0.65rem;
+    }
+
+    .routine-card p {
+      color: var(--text-dim);
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+
+    /* ─── Wellness: Notebook ────────────────────────────── */
+    .notebook-list {
+      max-width: 760px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .note-card {
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem 1.75rem;
+      transition: border-color 0.2s;
+      cursor: default;
+    }
+
+    .note-card:hover {
+      border-color: var(--coral);
+    }
+
+    .note-meta {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      margin-bottom: 0.65rem;
+    }
+
+    .note-tag {
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      border: 1px solid;
+    }
+
+    .note-tag.personal { background: rgba(181, 107, 107, 0.12); color: #b56b6b; border-color: #b56b6b; }
+    .note-tag.evidence { background: rgba(107, 155, 160, 0.15); color: #6b9ba0; border-color: #6b9ba0; }
+    .note-tag.woo { background: rgba(212, 169, 66, 0.15); color: #b88a1a; border-color: #b88a1a; }
+
+    .note-date {
+      font-family: var(--font-heading);
+      font-style: italic;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+    }
+
+    .note-card h3 {
+      font-family: var(--font-heading);
+      font-size: 1.3rem;
+      margin-bottom: 0.45rem;
+      color: var(--text);
+    }
+
+    .note-card p {
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    .notebook-disclaimer {
+      text-align: center;
+      max-width: 600px;
+      margin: 1.75rem auto 0;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      font-style: italic;
+    }
+
+    /* ─── Wellness: Rehab Tech ──────────────────────────── */
+    .rehab-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .rehab-card {
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem 1.75rem;
+      transition: all 0.3s;
+    }
+
+    .rehab-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--forest);
+    }
+
+    .rehab-icon {
+      font-size: 2rem;
+      display: block;
+      margin-bottom: 0.85rem;
+    }
+
+    .rehab-card h4 {
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      margin-bottom: 0.55rem;
+      color: var(--text);
+    }
+
+    .rehab-card p {
+      color: var(--text-dim);
+      font-size: 0.92rem;
+      line-height: 1.6;
+      margin-bottom: 0.85rem;
+    }
+
+    .rehab-link {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--ocean);
+      text-decoration: none;
     }
 
     /* ─── The Rig (Adventure only) ──────────────────────── */
@@ -3971,6 +4227,14 @@
                 </div>
                 <div class="theme-name">Garden</div>
               </button>
+              <button class="theme-option" data-set-theme="wellness">
+                <div class="theme-swatch">
+                  <span style="background: #f5ede3"></span>
+                  <span style="background: #6b9ba0"></span>
+                  <span style="background: #b56b6b"></span>
+                </div>
+                <div class="theme-name">Wellness</div>
+              </button>
             </div>
             <p class="settings-note">Each theme reframes the whole portfolio — colors, hero copy, and section order — for a different audience. Try a few.</p>
           </div>
@@ -4841,6 +5105,108 @@
     </div>
   </section>
 
+  <section id="practice">
+    <div class="container">
+      <div class="section-header">
+        <h2>The Practice</h2>
+        <p>Yoga · breath · slow strength</p>
+      </div>
+      <div class="practice-card">
+        <div class="practice-photo">🧘</div>
+        <div class="practice-body">
+          <div class="practice-cred">200hr RYT · Vinyasa lineage</div>
+          <h3>What I teach</h3>
+          <p>I teach the practice the way I needed it when I started — biomechanically honest, not mystical, but not mechanical either. Sequences that respect anatomy and leave room for the body to talk back.</p>
+          <p>Most weeks: morning Vinyasa, Tuesday-evening Yin. Slower than the studio average, more attention to breath than to shape.</p>
+          <div class="practice-where">
+            <span>📍 Denver, CO</span>
+            <span>🏷 Studio · private · retreats</span>
+            <a href="mailto:austinnafe@aol.com" class="practice-book">Book a class →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="routines">
+    <div class="container">
+      <div class="section-header">
+        <h2>Routines</h2>
+        <p>Short sequences you can do today. Linked when there's a video.</p>
+      </div>
+      <div class="routines-grid">
+        <div class="routine-card"><div class="routine-duration">10 min</div><h4>Morning Spine Wake-Up</h4><div class="routine-target">Spine + shoulders · Beginner</div><p>Cat-cow into thread-the-needle into low cobra. Five rounds, slow.</p></div>
+        <div class="routine-card"><div class="routine-duration">20 min</div><h4>Hip Opener Sequence</h4><div class="routine-target">Hips + low back · All levels</div><p>Pigeon, lizard, half-frog. Hold longer than feels comfortable.</p></div>
+        <div class="routine-card"><div class="routine-duration">15 min</div><h4>Post-Run Restore</h4><div class="routine-target">Hamstrings + IT band · All levels</div><p>Long forward folds, supine twist, legs-up-the-wall.</p></div>
+        <div class="routine-card"><div class="routine-duration">30 min</div><h4>Pre-Sleep Yin</h4><div class="routine-target">Whole-body downregulation · All levels</div><p>Five poses, three minutes each. Lights out within 20 of finishing.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="notebook">
+    <div class="container">
+      <div class="section-header">
+        <h2>Notebook</h2>
+        <p>Articles. Honest about what's evidence, what's experiment, what's intuition.</p>
+      </div>
+      <div class="notebook-list">
+        <article class="note-card">
+          <div class="note-meta"><span class="note-tag personal">personal</span><span class="note-date">Apr 2026</span></div>
+          <h3>How I fixed my left shoulder</h3>
+          <p>Six months of impingement. What finally worked: less stretching, more isolated strength.</p>
+        </article>
+        <article class="note-card">
+          <div class="note-meta"><span class="note-tag evidence">evidence-based</span><span class="note-date">Mar 2026</span></div>
+          <h3>Cold exposure: what the literature actually says</h3>
+          <p>The bro-science vs the actual papers. Some of it survives.</p>
+        </article>
+        <article class="note-card">
+          <div class="note-meta"><span class="note-tag personal">personal</span><span class="note-date">Feb 2026</span></div>
+          <h3>On feeling cells: meditation, vagal tone, and HRV</h3>
+          <p>What I notice when I sit. Caveat: n=1 forever.</p>
+        </article>
+        <article class="note-card">
+          <div class="note-meta"><span class="note-tag evidence">evidence-based</span><span class="note-date">Jan 2026</span></div>
+          <h3>Why I don't trust most supplement claims</h3>
+          <p>A short field guide to spotting marketing-as-science in the wellness aisle.</p>
+        </article>
+      </div>
+      <p class="notebook-disclaimer">Not medical advice. One person's experiment, written down.</p>
+    </div>
+  </section>
+
+  <section id="rehab-tech">
+    <div class="container">
+      <div class="section-header">
+        <h2>Rehab Tech</h2>
+        <p>Where technology meets the body's repair systems</p>
+      </div>
+      <div class="rehab-grid">
+        <div class="rehab-card">
+          <span class="rehab-icon">❤️</span>
+          <h4>HRV Detector</h4>
+          <p>Camera-based heart-rate-variability detection using photoplethysmography. No wearables — just your phone camera. Proof-of-concept for accessible biosignal capture.</p>
+          <a href="https://github.com/anafe03/hrv-detector" target="_blank" class="rehab-link">Repo →</a>
+        </div>
+        <div class="rehab-card">
+          <span class="rehab-icon">🏥</span>
+          <h4>Shirley Ryan Ability Lab</h4>
+          <p>Volunteer at the top US rehab hospital (2021–22). First-hand exposure to how technology gets adopted — or not — in real clinical workflows.</p>
+        </div>
+        <div class="rehab-card">
+          <span class="rehab-icon">🩺</span>
+          <h4>Prior Auth Agent</h4>
+          <p>AI advocate that reads insurance policies and files appeals when care is denied. Building. The gap that matters most: getting care actually authorized.</p>
+        </div>
+        <div class="rehab-card">
+          <span class="rehab-icon">🧠</span>
+          <h4>HDC for cross-modal signals</h4>
+          <p>Hyperdimensional computing as an efficient substrate for integrating biosignals (EEG, HRV, motion). Presented at Science of Consciousness, July 2025.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section id="rig">
     <div class="container">
       <div class="section-header">
@@ -5584,6 +5950,8 @@
     const PARKS_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/1edRZ9zCUnNHbr35_zaeSsFM5bSWl6h_Z6lLPTDNGw3M/export?format=csv&gid=0';
     const BUCKET_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/15YLgO7MSVevGKXjptxr1SUr9yW1MD28L5KmMMBznHbU/export?format=csv&gid=0';
     const FINANCE_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/1df_VtUPsa2YRD9G8jD4tKF36b9QqhliyhbmVlE6J9M8/export?format=csv&gid=0';
+    const ROUTINES_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/1o6R_to7wVQAndivz3In-eirSRvWI6-enMbG-8BbO98o/export?format=csv&gid=0';
+    const NOTEBOOK_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/1DaOwzQCLs8GkE0U6zqUb1rfI-AmZLA84ooYTggGdPA0/export?format=csv&gid=0';
 
     async function fetchSheet(url: string): Promise<Record<string, string>[]> {
       if (!url) return [];
@@ -5702,6 +6070,48 @@
           `;
         }).join('');
       }
+    }
+
+    async function syncRoutines() {
+      const rows = await fetchSheet(ROUTINES_SHEET_CSV);
+      if (!rows.length) return;
+      const grid = document.querySelector('#routines .routines-grid');
+      if (!grid) return;
+      grid.innerHTML = rows.map(r => `
+        <div class="routine-card">
+          <div class="routine-duration">${escapeHTML(r.duration || '')}</div>
+          <h4>${escapeHTML(r.name || '')}</h4>
+          <div class="routine-target">${escapeHTML([r.target, r.level].filter(Boolean).join(' · '))}</div>
+          <p>${escapeHTML(r.note || '')}</p>
+          ${r.link ? `<a href="${escapeHTML(r.link)}" target="_blank" class="rehab-link">Watch →</a>` : ''}
+        </div>
+      `).join('');
+    }
+
+    async function syncNotebook() {
+      const rows = await fetchSheet(NOTEBOOK_SHEET_CSV);
+      if (!rows.length) return;
+      const list = document.querySelector('#notebook .notebook-list');
+      if (!list) return;
+      const tagClass: Record<string, string> = {
+        personal: 'personal',
+        'evidence-based': 'evidence',
+        evidence: 'evidence',
+        woo: 'woo'
+      };
+      list.innerHTML = rows.map(r => {
+        const cls = tagClass[(r.tag || '').toLowerCase()] || 'personal';
+        return `
+          <article class="note-card">
+            <div class="note-meta">
+              <span class="note-tag ${cls}">${escapeHTML(r.tag || 'personal')}</span>
+              <span class="note-date">${escapeHTML(r.date || '')}</span>
+            </div>
+            <h3>${r.link ? `<a href="${escapeHTML(r.link)}" target="_blank" style="color:inherit;text-decoration:none">${escapeHTML(r.title || '')}</a>` : escapeHTML(r.title || '')}</h3>
+            <p>${escapeHTML(r.dek || '')}</p>
+          </article>
+        `;
+      }).join('');
     }
 
     async function loadPlacesFromSheet(): Promise<boolean> {
@@ -6194,6 +6604,8 @@
     syncParks();
     syncBucket();
     syncFinance();
+    syncRoutines();
+    syncNotebook();
 
     // Map pulse keyframe (injected once)
     const styleEl = document.createElement('style');
@@ -6210,7 +6622,7 @@
     }
 
     // Section IDs that may be present. Visibility is driven entirely by config.order.
-    const ALL_SECTIONS = ['now', 'businesses', 'projects', 'music', 'contact', 'picks', 'portfolio', 'dispatches', 'studio', 'journey', 'tracks', 'videos', 'garden', 'calendar', 'harvest', 'observations', 'press', 'manifesto', 'stack', 'faq', 'why-healthcare', 'album', 'nowplaying', 'letter', 'charts', 'bucket', 'pack', 'zoo', 'numbers', 'decisions', 'rig', 'parks', 'fests'];
+    const ALL_SECTIONS = ['now', 'businesses', 'projects', 'music', 'contact', 'picks', 'portfolio', 'dispatches', 'studio', 'journey', 'tracks', 'videos', 'garden', 'calendar', 'harvest', 'observations', 'press', 'manifesto', 'stack', 'faq', 'why-healthcare', 'album', 'nowplaying', 'letter', 'charts', 'bucket', 'pack', 'zoo', 'numbers', 'decisions', 'rig', 'parks', 'fests', 'practice', 'routines', 'notebook', 'rehab-tech'];
 
     const themes: Record<string, ThemeConfig> = {
       midnight: {
@@ -6272,6 +6684,12 @@
         subtitle: 'Gardener. Grower. Patient about it.',
         bio: 'Slow projects. Plants, compost, observation. The garden teaches you to plan in seasons, not sprints — every other project I work on borrows that rhythm.',
         badge: 'Currently — tending the plot'
+      },
+      wellness: {
+        order: ['practice', 'routines', 'notebook', 'rehab-tech', 'now', 'projects', 'contact'],
+        subtitle: 'Practitioner. Teacher. Self-experimenter.',
+        bio: "Yoga teacher, alt-medicine-curious, self-trained on my own anatomy. I write about what I try, what works, and what I don't know — empirical wellness, no snake oil.",
+        badge: 'Open to teaching + collaborations'
       }
     };
 
@@ -6472,7 +6890,8 @@
         letter: 'Quarterly Letter', charts: 'Charts I Made',
         bucket: 'Bucket List', pack: 'What I Pack', zoo: 'Agent Zoo',
         numbers: 'The Numbers', decisions: 'Decisions Log',
-        rig: 'The Rig', parks: 'National Parks', fests: 'Festivals'
+        rig: 'The Rig', parks: 'National Parks', fests: 'Festivals',
+        practice: 'The Practice', routines: 'Routines', notebook: 'Notebook', 'rehab-tech': 'Rehab Tech'
       };
       Object.entries(sectionLabels).forEach(([id, label]) => {
         items.push({
