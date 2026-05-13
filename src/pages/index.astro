@@ -327,48 +327,6 @@
       display: block;
     }
 
-    .now-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-bottom: 1.25rem;
-      animation: slideUp 0.8s ease-out 0.1s backwards;
-    }
-
-    .now-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      padding: 0.35rem 0.8rem 0.35rem 0.5rem;
-      background: var(--bg-light);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      font-size: 0.8rem;
-      max-width: 100%;
-      overflow: hidden;
-    }
-
-    .now-emoji {
-      font-size: 0.95rem;
-    }
-
-    .now-label {
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--text-dim);
-      font-weight: 800;
-    }
-
-    .now-value {
-      color: var(--text);
-      font-weight: 600;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      max-width: 240px;
-    }
-
     .open-to-work {
       display: inline-flex;
       align-items: center;
@@ -439,6 +397,344 @@
       font-size: 0.95rem;
       color: var(--text-dim);
       line-height: 1.6;
+    }
+
+    /* ─── Now playing / reading / watching ────────────── */
+    .np-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .np-card {
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: 1.25rem;
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.3s;
+    }
+
+    .np-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--coral);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .np-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--bg-card), var(--bg));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      flex-shrink: 0;
+    }
+
+    .np-kind {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--coral);
+      font-weight: 800;
+      margin-bottom: 0.35rem;
+    }
+
+    .np-title {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 700;
+      line-height: 1.1;
+      color: var(--text);
+      margin-bottom: 0.2rem;
+    }
+
+    .np-by {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      margin-bottom: 0.6rem;
+    }
+
+    .np-by em {
+      font-style: italic;
+    }
+
+    .np-note {
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      line-height: 1.55;
+      margin-bottom: 0.75rem;
+    }
+
+    .np-link {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--ocean);
+    }
+
+    /* ─── Stack ─────────────────────────────────────────── */
+    .stack-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .stack-cat {
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem 1.75rem;
+    }
+
+    .stack-cat h4 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--coral);
+      margin-bottom: 1rem;
+      font-weight: 800;
+    }
+
+    .stack-cat ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .stack-cat li {
+      padding: 0.45rem 0;
+      color: var(--text);
+      font-size: 0.95rem;
+      border-bottom: 1px dashed var(--border);
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .stack-cat li:last-child {
+      border-bottom: none;
+    }
+
+    .stack-cat li em {
+      font-style: italic;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 700;
+    }
+
+    /* ─── FAQ ───────────────────────────────────────────── */
+    .faq-list {
+      max-width: 760px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .faq-item {
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      transition: border-color 0.2s;
+    }
+
+    .faq-item[open] {
+      border-color: var(--ocean);
+    }
+
+    .faq-item summary {
+      font-weight: 700;
+      font-size: 1.05rem;
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      color: var(--text);
+    }
+
+    .faq-item summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .faq-item summary::after {
+      content: "+";
+      font-family: var(--font-mono);
+      font-size: 1.3rem;
+      color: var(--text-dim);
+      transition: transform 0.2s;
+    }
+
+    .faq-item[open] summary::after {
+      content: "−";
+    }
+
+    .faq-item p {
+      margin-top: 0.75rem;
+      color: var(--text-dim);
+      line-height: 1.65;
+      font-size: 0.95rem;
+    }
+
+    /* ─── Healthcare: stat block + manifesto pull-quote ── */
+    .hc-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      max-width: 1000px;
+      margin: 0 auto 3rem;
+      background: var(--bg-light);
+      border-radius: 16px;
+      padding: 1.75rem;
+      border: 2px solid var(--border);
+    }
+
+    .hc-stat {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      text-align: center;
+      padding: 0 1rem;
+    }
+
+    .hc-stat-num {
+      font-family: var(--font-heading);
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--forest);
+      line-height: 1;
+    }
+
+    .hc-stat-label {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      line-height: 1.4;
+    }
+
+    .hc-quote {
+      max-width: 760px;
+      margin: 0 auto;
+      text-align: center;
+      padding: 0 2rem;
+    }
+
+    .hc-quote p {
+      font-family: var(--font-heading);
+      font-size: clamp(1.4rem, 2.5vw, 1.75rem);
+      line-height: 1.45;
+      font-style: italic;
+      color: var(--text);
+    }
+
+    /* ECG-style divider above the why-healthcare section (Healthcare only) */
+    [data-theme="healthcare"] #why-healthcare {
+      position: relative;
+    }
+
+    [data-theme="healthcare"] #why-healthcare::before {
+      content: "";
+      position: absolute;
+      top: 2.5rem;
+      left: 0;
+      right: 0;
+      height: 30px;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 30' preserveAspectRatio='none'><path d='M0 15 L40 15 L48 5 L56 25 L64 15 L120 15 L128 8 L132 22 L136 15 L200 15' stroke='%2314b8a6' stroke-width='1.5' fill='none' opacity='0.5'/></svg>");
+      background-repeat: repeat-x;
+      background-size: 200px 30px;
+    }
+
+    /* ─── Album / Photo wall (Adventure only) ───────────── */
+    .album-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-auto-rows: 160px;
+      gap: 6px;
+    }
+
+    .album-tile {
+      grid-column: span var(--span, 1);
+      background: linear-gradient(135deg, var(--bg-light), var(--bg-card));
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-dim);
+      font-size: 1.5rem;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .album-tile:hover {
+      transform: scale(1.02);
+      border-color: var(--coral);
+    }
+
+    .album-foot {
+      margin-top: 1.5rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      font-style: italic;
+    }
+
+    .album-foot code {
+      font-family: var(--font-mono);
+      background: var(--bg-card);
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+
+    @media (max-width: 720px) {
+      .album-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* ─── Cream polaroid hero ──────────────────────────── */
+    [data-theme="cream"] .hero-image {
+      border-radius: 6px;
+      padding: 12px 12px 56px;
+      background: #ffffff;
+      transform: rotate(-3deg);
+      box-shadow: 0 10px 30px rgba(45, 30, 10, 0.15), 0 2px 6px rgba(45, 30, 10, 0.1);
+      animation: none;
+      position: relative;
+    }
+
+    [data-theme="cream"] .hero-image::after {
+      content: "Austin · 2024";
+      position: absolute;
+      bottom: 14px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-family: 'Caveat', cursive;
+      font-size: 1.4rem;
+      color: #2a1f10;
+      opacity: 0.7;
+    }
+
+    [data-theme="cream"] .hero-image img {
+      border-radius: 0;
+    }
+
+    /* Hand-drawn underline on links in cream theme */
+    [data-theme="cream"] nav a:hover::after {
+      background: var(--coral);
+      height: 3px;
+      border-radius: 2px;
     }
 
     /* ─── Founder magazine treatment ─────────────────────── */
@@ -2637,11 +2933,6 @@
       <div class="hero-content">
         <div class="hero-text">
           <span class="open-to-work" id="openToWork">Open to work — AI Engineer / Research</span>
-          <div class="now-bar">
-            <span class="now-chip"><span class="now-emoji">🎧</span><span class="now-label">Listening</span><span class="now-value" id="nowListening">Aphex Twin — Avril 14th</span></span>
-            <span class="now-chip"><span class="now-emoji">📖</span><span class="now-label">Reading</span><span class="now-value" id="nowReading">The Beginning of Infinity — Deutsch</span></span>
-            <span class="now-chip"><span class="now-emoji">📺</span><span class="now-label">Watching</span><span class="now-value" id="nowWatching">Pluribus</span></span>
-          </div>
           <h1>Austin Nafe</h1>
           <p class="subtitle" id="heroSubtitle">AI Engineer. Founder. Researcher.</p>
           <p class="bio" id="heroBio">
@@ -3078,6 +3369,185 @@
           </ul>
         </div>
       </div>
+    </div>
+  </section>
+
+  <section id="nowplaying">
+    <div class="container">
+      <div class="section-header">
+        <h2>What I'm into</h2>
+        <p>Current rotation. Updated whenever I remember.</p>
+      </div>
+      <div class="np-grid">
+        <a class="np-card" href="https://open.spotify.com/" target="_blank" rel="noopener">
+          <div class="np-icon">🎧</div>
+          <div class="np-body">
+            <div class="np-kind">Listening</div>
+            <div class="np-title">Avril 14th</div>
+            <div class="np-by">Aphex Twin · <em>Drukqs</em></div>
+            <p class="np-note">Sub-3-minute piano study that resets my entire week. I have it on loop when I write.</p>
+            <span class="np-link">Open in Spotify →</span>
+          </div>
+        </a>
+        <a class="np-card" href="https://www.goodreads.com/book/show/8954559-the-beginning-of-infinity" target="_blank" rel="noopener">
+          <div class="np-icon">📖</div>
+          <div class="np-body">
+            <div class="np-kind">Reading</div>
+            <div class="np-title">The Beginning of Infinity</div>
+            <div class="np-by">David Deutsch</div>
+            <p class="np-note">Optimism as a discipline. Knowledge as the thing that compounds across civilizations. Re-reading the explanations chapter.</p>
+            <span class="np-link">Goodreads →</span>
+          </div>
+        </a>
+        <a class="np-card" href="https://www.imdb.com/" target="_blank" rel="noopener">
+          <div class="np-icon">📺</div>
+          <div class="np-body">
+            <div class="np-kind">Watching</div>
+            <div class="np-title">Pluribus</div>
+            <div class="np-by">Vince Gilligan · Apple TV</div>
+            <p class="np-note">Worth the slow burn. Best new sci-fi in years.</p>
+            <span class="np-link">IMDb →</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section id="stack">
+    <div class="container">
+      <div class="section-header">
+        <h2>Stack</h2>
+        <p>What I actually use in production</p>
+      </div>
+      <div class="stack-grid">
+        <div class="stack-cat">
+          <h4>Languages</h4>
+          <ul>
+            <li>Python <em>primary</em></li>
+            <li>TypeScript</li>
+            <li>SQL</li>
+            <li>JavaScript</li>
+          </ul>
+        </div>
+        <div class="stack-cat">
+          <h4>Backend / AI</h4>
+          <ul>
+            <li>FastAPI</li>
+            <li>LangGraph</li>
+            <li>OpenAI &amp; Anthropic SDKs</li>
+            <li>pydantic</li>
+          </ul>
+        </div>
+        <div class="stack-cat">
+          <h4>Frontend</h4>
+          <ul>
+            <li>React</li>
+            <li>Astro</li>
+            <li>Tailwind / vanilla CSS</li>
+          </ul>
+        </div>
+        <div class="stack-cat">
+          <h4>Data</h4>
+          <ul>
+            <li>PostgreSQL</li>
+            <li>Supabase</li>
+            <li>pandas</li>
+            <li>Redis (cache layers)</li>
+          </ul>
+        </div>
+        <div class="stack-cat">
+          <h4>Deploy</h4>
+          <ul>
+            <li>Render</li>
+            <li>Vercel</li>
+            <li>Docker</li>
+            <li>Azure (PwC enterprise)</li>
+          </ul>
+        </div>
+        <div class="stack-cat">
+          <h4>Glue</h4>
+          <ul>
+            <li>Stripe</li>
+            <li>Supabase Auth</li>
+            <li>Streamlit (demos)</li>
+            <li>GitHub Actions</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="container">
+      <div class="section-header">
+        <h2>FAQ</h2>
+        <p>What people usually ask</p>
+      </div>
+      <div class="faq-list">
+        <details class="faq-item">
+          <summary>Are you open to remote?</summary>
+          <p>Yes. Denver-based, mostly remote since 2020. Comfortable across time zones.</p>
+        </details>
+        <details class="faq-item">
+          <summary>What's TM Go?</summary>
+          <p>An AI-powered tour management platform (formerly TourSync). Python + FastAPI + LangGraph backend, stateful memory, SMS coordination. Live customers since mid-2025.</p>
+        </details>
+        <details class="faq-item">
+          <summary>What's Boundless Horizons?</summary>
+          <p>An AI-native creation engine. Stealth. We use AI to make your dream a reality. More soon.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Are you available for consulting?</summary>
+          <p>Selectively. Reach out — I'll tell you straight whether it's a fit.</p>
+        </details>
+        <details class="faq-item">
+          <summary>What's your stack?</summary>
+          <p>Python, FastAPI, LangGraph for backends. React + Astro for frontends. Postgres / Supabase for data. Render / Vercel for deploy. Stripe for billing. Switch the theme to AI Agents for the long version with the Stack section.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Where can I hear your music?</summary>
+          <p>Switch to the Creative theme — full catalog there. SoundCloud is linked in Contact.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Why does this site have nine themes?</summary>
+          <p>Because different audiences care about different things. Send a recruiter the Finance link, a friend the Adventure link, a VC the Founder link. Same person, focused lens.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section id="why-healthcare">
+    <div class="container">
+      <div class="hc-stats">
+        <div class="hc-stat"><span class="hc-stat-num">5+</span><span class="hc-stat-label">Production AI systems shipped</span></div>
+        <div class="hc-stat"><span class="hc-stat-num">8</span><span class="hc-stat-label">PwC client-facing engagements</span></div>
+        <div class="hc-stat"><span class="hc-stat-num">2</span><span class="hc-stat-label">Years biosignal-adjacent research</span></div>
+        <div class="hc-stat"><span class="hc-stat-num">1</span><span class="hc-stat-label">Year volunteer rehab hospital (Shirley Ryan)</span></div>
+      </div>
+      <div class="hc-quote">
+        <p>"The hardest part of healthcare AI isn't the AI — it's the workflow. I build for the clinic the way it actually runs, not the way a deck says it does."</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="album">
+    <div class="container">
+      <div class="section-header">
+        <h2>Album</h2>
+        <p>Photographs from the road</p>
+      </div>
+      <div class="album-grid">
+        <div class="album-tile" style="--span: 2">📷</div>
+        <div class="album-tile">📷</div>
+        <div class="album-tile">📷</div>
+        <div class="album-tile">📷</div>
+        <div class="album-tile" style="--span: 2">📷</div>
+        <div class="album-tile">📷</div>
+        <div class="album-tile">📷</div>
+        <div class="album-tile">📷</div>
+        <div class="album-tile">📷</div>
+      </div>
+      <p class="album-foot">Coming soon. Drop photos into <code>public/photos/</code> and they appear here.</p>
     </div>
   </section>
 
@@ -3856,47 +4326,47 @@
     }
 
     // Section IDs that may be present. Visibility is driven entirely by config.order.
-    const ALL_SECTIONS = ['now', 'businesses', 'projects', 'music', 'contact', 'picks', 'portfolio', 'dispatches', 'studio', 'journey', 'tracks', 'videos', 'garden', 'calendar', 'harvest', 'observations', 'press', 'manifesto'];
+    const ALL_SECTIONS = ['now', 'businesses', 'projects', 'music', 'contact', 'picks', 'portfolio', 'dispatches', 'studio', 'journey', 'tracks', 'videos', 'garden', 'calendar', 'harvest', 'observations', 'press', 'manifesto', 'stack', 'faq', 'why-healthcare', 'album', 'nowplaying'];
 
     const themes: Record<string, ThemeConfig> = {
       midnight: {
-        order: ['now', 'businesses', 'projects', 'music', 'contact'],
+        order: ['now', 'businesses', 'projects', 'stack', 'nowplaying', 'faq', 'music', 'contact'],
         subtitle: 'AI Engineer. Founder. Researcher.',
         bio: 'I build production AI agents in Python, FastAPI, and LangGraph. Currently looking for roles in AI agents, healthcare tech, and AI research.',
         badge: 'Open to work — AI Engineer / Research'
       },
       cream: {
-        order: ['music', 'now', 'businesses', 'projects', 'contact'],
+        order: ['nowplaying', 'music', 'now', 'businesses', 'projects', 'contact'],
         subtitle: 'Builder. Maker. Tinkerer.',
         bio: 'I build things. AI agents, music, side projects, startups. This is a slower, warmer corner of the internet — poke around.',
         badge: 'Open to interesting conversations'
       },
       healthcare: {
-        order: ['now', 'projects', 'businesses', 'contact', 'music'],
+        order: ['why-healthcare', 'now', 'projects', 'businesses', 'faq', 'contact', 'music'],
         subtitle: 'AI Engineer building healthcare technology.',
         bio: 'Production AI agents for clinical workflows. Background spans PwC enterprise AI, real-time biosignal processing, and time in clinical settings — focused on tools that fit how medicine is actually practiced.',
         badge: 'Open to work — Healthcare AI / Clinical Tech'
       },
       adventure: {
-        order: ['journey', 'now', 'dispatches', 'music', 'businesses', 'projects', 'contact'],
+        order: ['journey', 'album', 'dispatches', 'now', 'music', 'businesses', 'projects', 'contact'],
         subtitle: 'Builder. Wanderer. Storyteller.',
         bio: 'I build software between trail miles and time zones. The best ideas tend to show up somewhere with no service — these are the ones I brought back.',
         badge: 'Currently — building from the road'
       },
       creative: {
-        order: ['music', 'tracks', 'videos', 'studio', 'projects', 'businesses', 'now', 'contact'],
+        order: ['music', 'tracks', 'nowplaying', 'videos', 'studio', 'projects', 'businesses', 'now', 'contact'],
         subtitle: 'Producer. Engineer. Artist.',
         bio: 'I make music and the tools to make music with. Audio ML, generative systems, and live performance — the rest of the stack is in service of that.',
         badge: 'Open to creative collaborations'
       },
       agents: {
-        order: ['projects', 'now', 'businesses', 'contact'],
+        order: ['projects', 'stack', 'now', 'businesses', 'faq', 'contact'],
         subtitle: 'AI Agent Engineer.',
         bio: 'I ship production multi-step agents — LangGraph, FastAPI, persistent memory, evaluation harnesses, adversarial testing. Reliability over demos.',
         badge: 'Open to work — Agent Infrastructure / Platform'
       },
       cyber: {
-        order: ['projects', 'now', 'businesses', 'contact'],
+        order: ['projects', 'stack', 'now', 'businesses', 'faq', 'contact'],
         subtitle: 'AI Security Researcher.',
         bio: 'I red-team AI agents. Octagon explores RL-driven attack policies against agent stacks. PwC background in compliance and risk underwrites the rigor.',
         badge: 'Open to work — AI Security / Red Team'
@@ -3908,7 +4378,7 @@
         badge: 'Open to work — AI in Financial Services'
       },
       founder: {
-        order: ['businesses', 'press', 'now', 'manifesto', 'projects', 'contact'],
+        order: ['businesses', 'press', 'now', 'manifesto', 'projects', 'faq', 'contact'],
         subtitle: 'Founder. Builder. Operator.',
         bio: 'Three ventures in motion — Boundless Horizons (stealth), TM Go (tour management), SelfNVest AI (FSBO real estate). Full-stack, from schema to UI to DNS. I ship.',
         badge: 'Open to founder / co-founder conversations'
@@ -4061,7 +4531,9 @@
         dispatches: 'Dispatches', studio: 'Studio', journey: 'Journey',
         tracks: 'Catalog', videos: 'Videos', garden: 'The Garden',
         calendar: 'Seasonal Calendar', harvest: 'Harvest Log', observations: 'Field Notes',
-        press: 'As Not Featured In', manifesto: 'Manifesto'
+        press: 'As Not Featured In', manifesto: 'Manifesto',
+        stack: 'Stack', faq: 'FAQ', 'why-healthcare': 'Why Healthcare', album: 'Album',
+        nowplaying: 'What I\'m Into'
       };
       Object.entries(sectionLabels).forEach(([id, label]) => {
         items.push({
