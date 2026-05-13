@@ -1003,6 +1003,261 @@
       line-height: 1.6;
     }
 
+    /* ─── Quarterly Letter (Finance only) ───────────────── */
+    .ql {
+      max-width: 720px;
+      margin: 0 auto;
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 3rem 3rem 2.5rem;
+      position: relative;
+    }
+
+    .ql-meta {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      color: var(--text-dim);
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .ql-title {
+      font-family: var(--font-heading);
+      font-size: 1.65rem;
+      line-height: 1.25;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: var(--text);
+    }
+
+    .ql-lede {
+      font-family: var(--font-heading);
+      font-style: italic;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    .ql p {
+      color: var(--text);
+      line-height: 1.75;
+      font-size: 1rem;
+      margin-bottom: 1.1rem;
+    }
+
+    .ql strong {
+      color: var(--forest);
+      font-weight: 800;
+    }
+
+    .ql em {
+      font-style: italic;
+      color: var(--coral);
+    }
+
+    .ql-sign {
+      margin-top: 2rem !important;
+      font-family: var(--font-heading);
+      font-style: italic;
+      font-size: 1.1rem;
+    }
+
+    .ql-sign-meta {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+    }
+
+    .ql-disclaimer {
+      margin-top: 2rem !important;
+      font-size: 0.7rem !important;
+      color: var(--text-dim);
+      font-style: italic;
+      border-top: 1px solid var(--border);
+      padding-top: 1rem;
+    }
+
+    /* ─── Charts I Made (Finance only) ─────────────────── */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .chart-card {
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+    }
+
+    .chart-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 1.25rem;
+    }
+
+    .chart-card-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 800;
+      color: var(--text-dim);
+    }
+
+    .chart-card-stat {
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .chart-card-stat.positive { color: #4ade80; }
+    .chart-card-stat.negative { color: #f87171; }
+
+    .chart-svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .chart-svg.donut {
+      max-width: 200px;
+      margin: 0 auto;
+    }
+
+    .chart-card-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+      margin-top: 1rem;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+
+    .chart-card-legend .ledge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .chart-card-legend .ledge i {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      display: inline-block;
+    }
+
+    .chart-card-legend.allocs {
+      font-family: var(--font-mono);
+    }
+
+    /* ─── Bucket List (Adventure only) ──────────────────── */
+    .bucket-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .bucket-card {
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 1.75rem;
+      position: relative;
+      transition: all 0.3s;
+    }
+
+    .bucket-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--coral);
+    }
+
+    .bucket-num {
+      font-family: var(--font-heading);
+      font-style: italic;
+      font-size: 2rem;
+      color: var(--coral);
+      opacity: 0.5;
+      position: absolute;
+      top: 0.85rem;
+      right: 1.25rem;
+    }
+
+    .bucket-card h4 {
+      font-family: var(--font-heading);
+      font-size: 1.4rem;
+      margin-bottom: 0.25rem;
+      color: var(--text);
+      padding-right: 3rem;
+    }
+
+    .bucket-where {
+      font-style: italic;
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .bucket-why {
+      color: var(--text);
+      font-size: 0.95rem;
+      line-height: 1.55;
+      margin-bottom: 1rem;
+    }
+
+    .bucket-when {
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--forest);
+      padding: 0.3rem 0.7rem;
+      border: 1px solid var(--forest);
+      border-radius: 10px;
+    }
+
+    /* ─── What I Pack (Adventure only) ──────────────────── */
+    .pack-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .pack-cat {
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem 1.75rem;
+    }
+
+    .pack-cat h4 {
+      font-family: var(--font-heading);
+      font-size: 1.05rem;
+      margin-bottom: 1rem;
+      color: var(--coral);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+
+    .pack-cat ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .pack-cat li {
+      padding: 0.35rem 0;
+      color: var(--text);
+      font-size: 0.92rem;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .pack-cat li:last-child {
+      border-bottom: none;
+    }
+
     /* ─── Portfolio (Finance only) ──────────────────────── */
     .portfolio-stats {
       display: grid;
@@ -3432,6 +3687,137 @@
     </div>
   </section>
 
+  <section id="letter">
+    <div class="container">
+      <div class="section-header">
+        <h2>Quarterly Letter</h2>
+        <p>To my imaginary LPs · Q2 2026</p>
+      </div>
+      <article class="ql">
+        <p class="ql-meta">DENVER, CO · MAY 2026</p>
+        <h3 class="ql-title">Patience, conviction, and the limits of being early.</h3>
+        <p class="ql-lede">Dear partners,</p>
+        <p>Q2 closed up <strong>6.2%</strong> against SPY, with the bulk of attribution from <strong>NVDA</strong> and the quiet networking sleeve. We trimmed PLTR on the late-April rip and added selectively into the May drawdown. The book is now 18% cash — the highest in twelve months — not because we are bearish, but because optionality is unusually cheap right now and we like having dry powder when narrative shifts.</p>
+        <p>The harder lesson this quarter was a smaller one: a watchlist name we'd held conviction on for two years finally re-rated, and we hadn't sized it. <em>Being early is being wrong</em>, as the saying goes; the corollary is that being right at the wrong size is also a form of being wrong.</p>
+        <p>We continue to underwrite the agent-infrastructure thesis (picks &amp; shovels in the AI capex cycle) and remain net long the index. Specific names and rationale follow in the position notes below.</p>
+        <p class="ql-sign">— A.N.<br/><span class="ql-sign-meta">Sole partner, sole LP, sole reader.</span></p>
+        <p class="ql-disclaimer">This is a parody letter. None of this is investment advice. The numbers, like the LPs, are imaginary in proportion.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="charts">
+    <div class="container">
+      <div class="section-header">
+        <h2>Charts I Made</h2>
+        <p>Three views of the book</p>
+      </div>
+      <div class="charts-grid">
+
+        <div class="chart-card">
+          <div class="chart-card-head">
+            <div class="chart-card-title">Portfolio vs SPY (YTD)</div>
+            <div class="chart-card-stat positive">+6.2%</div>
+          </div>
+          <svg class="chart-svg" viewBox="0 0 400 140" preserveAspectRatio="none" aria-label="Portfolio vs SPY line chart">
+            <defs>
+              <linearGradient id="gradPort" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#d4af37" stop-opacity="0.4"/>
+                <stop offset="100%" stop-color="#d4af37" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <!-- SPY baseline -->
+            <path d="M0,100 L40,98 L80,95 L120,92 L160,90 L200,86 L240,82 L280,80 L320,76 L360,72 L400,68"
+              fill="none" stroke="#8a9aa8" stroke-width="1.5" stroke-dasharray="4 4" />
+            <!-- Portfolio -->
+            <path d="M0,100 L40,94 L80,88 L120,82 L160,72 L200,76 L240,60 L280,52 L320,46 L360,40 L400,32"
+              fill="url(#gradPort)" />
+            <path d="M0,100 L40,94 L80,88 L120,82 L160,72 L200,76 L240,60 L280,52 L320,46 L360,40 L400,32"
+              fill="none" stroke="#d4af37" stroke-width="2.5" stroke-linejoin="round" />
+          </svg>
+          <div class="chart-card-legend">
+            <span class="ledge"><i style="background:#d4af37"></i>Book</span>
+            <span class="ledge"><i style="background:#8a9aa8"></i>SPY</span>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-card-head">
+            <div class="chart-card-title">Allocation</div>
+            <div class="chart-card-stat">6 names</div>
+          </div>
+          <svg class="chart-svg donut" viewBox="0 0 140 140" aria-label="Allocation donut">
+            <!-- 30 + 22 + 18 + 12 + 10 + 8 = 100 -->
+            <circle cx="70" cy="70" r="55" fill="none" stroke="#2a3d4d" stroke-width="20"/>
+            <!-- VOO 30% -->
+            <circle cx="70" cy="70" r="55" fill="none" stroke="#d4af37" stroke-width="20"
+              stroke-dasharray="103.7 345.6" transform="rotate(-90 70 70)" />
+            <!-- NVDA 22% -->
+            <circle cx="70" cy="70" r="55" fill="none" stroke="#2d8659" stroke-width="20"
+              stroke-dasharray="76 345.6" stroke-dashoffset="-103.7" transform="rotate(-90 70 70)" />
+            <!-- CASH 18% -->
+            <circle cx="70" cy="70" r="55" fill="none" stroke="#8a9aa8" stroke-width="20"
+              stroke-dasharray="62.2 345.6" stroke-dashoffset="-179.7" transform="rotate(-90 70 70)" />
+            <!-- ANET 12% -->
+            <circle cx="70" cy="70" r="55" fill="none" stroke="#b08d57" stroke-width="20"
+              stroke-dasharray="41.5 345.6" stroke-dashoffset="-241.9" transform="rotate(-90 70 70)" />
+            <!-- TSM 10% -->
+            <circle cx="70" cy="70" r="55" fill="none" stroke="#c97b4c" stroke-width="20"
+              stroke-dasharray="34.6 345.6" stroke-dashoffset="-283.4" transform="rotate(-90 70 70)" />
+            <!-- PLTR 8% -->
+            <circle cx="70" cy="70" r="55" fill="none" stroke="#f0e9d2" stroke-width="20"
+              stroke-dasharray="27.6 345.6" stroke-dashoffset="-318" transform="rotate(-90 70 70)" />
+          </svg>
+          <div class="chart-card-legend allocs">
+            <span class="ledge"><i style="background:#d4af37"></i>VOO 30%</span>
+            <span class="ledge"><i style="background:#2d8659"></i>NVDA 22%</span>
+            <span class="ledge"><i style="background:#8a9aa8"></i>CASH 18%</span>
+            <span class="ledge"><i style="background:#b08d57"></i>ANET 12%</span>
+            <span class="ledge"><i style="background:#c97b4c"></i>TSM 10%</span>
+            <span class="ledge"><i style="background:#f0e9d2"></i>PLTR 8%</span>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-card-head">
+            <div class="chart-card-title">YTD by position</div>
+            <div class="chart-card-stat positive">+18.4%</div>
+          </div>
+          <svg class="chart-svg bars" viewBox="0 0 400 140" preserveAspectRatio="none" aria-label="YTD return by position">
+            <line x1="0" y1="100" x2="400" y2="100" stroke="#2a3d4d" stroke-width="1" />
+            <!-- bars (centered at y=100, positive grows up, negative grows down) -->
+            <g font-family="IBM Plex Mono, monospace" font-size="9" fill="#8a9aa8">
+              <rect x="20" y="40" width="45" height="60" fill="#2d8659" />
+              <text x="42" y="118" text-anchor="middle">NVDA</text>
+              <text x="42" y="34" text-anchor="middle" fill="#d4af37">+34%</text>
+
+              <rect x="85" y="58" width="45" height="42" fill="#2d8659" />
+              <text x="107" y="118" text-anchor="middle">PLTR</text>
+              <text x="107" y="52" text-anchor="middle" fill="#d4af37">+22%</text>
+
+              <rect x="150" y="68" width="45" height="32" fill="#2d8659" />
+              <text x="172" y="118" text-anchor="middle">ANET</text>
+              <text x="172" y="62" text-anchor="middle" fill="#d4af37">+16%</text>
+
+              <rect x="215" y="82" width="45" height="18" fill="#2d8659" />
+              <text x="237" y="118" text-anchor="middle">VOO</text>
+              <text x="237" y="76" text-anchor="middle" fill="#d4af37">+8%</text>
+
+              <rect x="280" y="100" width="45" height="14" fill="#b85c2a" />
+              <text x="302" y="128" text-anchor="middle">TSM</text>
+              <text x="302" y="120" text-anchor="middle" fill="#b85c2a">-4%</text>
+
+              <rect x="345" y="92" width="45" height="8" fill="#2d8659" />
+              <text x="367" y="118" text-anchor="middle">CASH</text>
+              <text x="367" y="86" text-anchor="middle" fill="#d4af37">+4%</text>
+            </g>
+          </svg>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
   <section id="portfolio">
     <div class="container">
       <div class="section-header">
@@ -3793,6 +4179,94 @@
       </div>
       <div class="hc-quote">
         <p>"The hardest part of healthcare AI isn't the AI — it's the workflow. I build for the clinic the way it actually runs, not the way a deck says it does."</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="bucket">
+    <div class="container">
+      <div class="section-header">
+        <h2>Bucket List</h2>
+        <p>Places I haven't been yet · roughly in priority order</p>
+      </div>
+      <div class="bucket-grid">
+        <div class="bucket-card"><span class="bucket-num">01</span><h4>Patagonia</h4><p class="bucket-where">Argentina · Chile</p><p class="bucket-why">Torres del Paine W-trek, end of the world feeling.</p><span class="bucket-when">Target: 2026</span></div>
+        <div class="bucket-card"><span class="bucket-num">02</span><h4>Iceland (winter)</h4><p class="bucket-where">North Atlantic</p><p class="bucket-why">Northern lights, ring road, geothermal springs.</p><span class="bucket-when">Target: 2026</span></div>
+        <div class="bucket-card"><span class="bucket-num">03</span><h4>Morocco</h4><p class="bucket-where">Marrakech &amp; Sahara</p><p class="bucket-why">Medina labyrinth, camel + dune sleep.</p><span class="bucket-when">Target: 2027</span></div>
+        <div class="bucket-card"><span class="bucket-num">04</span><h4>Kyoto (in fall)</h4><p class="bucket-where">Japan</p><p class="bucket-why">Maple season, temple gardens, kaiseki at least once.</p><span class="bucket-when">Target: 2027</span></div>
+        <div class="bucket-card"><span class="bucket-num">05</span><h4>Bhutan</h4><p class="bucket-where">Himalayas</p><p class="bucket-why">Tiger's Nest. The country that measures gross national happiness.</p><span class="bucket-when">Target: 2027</span></div>
+        <div class="bucket-card"><span class="bucket-num">06</span><h4>Faroe Islands</h4><p class="bucket-where">North Atlantic</p><p class="bucket-why">Eighteen islands, cliffside grass-roof homes, complete silence.</p><span class="bucket-when">Target: 2028</span></div>
+        <div class="bucket-card"><span class="bucket-num">07</span><h4>Madagascar</h4><p class="bucket-where">Indian Ocean</p><p class="bucket-why">Avenue of Baobabs, lemurs, ecosystems found nowhere else.</p><span class="bucket-when">Target: 2028</span></div>
+        <div class="bucket-card"><span class="bucket-num">08</span><h4>Antarctica</h4><p class="bucket-where">Seventh continent</p><p class="bucket-why">Cross it off. Penguins. Silence of a different kind.</p><span class="bucket-when">Target: someday</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="pack">
+    <div class="container">
+      <div class="section-header">
+        <h2>What I Pack</h2>
+        <p>The kit that's earned its spot. Updated by trip.</p>
+      </div>
+      <div class="pack-grid">
+        <div class="pack-cat">
+          <h4>Daily carry</h4>
+          <ul>
+            <li>Passport + Global Entry card</li>
+            <li>Apple Watch (offline maps + transit)</li>
+            <li>Aer Field Pouch for cables</li>
+            <li>Bellroy slim wallet</li>
+            <li>Anker 30W GaN charger</li>
+          </ul>
+        </div>
+        <div class="pack-cat">
+          <h4>Bag</h4>
+          <ul>
+            <li>Tortuga Travel 40L (carry-on)</li>
+            <li>Bellroy Classic Backpack (day)</li>
+            <li>Eagle Creek packing cubes</li>
+            <li>Matador dry bag for laundry</li>
+          </ul>
+        </div>
+        <div class="pack-cat">
+          <h4>Tech</h4>
+          <ul>
+            <li>MacBook Pro 14"</li>
+            <li>iPhone (primary camera)</li>
+            <li>AirPods Pro</li>
+            <li>Kindle Oasis</li>
+            <li>eSIM + universal adapter</li>
+          </ul>
+        </div>
+        <div class="pack-cat">
+          <h4>Trail</h4>
+          <ul>
+            <li>Salomon X Ultra 4</li>
+            <li>Patagonia Houdini (windbreaker)</li>
+            <li>Smartwool merino × 3</li>
+            <li>Buff (sun, sweat, scarf)</li>
+            <li>Black Diamond headlamp</li>
+          </ul>
+        </div>
+        <div class="pack-cat">
+          <h4>Sleep</h4>
+          <ul>
+            <li>Silk liner (hostels, sketchy mattresses)</li>
+            <li>Manta sleep mask</li>
+            <li>Loop earplugs</li>
+            <li>Melatonin for time-zone jumps</li>
+          </ul>
+        </div>
+        <div class="pack-cat">
+          <h4>Just in case</h4>
+          <ul>
+            <li>Compact first-aid + electrolytes</li>
+            <li>Duct tape (wrapped around a pen)</li>
+            <li>Cash in two currencies</li>
+            <li>Photocopies of passport</li>
+            <li>Tiny notebook + Field Notes pen</li>
+          </ul>
+        </div>
       </div>
     </div>
   </section>
@@ -4595,7 +5069,7 @@
     }
 
     // Section IDs that may be present. Visibility is driven entirely by config.order.
-    const ALL_SECTIONS = ['now', 'businesses', 'projects', 'music', 'contact', 'picks', 'portfolio', 'dispatches', 'studio', 'journey', 'tracks', 'videos', 'garden', 'calendar', 'harvest', 'observations', 'press', 'manifesto', 'stack', 'faq', 'why-healthcare', 'album', 'nowplaying'];
+    const ALL_SECTIONS = ['now', 'businesses', 'projects', 'music', 'contact', 'picks', 'portfolio', 'dispatches', 'studio', 'journey', 'tracks', 'videos', 'garden', 'calendar', 'harvest', 'observations', 'press', 'manifesto', 'stack', 'faq', 'why-healthcare', 'album', 'nowplaying', 'letter', 'charts', 'bucket', 'pack'];
 
     const themes: Record<string, ThemeConfig> = {
       midnight: {
@@ -4617,7 +5091,7 @@
         badge: 'Open to work — Healthcare AI / Clinical Tech'
       },
       adventure: {
-        order: ['journey', 'album', 'dispatches', 'now', 'music', 'businesses', 'projects', 'contact'],
+        order: ['journey', 'bucket', 'album', 'dispatches', 'pack', 'now', 'music', 'businesses', 'projects', 'contact'],
         subtitle: 'Builder. Wanderer. Storyteller.',
         bio: 'I build software between trail miles and time zones. The best ideas tend to show up somewhere with no service — these are the ones I brought back.',
         badge: 'Currently — building from the road'
@@ -4641,7 +5115,7 @@
         badge: 'Open to work — AI Security / Red Team'
       },
       finance: {
-        order: ['now', 'portfolio', 'picks', 'projects', 'businesses', 'contact'],
+        order: ['now', 'portfolio', 'charts', 'letter', 'picks', 'projects', 'businesses', 'faq', 'contact'],
         subtitle: 'AI Engineer. Quant-Curious. Former PwC.',
         bio: 'Finance + CS undergrad, PwC Innovation Hub alum building AI for banking clients. Comfortable shipping production systems against regulated environments and senior-stakeholder review cycles.',
         badge: 'Open to work — AI in Financial Services'
@@ -4853,7 +5327,9 @@
         calendar: 'Seasonal Calendar', harvest: 'Harvest Log', observations: 'Field Notes',
         press: 'As Not Featured In', manifesto: 'Manifesto',
         stack: 'Stack', faq: 'FAQ', 'why-healthcare': 'Why Healthcare', album: 'Album',
-        nowplaying: 'What I\'m Into'
+        nowplaying: 'What I\'m Into',
+        letter: 'Quarterly Letter', charts: 'Charts I Made',
+        bucket: 'Bucket List', pack: 'What I Pack'
       };
       Object.entries(sectionLabels).forEach(([id, label]) => {
         items.push({
