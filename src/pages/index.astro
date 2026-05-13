@@ -480,6 +480,118 @@
       color: var(--ocean);
     }
 
+    /* ─── Agent Zoo ─────────────────────────────────────── */
+    .zoo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .agent-card {
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      transition: all 0.3s;
+    }
+
+    .agent-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--ocean);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+    }
+
+    .agent-head {
+      display: grid;
+      grid-template-columns: 56px 1fr auto;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .agent-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--bg-card), var(--bg));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      flex-shrink: 0;
+    }
+
+    .agent-name {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.1;
+    }
+
+    .agent-role {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      margin-top: 0.2rem;
+      line-height: 1.4;
+    }
+
+    .agent-status {
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      padding: 0.3rem 0.6rem;
+      border-radius: 8px;
+      align-self: start;
+      white-space: nowrap;
+      border: 1px solid;
+    }
+
+    .agent-status.deployed { background: rgba(74, 222, 128, 0.15); color: #4ade80; border-color: #4ade80; }
+    .agent-status.live { background: rgba(14, 165, 233, 0.18); color: #38bdf8; border-color: #38bdf8; }
+    .agent-status.building { background: rgba(251, 191, 36, 0.18); color: #fbbf24; border-color: #fbbf24; }
+    .agent-status.stealth { background: rgba(212, 175, 55, 0.18); color: #d4af37; border-color: #d4af37; }
+    .agent-status.archived { background: rgba(120, 113, 108, 0.18); color: #a8a29e; border-color: #a8a29e; }
+
+    .agent-quote {
+      font-family: var(--font-heading);
+      font-style: italic;
+      color: var(--text);
+      font-size: 0.98rem;
+      line-height: 1.6;
+      padding: 0.75rem 1rem;
+      border-left: 3px solid var(--coral);
+      background: rgba(255, 107, 107, 0.05);
+      border-radius: 4px;
+    }
+
+    .agent-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .agent-caps {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      padding-top: 0.5rem;
+      border-top: 1px dashed var(--border);
+    }
+
+    .agent-caps span {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 0.25rem 0.55rem;
+      border-radius: 8px;
+      font-family: var(--font-mono);
+    }
+
     /* ─── Stack ─────────────────────────────────────────── */
     .stack-grid {
       display: grid;
@@ -4066,6 +4178,135 @@
     </div>
   </section>
 
+  <section id="zoo">
+    <div class="container">
+      <div class="section-header">
+        <h2>Agent Zoo</h2>
+        <p>Every agent I've shipped, with the voice it would have if you asked.</p>
+      </div>
+      <div class="zoo-grid">
+
+        <div class="agent-card">
+          <div class="agent-head">
+            <span class="agent-avatar">🚐</span>
+            <div>
+              <div class="agent-name">TM Go</div>
+              <div class="agent-role">Tour Manager · stateful, SMS-native</div>
+            </div>
+            <span class="agent-status deployed">Deployed</span>
+          </div>
+          <p class="agent-quote">"I keep the bus on schedule and the band fed. Group SMS is my native tongue. Don't lose the driver."</p>
+          <div class="agent-tags">
+            <span class="tag">LangGraph</span>
+            <span class="tag">FastAPI</span>
+            <span class="tag">Supabase</span>
+            <span class="tag">Stripe</span>
+          </div>
+          <div class="agent-caps">
+            <span title="Persistent memory">🧠 memory</span>
+            <span title="Tool use">🛠 tools</span>
+            <span title="Multi-turn dialogue">💬 multi-turn</span>
+            <span title="SMS coordination">📱 SMS</span>
+          </div>
+        </div>
+
+        <div class="agent-card">
+          <div class="agent-head">
+            <span class="agent-avatar">🏠</span>
+            <div>
+              <div class="agent-name">SelfNVest Agent</div>
+              <div class="agent-role">Real-estate FSBO · contracts, showings, comps</div>
+            </div>
+            <span class="agent-status deployed">Deployed</span>
+          </div>
+          <p class="agent-quote">"I read the contract twice. I'll answer the buyer's question at 11 PM so you don't have to. And I know what your neighbor's place sold for."</p>
+          <div class="agent-tags">
+            <span class="tag">LangGraph</span>
+            <span class="tag">React</span>
+            <span class="tag">FastAPI</span>
+            <span class="tag">Supabase</span>
+          </div>
+          <div class="agent-caps">
+            <span title="Per-user persistent memory">🧠 memory</span>
+            <span title="Tool use">🛠 tools</span>
+            <span title="Scheduling">📅 scheduling</span>
+            <span title="Tiered access">🔐 auth</span>
+          </div>
+        </div>
+
+        <div class="agent-card">
+          <div class="agent-head">
+            <span class="agent-avatar">🥊</span>
+            <div>
+              <div class="agent-name">Octagon</div>
+              <div class="agent-role">Adversarial tester · RL-driven attack policies</div>
+            </div>
+            <span class="agent-status live">Live demo</span>
+          </div>
+          <p class="agent-quote">"I attack agents for a living. Prompt-injection, tool-misuse, jailbreak — I'm the one your security team wishes they'd hired before launch."</p>
+          <div class="agent-tags">
+            <span class="tag">Python</span>
+            <span class="tag">RL</span>
+            <span class="tag">AI Security</span>
+            <span class="tag">Streamlit</span>
+          </div>
+          <div class="agent-caps">
+            <span title="Adversarial probing">🎯 adversarial</span>
+            <span title="Evaluation harness">📊 evals</span>
+            <span title="Live demo">🌐 live</span>
+          </div>
+        </div>
+
+        <div class="agent-card">
+          <div class="agent-head">
+            <span class="agent-avatar">🎲</span>
+            <div>
+              <div class="agent-name">Multi-Agent Sim</div>
+              <div class="agent-role">RL researcher · ten thousand agents arguing</div>
+            </div>
+            <span class="agent-status live">Live demo</span>
+          </div>
+          <p class="agent-quote">"I run thousands of agents against each other and tell you which strategies survive. Emergence is my hobby. Cooperation is the surprise."</p>
+          <div class="agent-tags">
+            <span class="tag">Python</span>
+            <span class="tag">Multi-Agent RL</span>
+            <span class="tag">Streamlit</span>
+          </div>
+          <div class="agent-caps">
+            <span title="Multi-agent simulation">🌀 simulation</span>
+            <span title="Strategy evaluation">📊 evals</span>
+            <span title="Real-time visualization">📺 viz</span>
+          </div>
+        </div>
+
+        <div class="agent-card">
+          <div class="agent-head">
+            <span class="agent-avatar">🩺</span>
+            <div>
+              <div class="agent-name">Prior Auth Agent</div>
+              <div class="agent-role">Healthcare advocate · policies, appeals, citations</div>
+            </div>
+            <span class="agent-status building">Building</span>
+          </div>
+          <p class="agent-quote">"I read every page of your insurance policy so the patient doesn't have to. When they deny, I cite the exact CMS reg and file the appeal — with receipts."</p>
+          <div class="agent-tags">
+            <span class="tag">LangGraph</span>
+            <span class="tag">FastAPI</span>
+            <span class="tag">Healthcare</span>
+            <span class="tag">RAG</span>
+          </div>
+          <div class="agent-caps">
+            <span title="Policy memory">🧠 memory</span>
+            <span title="Tool use">🛠 tools</span>
+            <span title="Policy retrieval">📚 lookup</span>
+            <span title="Appeals generation">⚖ appeals</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
   <section id="stack">
     <div class="container">
       <div class="section-header">
@@ -5069,7 +5310,7 @@
     }
 
     // Section IDs that may be present. Visibility is driven entirely by config.order.
-    const ALL_SECTIONS = ['now', 'businesses', 'projects', 'music', 'contact', 'picks', 'portfolio', 'dispatches', 'studio', 'journey', 'tracks', 'videos', 'garden', 'calendar', 'harvest', 'observations', 'press', 'manifesto', 'stack', 'faq', 'why-healthcare', 'album', 'nowplaying', 'letter', 'charts', 'bucket', 'pack'];
+    const ALL_SECTIONS = ['now', 'businesses', 'projects', 'music', 'contact', 'picks', 'portfolio', 'dispatches', 'studio', 'journey', 'tracks', 'videos', 'garden', 'calendar', 'harvest', 'observations', 'press', 'manifesto', 'stack', 'faq', 'why-healthcare', 'album', 'nowplaying', 'letter', 'charts', 'bucket', 'pack', 'zoo'];
 
     const themes: Record<string, ThemeConfig> = {
       midnight: {
@@ -5085,7 +5326,7 @@
         badge: 'Open to interesting conversations'
       },
       healthcare: {
-        order: ['why-healthcare', 'now', 'projects', 'businesses', 'faq', 'contact', 'music'],
+        order: ['why-healthcare', 'zoo', 'now', 'projects', 'businesses', 'faq', 'contact', 'music'],
         subtitle: 'AI Engineer building healthcare technology.',
         bio: 'Production AI agents for clinical workflows. Background spans PwC enterprise AI, real-time biosignal processing, and time in clinical settings — focused on tools that fit how medicine is actually practiced.',
         badge: 'Open to work — Healthcare AI / Clinical Tech'
@@ -5103,7 +5344,7 @@
         badge: 'Open to creative collaborations'
       },
       agents: {
-        order: ['projects', 'stack', 'now', 'businesses', 'faq', 'contact'],
+        order: ['zoo', 'projects', 'stack', 'now', 'businesses', 'faq', 'contact'],
         subtitle: 'AI Agent Engineer.',
         bio: 'I ship production multi-step agents — LangGraph, FastAPI, persistent memory, evaluation harnesses, adversarial testing. Reliability over demos.',
         badge: 'Open to work — Agent Infrastructure / Platform'
@@ -5329,7 +5570,7 @@
         stack: 'Stack', faq: 'FAQ', 'why-healthcare': 'Why Healthcare', album: 'Album',
         nowplaying: 'What I\'m Into',
         letter: 'Quarterly Letter', charts: 'Charts I Made',
-        bucket: 'Bucket List', pack: 'What I Pack'
+        bucket: 'Bucket List', pack: 'What I Pack', zoo: 'Agent Zoo'
       };
       Object.entries(sectionLabels).forEach(([id, label]) => {
         items.push({
