@@ -3961,7 +3961,7 @@
       inset: 0;
       background: rgba(0, 0, 0, 0.55);
       display: none;
-      z-index: 300;
+      z-index: 10000;
       align-items: flex-start;
       justify-content: center;
       padding-top: 12vh;
@@ -4049,7 +4049,7 @@
       inset: 0;
       background: rgba(0, 0, 0, 0.65);
       display: none;
-      z-index: 300;
+      z-index: 10000;
       align-items: center;
       justify-content: center;
       padding: 2rem;
@@ -6113,6 +6113,8 @@
       songs?: string[];
       projects?: string[];
       guide?: string;
+      // Transit mode used to GET to this place from the previous one
+      transit?: 'drive' | 'flight' | 'train' | 'boat' | 'walk';
       // Place-modal fields (all optional, fill at your pace or via Sheet later)
       photos?: string[];
       eat?: string;
@@ -6209,6 +6211,10 @@
         v ? v.split(',').map(s => s.trim()).filter(Boolean) : undefined;
       const truthy = (v: string) =>
         ['true', '1', 'yes', 'y'].includes((v || '').toLowerCase());
+      const validTransit = ['drive', 'flight', 'train', 'boat', 'walk'];
+      const transit = validTransit.includes((row.transit || '').toLowerCase().trim())
+        ? (row.transit.toLowerCase().trim() as Place['transit'])
+        : undefined;
       return {
         id: row.id,
         city: row.city || row.id,
@@ -6218,6 +6224,7 @@
         country: row.country || undefined,
         current: truthy(row.current),
         guide: row.guide || undefined,
+        transit,
         songs: splitList(row.songs),
         projects: splitList(row.projects),
         photos: splitList(row.photos),
@@ -7147,20 +7154,63 @@
       });
 
       // Route polyline — connect pins in their array order (chronological).
+      // Flights render as curved arcs; ground transit as straight dashed lines.
       const segmentsByYear: Record<number, any[]> = {};
+
+      function arcPath(from: [number, number], to: [number, number], steps = 30): [number, number][] {
+        const [lat1, lng1] = from;
+        const [lat2, lng2] = to;
+        const distSq = (lat2 - lat1) ** 2 + (lng2 - lng1) ** 2;
+        const dist = Math.sqrt(distSq);
+        const arcHeight = Math.min(dist * 0.18, 12);
+        const midLat = (lat1 + lat2) / 2;
+        const midLng = (lng1 + lng2) / 2;
+        const dx = lng2 - lng1;
+        const dy = lat2 - lat1;
+        const norm = Math.sqrt(dx * dx + dy * dy) || 1;
+        // Perpendicular (counter-clockwise) for the control point
+        const cLat = midLat + (dx / norm) * arcHeight;
+        const cLng = midLng - (dy / norm) * arcHeight;
+        const out: [number, number][] = [];
+        for (let i = 0; i <= steps; i++) {
+          const t = i / steps;
+          const inv = 1 - t;
+          const lat = inv * inv * lat1 + 2 * inv * t * cLat + t * t * lat2;
+          const lng = inv * inv * lng1 + 2 * inv * t * cLng + t * t * lng2;
+          out.push([lat, lng]);
+        }
+        return out;
+      }
+
       for (let i = 0; i < placesData.length - 1; i++) {
         const a = placesData[i];
         const b = placesData[i + 1];
         const year = getYear(b.date);
-        const seg = L.polyline([a.coords, b.coords], {
+        const isFlight = b.transit === 'flight';
+        const path = isFlight ? arcPath(a.coords, b.coords) : [a.coords, b.coords];
+        const seg = L.polyline(path, {
           color: yearColors[year] || '#888',
-          weight: 1.6,
-          opacity: 0.15,
-          dashArray: '5 7',
+          weight: isFlight ? 1.8 : 2,
+          opacity: 0.18,
+          dashArray: isFlight ? '4 6' : (b.transit === 'train' ? '2 4' : undefined),
           className: 'route-segment',
           smoothFactor: 1
         }).addTo(mapInstance);
         (segmentsByYear[year] ||= []).push(seg);
+
+        // ✈ marker at the midpoint of a flight arc
+        if (isFlight) {
+          const midIdx = Math.floor(path.length / 2);
+          const midPoint = path[midIdx];
+          const transitIcon = L.divIcon({
+            className: 'transit-icon',
+            html: `<div style="font-size:14px; line-height:1; transform: translate(-50%, -50%);">✈</div>`,
+            iconSize: [20, 20],
+            iconAnchor: [10, 10]
+          });
+          const m = L.marker(midPoint, { icon: transitIcon, interactive: false }).addTo(mapInstance);
+          (segmentsByYear[year] ||= []).push(m);
+        }
       }
 
       // Fit the view to all pins so the world view shows on first load.
@@ -7185,7 +7235,10 @@
               activeYear = v === 'all' ? null : parseInt(v || '0');
               years.forEach(y => {
                 const visible = activeYear === null || activeYear === y;
-                (segmentsByYear[y] || []).forEach((s: any) => s.setStyle({ opacity: visible ? 0.55 : 0 }));
+                (segmentsByYear[y] || []).forEach((s: any) => {
+                  if (typeof s.setStyle === 'function') s.setStyle({ opacity: visible ? 0.55 : 0 });
+                  else if (typeof s.setOpacity === 'function') s.setOpacity(visible ? 1 : 0);
+                });
                 (markerByYear[y] || []).forEach((m: any) => m.setOpacity(visible ? 1 : 0.15));
               });
               render();
