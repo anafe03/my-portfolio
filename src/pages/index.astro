@@ -5555,7 +5555,7 @@
     <div class="container">
       <div class="section-header">
         <h2>National Parks</h2>
-        <p>9 of 63 · climbing slowly</p>
+        <p>11 of 63 · climbing slowly</p>
       </div>
       <div class="parks-grid">
         <div class="park"><span class="park-emoji">🏜</span><span class="park-name">Big Bend</span><span class="park-year">2023</span></div>
@@ -5567,8 +5567,10 @@
         <div class="park"><span class="park-emoji">🪨</span><span class="park-name">Yosemite</span><span class="park-year">2023</span></div>
         <div class="park"><span class="park-emoji">🌲</span><span class="park-name">Redwood</span><span class="park-year">2023</span></div>
         <div class="park"><span class="park-emoji">🏜</span><span class="park-name">Death Valley</span><span class="park-year">2024</span></div>
+        <div class="park"><span class="park-emoji">⛰</span><span class="park-name">Zion</span><span class="park-year">2025</span></div>
+        <div class="park"><span class="park-emoji">🪨</span><span class="park-name">Capitol Reef</span><span class="park-year">2025</span></div>
       </div>
-      <p class="parks-foot">Next on the list: Glacier · Olympic · Crater Lake · Grand Teton · Zion.</p>
+      <p class="parks-foot">Next on the list: Glacier · Olympic · Crater Lake · Grand Teton · Arches.</p>
     </div>
   </section>
 
@@ -6890,6 +6892,10 @@
         note: 'Lowest point in North America. Highest contrast in light.' },
       { id: 'san-diego', city: 'San Diego, CA', coords: [32.7157, -117.1611], date: '2024 · 2025', country: 'USA',
         note: 'Multiple visits. Tacos, surf, perfect weather.' },
+      { id: 'zion', city: 'Zion NP, UT', coords: [37.2982, -113.0263], date: '2025', country: 'USA', transit: 'drive',
+        note: 'Stop on the SD → Denver drive. Angels Landing if your knees can take it; Narrows if not.' },
+      { id: 'capitol-reef', city: 'Capitol Reef NP, UT', coords: [38.3667, -111.2615], date: '2025', country: 'USA', transit: 'drive',
+        note: 'The quiet one. Empty trails, fruit orchards, petroglyphs. Pie at the Gifford House.' },
       { id: 'houston', city: 'Houston, TX', coords: [29.7604, -95.3698], date: '2024', country: 'USA',
         note: 'Family + space center pilgrimages.' },
       { id: 'aptos', city: 'Aptos, CA', coords: [36.9772, -121.8997], date: '2024', country: 'USA',
@@ -7164,7 +7170,9 @@
 
       // Route polyline — connect pins in their array order (chronological).
       // Flights render as curved arcs; ground transit as straight dashed lines.
+      // Drive segments get upgraded to real road routes via OSRM after initial paint.
       const segmentsByYear: Record<number, any[]> = {};
+      const segmentByIndex: any[] = [];
 
       function arcPath(from: [number, number], to: [number, number], steps = 30): [number, number][] {
         const [lat1, lng1] = from;
@@ -7206,6 +7214,7 @@
           smoothFactor: 1
         }).addTo(mapInstance);
         (segmentsByYear[year] ||= []).push(seg);
+        segmentByIndex[i] = seg;
 
         // ✈ marker at the midpoint of a flight arc
         if (isFlight) {
@@ -7227,6 +7236,57 @@
       if (allCoords.length > 0) {
         mapInstance.fitBounds(allCoords, { padding: [30, 30], maxZoom: 6 });
       }
+
+      // Async: upgrade drive segments to real road routes via OSRM.
+      // Cached in localStorage so subsequent visits skip the API round-trip.
+      async function fetchOsrmDriving(from: [number, number], to: [number, number]): Promise<[number, number][] | null> {
+        const cacheKey = `osrm:${from[0].toFixed(4)},${from[1].toFixed(4)}->${to[0].toFixed(4)},${to[1].toFixed(4)}`;
+        try {
+          const cached = localStorage.getItem(cacheKey);
+          if (cached) return JSON.parse(cached);
+        } catch {}
+        try {
+          const url = `https://router.project-osrm.org/route/v1/driving/${from[1]},${from[0]};${to[1]},${to[0]}?overview=full&geometries=geojson`;
+          const res = await fetch(url);
+          if (!res.ok) return null;
+          const data = await res.json();
+          const coords: number[][] | undefined = data?.routes?.[0]?.geometry?.coordinates;
+          if (!coords || coords.length < 2) return null;
+          const path: [number, number][] = coords.map(c => [c[1], c[0]]);
+          try { localStorage.setItem(cacheKey, JSON.stringify(path)); } catch {}
+          return path;
+        } catch {
+          return null;
+        }
+      }
+
+      function haversineKm(a: [number, number], b: [number, number]): number {
+        const R = 6371;
+        const toRad = (d: number) => d * Math.PI / 180;
+        const dLat = toRad(b[0] - a[0]);
+        const dLng = toRad(b[1] - a[1]);
+        const x = Math.sin(dLat / 2) ** 2 +
+                  Math.cos(toRad(a[0])) * Math.cos(toRad(b[0])) * Math.sin(dLng / 2) ** 2;
+        return 2 * R * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
+      }
+
+      (async () => {
+        for (let i = 0; i < placesData.length - 1; i++) {
+          const a = placesData[i];
+          const b = placesData[i + 1];
+          if (b.transit === 'flight' || b.transit === 'boat') continue;
+          // OSRM can't route across oceans — skip pairs that are clearly transcontinental.
+          if (haversineKm(a.coords, b.coords) > 4000) continue;
+          const seg = segmentByIndex[i];
+          if (!seg) continue;
+          const route = await fetchOsrmDriving(a.coords, b.coords);
+          if (route && route.length > 1) {
+            try { seg.setLatLngs(route); } catch {}
+          }
+          // Be polite to the public OSRM demo
+          await new Promise(r => setTimeout(r, 80));
+        }
+      })();
 
       // Render the year legend below the map. Clicking a year isolates it.
       const legendEl = document.getElementById('pathLegend');
