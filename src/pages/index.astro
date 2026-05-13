@@ -849,6 +849,111 @@
       border-radius: 2px;
     }
 
+    /* ─── The Numbers (Founder only) ─────────────────────── */
+    .numbers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      max-width: 1000px;
+      margin: 0 auto;
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 1.75rem;
+    }
+
+    .number-tile {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      text-align: center;
+      padding: 0.75rem;
+      border-right: 1px solid var(--border);
+    }
+
+    .number-tile:last-child { border-right: none; }
+
+    .number-value {
+      font-family: var(--font-heading);
+      font-size: 2.75rem;
+      font-weight: 700;
+      font-style: italic;
+      line-height: 1;
+      color: var(--text);
+    }
+
+    .number-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      color: var(--text-dim);
+      font-weight: 700;
+    }
+
+    /* ─── Decisions Log (Founder only) ────────────────────── */
+    .decisions-list {
+      max-width: 760px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .decision {
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem 1.75rem;
+      transition: all 0.3s;
+    }
+
+    .decision:hover { border-color: var(--coral); }
+
+    .decision-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .decision-date {
+      font-family: var(--font-heading);
+      font-style: italic;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      letter-spacing: 0.02em;
+    }
+
+    .decision-outcome {
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      border: 1px solid;
+    }
+
+    .decision-outcome.worked { background: rgba(74, 222, 128, 0.15); color: #4ade80; border-color: #4ade80; }
+    .decision-outcome.open { background: rgba(212, 175, 55, 0.15); color: #d4af37; border-color: #d4af37; }
+    .decision-outcome.reversed { background: rgba(248, 113, 113, 0.15); color: #f87171; border-color: #f87171; }
+
+    .decision h4 {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 0.6rem;
+      color: var(--text);
+    }
+
+    .decision p {
+      color: var(--text);
+      line-height: 1.65;
+      font-size: 0.95rem;
+    }
+
     /* ─── Founder magazine treatment ─────────────────────── */
     [data-theme="founder"] .hero {
       padding-top: 9rem;
@@ -4533,6 +4638,91 @@
     </div>
   </section>
 
+  <section id="numbers">
+    <div class="container">
+      <div class="section-header">
+        <h2>The Numbers</h2>
+        <p>Vanity metrics. Updated when I remember.</p>
+      </div>
+      <div class="numbers-grid">
+        <div class="number-tile"><span class="number-value">3</span><span class="number-label">Ventures live</span></div>
+        <div class="number-tile"><span class="number-value">2</span><span class="number-label">In production</span></div>
+        <div class="number-tile"><span class="number-value">1</span><span class="number-label">Stealth</span></div>
+        <div class="number-tile"><span class="number-value">5</span><span class="number-label">Agents shipped</span></div>
+        <div class="number-tile"><span class="number-value">14</span><span class="number-label">Avg days, idea → prod</span></div>
+        <div class="number-tile"><span class="number-value">0</span><span class="number-label">Paid acquisition</span></div>
+        <div class="number-tile"><span class="number-value">2yr</span><span class="number-label">Operator runway</span></div>
+        <div class="number-tile"><span class="number-value">∞</span><span class="number-label">Ideas per week</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="decisions">
+    <div class="container">
+      <div class="section-header">
+        <h2>Decisions Log</h2>
+        <p>The calls, the reasoning, what happened next.</p>
+      </div>
+      <div class="decisions-list">
+
+        <article class="decision">
+          <div class="decision-meta">
+            <span class="decision-date">May 2026</span>
+            <span class="decision-outcome open">Open</span>
+          </div>
+          <h4>Build Boundless Horizons before raising.</h4>
+          <p>The pattern of "raise on a deck, then build" is misaligned with how I actually move. Closing the loop the other way: ship a working v1 to a small group, see what compounds, then talk to capital with leverage instead of dependence. Cost: longer to scale. Upside: nothing to renegotiate later.</p>
+        </article>
+
+        <article class="decision">
+          <div class="decision-meta">
+            <span class="decision-date">Apr 2026</span>
+            <span class="decision-outcome worked">Worked</span>
+          </div>
+          <h4>Renamed TourSync → TM Go.</h4>
+          <p>TourSync had collision in search and was a mouthful in group SMS. TM Go is two syllables, queryable, and owns the .com tier. The migration cost was a weekend; the brand clarity has been worth it every week since.</p>
+        </article>
+
+        <article class="decision">
+          <div class="decision-meta">
+            <span class="decision-date">Mar 2026</span>
+            <span class="decision-outcome open">Open</span>
+          </div>
+          <h4>Open-sourcing the LangGraph eval harness early.</h4>
+          <p>Tempted to keep it private and let it be a moat. Decided the opposite: distribution beats moat when the tool itself is the demonstration of skill. Watching adoption to see if the bet is right.</p>
+        </article>
+
+        <article class="decision">
+          <div class="decision-meta">
+            <span class="decision-date">Feb 2026</span>
+            <span class="decision-outcome worked">Worked</span>
+          </div>
+          <h4>Render over AWS for both startups.</h4>
+          <p>AWS is the right answer at scale; it is the wrong answer at 0→1. Render lets me ship a stateful FastAPI service in an afternoon without writing IAM policy fan-fiction. We'll graduate when the cost of graduating is cheaper than the cost of not.</p>
+        </article>
+
+        <article class="decision">
+          <div class="decision-meta">
+            <span class="decision-date">Jan 2026</span>
+            <span class="decision-outcome worked">Worked</span>
+          </div>
+          <h4>Killed TM Go's "events module" pre-launch.</h4>
+          <p>Customers had asked. The feature would have shipped. But it dragged the core flow toward configurability and away from the SMS-first experience that was working. Cut it, refocused. Three customers later, no one missed it.</p>
+        </article>
+
+        <article class="decision">
+          <div class="decision-meta">
+            <span class="decision-date">Dec 2025</span>
+            <span class="decision-outcome reversed">Reversed</span>
+          </div>
+          <h4>Tried to ship TM Go and SelfNVest in parallel sprints.</h4>
+          <p>For three weeks I split focus 60/40, then 50/50, then 40/60. Both products got worse. Reversed in early Jan — TM Go takes priority, SelfNVest goes to maintenance mode. Lesson: parallel founders are rare for a reason.</p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
   <section id="press">
     <div class="container">
       <p class="press-kicker">As not featured in</p>
@@ -5310,7 +5500,7 @@
     }
 
     // Section IDs that may be present. Visibility is driven entirely by config.order.
-    const ALL_SECTIONS = ['now', 'businesses', 'projects', 'music', 'contact', 'picks', 'portfolio', 'dispatches', 'studio', 'journey', 'tracks', 'videos', 'garden', 'calendar', 'harvest', 'observations', 'press', 'manifesto', 'stack', 'faq', 'why-healthcare', 'album', 'nowplaying', 'letter', 'charts', 'bucket', 'pack', 'zoo'];
+    const ALL_SECTIONS = ['now', 'businesses', 'projects', 'music', 'contact', 'picks', 'portfolio', 'dispatches', 'studio', 'journey', 'tracks', 'videos', 'garden', 'calendar', 'harvest', 'observations', 'press', 'manifesto', 'stack', 'faq', 'why-healthcare', 'album', 'nowplaying', 'letter', 'charts', 'bucket', 'pack', 'zoo', 'numbers', 'decisions'];
 
     const themes: Record<string, ThemeConfig> = {
       midnight: {
@@ -5362,7 +5552,7 @@
         badge: 'Open to work — AI in Financial Services'
       },
       founder: {
-        order: ['businesses', 'press', 'now', 'manifesto', 'projects', 'faq', 'contact'],
+        order: ['businesses', 'numbers', 'press', 'decisions', 'manifesto', 'projects', 'now', 'faq', 'contact'],
         subtitle: 'Founder. Builder. Operator.',
         bio: 'Three ventures in motion — Boundless Horizons (stealth), TM Go (tour management), SelfNVest AI (FSBO real estate). Full-stack, from schema to UI to DNS. I ship.',
         badge: 'Open to founder / co-founder conversations'
@@ -5570,7 +5760,8 @@
         stack: 'Stack', faq: 'FAQ', 'why-healthcare': 'Why Healthcare', album: 'Album',
         nowplaying: 'What I\'m Into',
         letter: 'Quarterly Letter', charts: 'Charts I Made',
-        bucket: 'Bucket List', pack: 'What I Pack', zoo: 'Agent Zoo'
+        bucket: 'Bucket List', pack: 'What I Pack', zoo: 'Agent Zoo',
+        numbers: 'The Numbers', decisions: 'Decisions Log'
       };
       Object.entries(sectionLabels).forEach(([id, label]) => {
         items.push({
