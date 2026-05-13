@@ -2443,6 +2443,96 @@
       color: var(--text-dim);
     }
 
+    /* ─── Cyber matrix ──────────────────────────────────── */
+    .matrix-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.6s;
+    }
+
+    [data-theme="cyber"] .matrix-canvas {
+      opacity: 0.22;
+    }
+
+    [data-theme="cyber"] .hero h1 {
+      background: none;
+      -webkit-background-clip: initial;
+      -webkit-text-fill-color: var(--text);
+      background-clip: initial;
+      color: var(--text);
+      letter-spacing: 0.04em;
+      animation: cyberGlitch 6s infinite steps(1);
+      position: relative;
+    }
+
+    @keyframes cyberGlitch {
+      0%, 91%, 100% { text-shadow: none; transform: translate(0); }
+      92% { text-shadow: 2px 0 var(--ocean), -2px 0 var(--coral); transform: translate(-1px); }
+      93% { text-shadow: -2px 0 var(--ocean), 2px 0 var(--coral); transform: translate(1px); }
+      94% { text-shadow: 3px 0 var(--ocean), -3px 0 var(--coral); transform: translate(-1px, 1px); }
+      95% { text-shadow: -1px 0 var(--ocean), 1px 0 var(--coral); transform: translate(1px, -1px); }
+      96% { text-shadow: 2px 0 var(--coral), -2px 0 var(--ocean); }
+    }
+
+    [data-theme="cyber"] .section-header h2 {
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    [data-theme="cyber"] .section-header h2::before {
+      content: "[ ";
+      color: var(--forest);
+    }
+
+    [data-theme="cyber"] .section-header h2::after {
+      content: " ]";
+      color: var(--forest);
+      background: none;
+      width: auto;
+      height: auto;
+      position: static;
+      display: inline;
+    }
+
+    [data-theme="cyber"] .project-card,
+    [data-theme="cyber"] .business-card {
+      border-style: dashed;
+      position: relative;
+    }
+
+    [data-theme="cyber"] .project-card::after,
+    [data-theme="cyber"] .business-card::after {
+      content: "[CLASSIFIED]";
+      position: absolute;
+      top: 0.6rem;
+      right: 0.9rem;
+      font-size: 0.6rem;
+      font-family: var(--font-mono);
+      color: var(--ocean);
+      letter-spacing: 0.18em;
+      font-weight: 700;
+      opacity: 0.55;
+      background: none;
+      width: auto;
+      height: auto;
+      transform: none;
+      border-radius: 0;
+      pointer-events: none;
+    }
+
+    [data-theme="cyber"] .hero,
+    [data-theme="cyber"] section {
+      position: relative;
+      z-index: 1;
+    }
+
+    [data-theme="cyber"] .floating-shape {
+      display: none;
+    }
+
     /* ─── Cmd+K command palette ─────────────────────────── */
     .cmdk-overlay {
       position: fixed;
@@ -3796,6 +3886,8 @@
   </section>
   </main>
 
+  <canvas id="matrixCanvas" class="matrix-canvas" aria-hidden="true"></canvas>
+
   <!-- Cmd+K command palette -->
   <div class="cmdk-overlay" id="cmdkOverlay" role="dialog" aria-label="Command palette">
     <div class="cmdk">
@@ -4440,7 +4532,58 @@
       if (theme === 'adventure') {
         requestAnimationFrame(() => initMap());
       }
+
+      // Cyber matrix rain canvas
+      if (theme === 'cyber') startMatrix();
+      else stopMatrix();
     }
+
+    // ─── Cyber: matrix rain ─────────────────────────────
+    const matrixCanvas = document.getElementById('matrixCanvas') as HTMLCanvasElement | null;
+    let matrixRaf: number | null = null;
+    let matrixDrops: number[] = [];
+
+    function startMatrix() {
+      if (!matrixCanvas || matrixRaf) return;
+      const ctx = matrixCanvas.getContext('2d');
+      if (!ctx) return;
+      matrixCanvas.width = window.innerWidth;
+      matrixCanvas.height = window.innerHeight;
+      const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789';
+      const fontSize = 14;
+      const cols = Math.floor(matrixCanvas.width / fontSize);
+      matrixDrops = new Array(cols).fill(1).map(() => Math.random() * matrixCanvas!.height / fontSize);
+      const tick = () => {
+        if (!matrixCanvas) return;
+        ctx.fillStyle = 'rgba(10, 15, 10, 0.06)';
+        ctx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+        ctx.fillStyle = '#00ff41';
+        ctx.font = `${fontSize}px monospace`;
+        for (let i = 0; i < matrixDrops.length; i++) {
+          const c = chars[Math.floor(Math.random() * chars.length)];
+          ctx.fillText(c, i * fontSize, matrixDrops[i] * fontSize);
+          if (matrixDrops[i] * fontSize > matrixCanvas.height && Math.random() > 0.975) matrixDrops[i] = 0;
+          matrixDrops[i]++;
+        }
+        matrixRaf = requestAnimationFrame(tick);
+      };
+      tick();
+    }
+
+    function stopMatrix() {
+      if (matrixRaf) { cancelAnimationFrame(matrixRaf); matrixRaf = null; }
+      if (matrixCanvas) {
+        const ctx = matrixCanvas.getContext('2d');
+        ctx?.clearRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+      }
+    }
+
+    window.addEventListener('resize', () => {
+      if (matrixCanvas && matrixRaf) {
+        matrixCanvas.width = window.innerWidth;
+        matrixCanvas.height = window.innerHeight;
+      }
+    });
 
     // Theme resolution priority: URL ?theme=X → localStorage → midnight
     const urlTheme = new URLSearchParams(window.location.search).get('theme');
