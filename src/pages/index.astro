@@ -1371,6 +1371,225 @@
       font-family: var(--font-mono);
     }
 
+    /* ─── The Rig (Adventure only) ──────────────────────── */
+    .rig-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .rig-hero {
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      align-self: start;
+      position: sticky;
+      top: 8rem;
+    }
+
+    .rig-photo {
+      aspect-ratio: 4 / 3;
+      background: linear-gradient(135deg, var(--bg-card), var(--bg));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 5rem;
+    }
+
+    .rig-name {
+      font-family: var(--font-heading);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .rig-spec {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      margin-bottom: 0.75rem;
+      font-style: italic;
+    }
+
+    .rig-status {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      padding: 0.35rem 0.7rem;
+      border-radius: 8px;
+      border: 1px solid var(--coral);
+      color: var(--coral);
+      background: rgba(232, 93, 74, 0.12);
+    }
+
+    .rig-phases {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .rig-phase {
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      gap: 1rem;
+      padding: 1.25rem 1.5rem;
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      transition: border-color 0.2s;
+    }
+
+    .rig-phase.done { border-color: rgba(74, 222, 128, 0.4); }
+    .rig-phase.doing { border-color: var(--coral); }
+    .rig-phase.todo { opacity: 0.78; }
+
+    .phase-mark {
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      font-weight: 700;
+      line-height: 1;
+      align-self: center;
+      text-align: center;
+    }
+
+    .rig-phase.done .phase-mark { color: #4ade80; }
+    .rig-phase.doing .phase-mark { color: var(--coral); animation: termBlink 1.5s infinite; }
+    .rig-phase.todo .phase-mark { color: var(--text-dim); }
+
+    .rig-phase-body h4 {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      margin-bottom: 0.35rem;
+      color: var(--text);
+    }
+
+    .rig-phase-body p {
+      color: var(--text-dim);
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+
+    @media (max-width: 820px) {
+      .rig-grid { grid-template-columns: 1fr; }
+      .rig-hero { position: static; }
+    }
+
+    /* ─── National Parks (Adventure only) ─────────────────── */
+    .parks-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.85rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .park {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.85rem 1.1rem;
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      transition: all 0.25s;
+    }
+
+    .park:hover {
+      transform: translateY(-2px);
+      border-color: var(--forest);
+    }
+
+    .park-emoji {
+      font-size: 1.4rem;
+    }
+
+    .park-name {
+      flex: 1;
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    .park-year {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--coral);
+      font-weight: 700;
+    }
+
+    .parks-foot {
+      text-align: center;
+      margin-top: 1.5rem;
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      font-style: italic;
+    }
+
+    /* ─── Festivals (Adventure only) ────────────────────────── */
+    .fests-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .fest {
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      gap: 1rem;
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 1.25rem 1.4rem;
+      transition: all 0.3s;
+    }
+
+    .fest:hover {
+      transform: translateY(-3px);
+      border-color: var(--coral);
+    }
+
+    .fest-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .fest-name {
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .fest-meta {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      font-style: italic;
+      margin-bottom: 0.5rem;
+    }
+
+    .fest-note {
+      color: var(--text);
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
     /* ─── Bucket List (Adventure only) ──────────────────── */
     .bucket-grid {
       display: grid;
@@ -4622,6 +4841,135 @@
     </div>
   </section>
 
+  <section id="rig">
+    <div class="container">
+      <div class="section-header">
+        <h2>The Rig</h2>
+        <p>Ambulance conversion · slow build · documenting as I go</p>
+      </div>
+      <div class="rig-grid">
+        <div class="rig-hero">
+          <div class="rig-photo">🚑</div>
+          <div class="rig-info">
+            <div class="rig-name">The Patient</div>
+            <div class="rig-spec">Type-III box on a Ford E-450 chassis · diesel · ~180k mi</div>
+            <span class="rig-status building">Phase 2 · Electrical + sleep</span>
+          </div>
+        </div>
+        <div class="rig-phases">
+          <div class="rig-phase done">
+            <span class="phase-mark">✓</span>
+            <div class="rig-phase-body">
+              <h4>Phase 1 — Gut + reinforce</h4>
+              <p>Stripped the med cabinetry, kept the structural shelves. Havelock wool in the walls, Thinsulate in the ceiling, 1/4" birch ply skin. New flooring over the original aluminum.</p>
+            </div>
+          </div>
+          <div class="rig-phase doing">
+            <span class="phase-mark">●</span>
+            <div class="rig-phase-body">
+              <h4>Phase 2 — Electrical + sleep</h4>
+              <p>400W rooftop solar, 200Ah LiFePO4 bank, Victron everything. Bed platform overhead with deep storage underneath. Maxxfan in the ceiling, blackout curtains on every window.</p>
+            </div>
+          </div>
+          <div class="rig-phase todo">
+            <span class="phase-mark">○</span>
+            <div class="rig-phase-body">
+              <h4>Phase 3 — Kitchen + water</h4>
+              <p>20gal fresh tank, induction cooktop, slide-out pantry. Hot water off the engine heat exchanger. Foot-pump sink as backup when boondocking.</p>
+            </div>
+          </div>
+          <div class="rig-phase todo">
+            <span class="phase-mark">○</span>
+            <div class="rig-phase-body">
+              <h4>Phase 4 — Office + finish</h4>
+              <p>Convertible bench into desk. Starlink Mini mounted. Soft goods, lighting, the small stuff that takes the longest. Naming the truck is also Phase 4.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="parks">
+    <div class="container">
+      <div class="section-header">
+        <h2>National Parks</h2>
+        <p>9 of 63 · climbing slowly</p>
+      </div>
+      <div class="parks-grid">
+        <div class="park"><span class="park-emoji">🏜</span><span class="park-name">Big Bend</span><span class="park-year">2023</span></div>
+        <div class="park"><span class="park-emoji">⛰</span><span class="park-name">Guadalupe Mountains</span><span class="park-year">2023</span></div>
+        <div class="park"><span class="park-emoji">🌾</span><span class="park-name">White Sands</span><span class="park-year">2023</span></div>
+        <div class="park"><span class="park-emoji">🌵</span><span class="park-name">Saguaro</span><span class="park-year">2023</span></div>
+        <div class="park"><span class="park-emoji">🌲</span><span class="park-name">Sequoia</span><span class="park-year">2023</span></div>
+        <div class="park"><span class="park-emoji">🌳</span><span class="park-name">Joshua Tree</span><span class="park-year">2023 · 2024</span></div>
+        <div class="park"><span class="park-emoji">🪨</span><span class="park-name">Yosemite</span><span class="park-year">2023</span></div>
+        <div class="park"><span class="park-emoji">🌲</span><span class="park-name">Redwood</span><span class="park-year">2023</span></div>
+        <div class="park"><span class="park-emoji">🏜</span><span class="park-name">Death Valley</span><span class="park-year">2024</span></div>
+      </div>
+      <p class="parks-foot">Next on the list: Glacier · Olympic · Crater Lake · Grand Teton · Zion.</p>
+    </div>
+  </section>
+
+  <section id="fests">
+    <div class="container">
+      <div class="section-header">
+        <h2>Festivals</h2>
+        <p>Where I show up loud</p>
+      </div>
+      <div class="fests-list">
+        <div class="fest">
+          <div class="fest-icon">🔥</div>
+          <div class="fest-body">
+            <div class="fest-name">Burning Man</div>
+            <div class="fest-meta">Black Rock City, NV · 2023 &amp; 2025</div>
+            <p class="fest-note">Twice. There is no review.</p>
+          </div>
+        </div>
+        <div class="fest">
+          <div class="fest-icon">🌲</div>
+          <div class="fest-body">
+            <div class="fest-name">Electric Forest</div>
+            <div class="fest-meta">Rothbury, MI · 2023 &amp; 2025</div>
+            <p class="fest-note">The forest does what it says. Stayed both years, going back.</p>
+          </div>
+        </div>
+        <div class="fest">
+          <div class="fest-icon">💎</div>
+          <div class="fest-body">
+            <div class="fest-name">gem and jam</div>
+            <div class="fest-meta">Tucson, AZ · 2023</div>
+            <p class="fest-note">Desert bass + sunrise sets. The right way to start a year.</p>
+          </div>
+        </div>
+        <div class="fest">
+          <div class="fest-icon">🌑</div>
+          <div class="fest-body">
+            <div class="fest-name">Texas Eclipse Festival</div>
+            <div class="fest-meta">Hill Country, TX · 2024</div>
+            <p class="fest-note">Totality at noon, bass under the moon. Cosmically scheduled.</p>
+          </div>
+        </div>
+        <div class="fest">
+          <div class="fest-icon">🎡</div>
+          <div class="fest-body">
+            <div class="fest-name">Wonderland</div>
+            <div class="fest-meta">2025</div>
+            <p class="fest-note">Adjust your reality settings.</p>
+          </div>
+        </div>
+        <div class="fest">
+          <div class="fest-icon">🏁</div>
+          <div class="fest-body">
+            <div class="fest-name">Indy 500</div>
+            <div class="fest-meta">Indianapolis, IN · 2025</div>
+            <p class="fest-note">Not a music fest but absolutely an event. Loud, sunburned, perfect.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section id="bucket">
     <div class="container">
       <div class="section-header">
@@ -5581,8 +5929,8 @@
         const year = getYear(b.date);
         const seg = L.polyline([a.coords, b.coords], {
           color: yearColors[year] || '#888',
-          weight: 1.8,
-          opacity: 0.55,
+          weight: 1.6,
+          opacity: 0.15,
           dashArray: '5 7',
           className: 'route-segment',
           smoothFactor: 1
@@ -5729,7 +6077,7 @@
     }
 
     // Section IDs that may be present. Visibility is driven entirely by config.order.
-    const ALL_SECTIONS = ['now', 'businesses', 'projects', 'music', 'contact', 'picks', 'portfolio', 'dispatches', 'studio', 'journey', 'tracks', 'videos', 'garden', 'calendar', 'harvest', 'observations', 'press', 'manifesto', 'stack', 'faq', 'why-healthcare', 'album', 'nowplaying', 'letter', 'charts', 'bucket', 'pack', 'zoo', 'numbers', 'decisions'];
+    const ALL_SECTIONS = ['now', 'businesses', 'projects', 'music', 'contact', 'picks', 'portfolio', 'dispatches', 'studio', 'journey', 'tracks', 'videos', 'garden', 'calendar', 'harvest', 'observations', 'press', 'manifesto', 'stack', 'faq', 'why-healthcare', 'album', 'nowplaying', 'letter', 'charts', 'bucket', 'pack', 'zoo', 'numbers', 'decisions', 'rig', 'parks', 'fests'];
 
     const themes: Record<string, ThemeConfig> = {
       midnight: {
@@ -5751,7 +6099,7 @@
         badge: 'Open to work — Healthcare AI / Clinical Tech'
       },
       adventure: {
-        order: ['journey', 'bucket', 'album', 'dispatches', 'pack', 'now', 'music', 'businesses', 'projects', 'contact'],
+        order: ['journey', 'rig', 'fests', 'parks', 'bucket', 'album', 'dispatches', 'pack', 'now', 'music', 'businesses', 'projects', 'contact'],
         subtitle: 'Builder. Wanderer. Storyteller.',
         bio: 'I build software between trail miles and time zones. The best ideas tend to show up somewhere with no service — these are the ones I brought back.',
         badge: 'Currently — building from the road'
@@ -5990,7 +6338,8 @@
         nowplaying: 'What I\'m Into',
         letter: 'Quarterly Letter', charts: 'Charts I Made',
         bucket: 'Bucket List', pack: 'What I Pack', zoo: 'Agent Zoo',
-        numbers: 'The Numbers', decisions: 'Decisions Log'
+        numbers: 'The Numbers', decisions: 'Decisions Log',
+        rig: 'The Rig', parks: 'National Parks', fests: 'Festivals'
       };
       Object.entries(sectionLabels).forEach(([id, label]) => {
         items.push({
