@@ -2443,6 +2443,100 @@
       color: var(--text-dim);
     }
 
+    /* ─── AI Agents terminal ────────────────────────────── */
+    [data-theme="agents"] .hero h1 {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      background: none;
+      -webkit-text-fill-color: var(--text);
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+
+    [data-theme="agents"] .hero h1::before {
+      content: "> ";
+      color: var(--forest);
+    }
+
+    [data-theme="agents"] .hero h1::after {
+      content: "█";
+      color: var(--forest);
+      margin-left: 0.15em;
+      animation: termBlink 1s step-end infinite;
+    }
+
+    @keyframes termBlink {
+      50% { opacity: 0; }
+    }
+
+    [data-theme="agents"] .hero .subtitle {
+      font-family: var(--font-mono);
+      font-size: 1.1rem;
+    }
+
+    [data-theme="agents"] .hero .subtitle::before {
+      content: "$ ";
+      color: var(--ocean);
+    }
+
+    [data-theme="agents"] .section-header h2 {
+      font-family: var(--font-mono);
+    }
+
+    [data-theme="agents"] .section-header h2::before {
+      content: "// ";
+      color: var(--forest);
+      opacity: 0.7;
+    }
+
+    [data-theme="agents"] .section-header h2::after {
+      display: none;
+    }
+
+    /* Project / business cards as terminal windows */
+    [data-theme="agents"] .project-card,
+    [data-theme="agents"] .business-card,
+    [data-theme="agents"] .now-card {
+      padding-top: 2.75rem;
+      position: relative;
+    }
+
+    [data-theme="agents"] .project-card::before,
+    [data-theme="agents"] .business-card::before,
+    [data-theme="agents"] .now-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1.85rem;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      border-radius: 22px 22px 0 0;
+      background-image:
+        radial-gradient(circle at 14px 14px, #ff5f56 4px, transparent 5px),
+        radial-gradient(circle at 32px 14px, #ffbd2e 4px, transparent 5px),
+        radial-gradient(circle at 50px 14px, #27c93f 4px, transparent 5px);
+      transform: none;
+    }
+
+    [data-theme="agents"] .project-card h3,
+    [data-theme="agents"] .business-card h3 {
+      font-family: var(--font-mono);
+      font-size: 1.2rem;
+    }
+
+    [data-theme="agents"] .project-card .tag,
+    [data-theme="agents"] .business-link {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+    }
+
+    [data-theme="agents"] .floating-shape {
+      display: none;
+    }
+
     /* ─── Cyber matrix ──────────────────────────────────── */
     .matrix-canvas {
       position: fixed;
