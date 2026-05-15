@@ -4192,57 +4192,43 @@
       line-height: 1.6;
     }
 
-    .nav-settings {
-      position: relative;
+    /* Discreet theme trigger — the literal period after "Built with Astro" */
+    .settings-trigger {
+      background: none;
+      border: none;
+      padding: 0;
+      margin: 0;
+      font: inherit;
+      color: inherit;
+      cursor: default;
     }
 
-    .settings-btn {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      background: transparent;
-      border: 2px solid var(--border);
-      color: var(--text);
-      cursor: pointer;
-      display: flex;
+    .settings-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      z-index: 10000;
       align-items: center;
       justify-content: center;
-      font-size: 1.1rem;
-      transition: all 0.3s;
-      padding: 0;
+      padding: 2rem;
+      backdrop-filter: blur(8px);
     }
 
-    .settings-btn:hover {
-      transform: rotate(45deg);
-      border-color: var(--ocean);
-      color: var(--ocean);
+    .settings-overlay.open {
+      display: flex;
     }
 
     .settings-panel {
-      position: absolute;
-      top: calc(100% + 0.75rem);
-      right: 0;
-      width: 360px;
-      max-width: calc(100vw - 2rem);
-      max-height: calc(100vh - 8rem);
+      width: 380px;
+      max-width: 100%;
+      max-height: 85vh;
       overflow-y: auto;
       background: var(--bg-light);
       border: 2px solid var(--border);
       border-radius: 20px;
-      padding: 1.5rem;
-      z-index: 199;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-      opacity: 0;
-      transform: translateY(-10px) scale(0.95);
-      pointer-events: none;
-      transition: opacity 0.25s, transform 0.25s;
-      transform-origin: top right;
-    }
-
-    .settings-panel.open {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-      pointer-events: auto;
+      padding: 1.75rem;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
     }
 
     .settings-panel h4 {
@@ -4356,11 +4342,14 @@
         <li><a href="#music">Music</a></li>
         <li><a href="/RESUME_2026.pdf" target="_blank">Resume</a></li>
         <li><a href="#contact">Contact</a></li>
-        <li class="nav-settings">
-          <button class="settings-btn" id="settingsBtn" aria-label="Open theme settings">⚙</button>
-          <div class="settings-panel" id="settingsPanel" role="dialog" aria-label="Theme settings">
-            <h4>Theme</h4>
-            <div class="theme-options">
+      </ul>
+    </div>
+  </nav>
+
+  <div class="settings-overlay" id="settingsOverlay">
+    <div class="settings-panel" id="settingsPanel" role="dialog" aria-label="Theme settings">
+      <h4>Theme</h4>
+      <div class="theme-options">
               <button class="theme-option" data-set-theme="midnight">
                 <div class="theme-swatch">
                   <span style="background: #0a0e27"></span>
@@ -4450,12 +4439,9 @@
                 <div class="theme-name">Wellness</div>
               </button>
             </div>
-            <p class="settings-note">Each theme reframes the whole portfolio — colors, hero copy, and section order — for a different audience. Try a few.</p>
-          </div>
-        </li>
-      </ul>
+      <p class="settings-note">Each theme reframes the whole portfolio — colors, hero copy, and section order — for a different audience.</p>
     </div>
-  </nav>
+  </div>
 
   <section class="hero">
     <div class="container">
@@ -6099,7 +6085,7 @@
 
   <footer>
     <div class="container">
-      <p>&copy; 2026 Austin Nafe. Built with Astro.</p>
+      <p>&copy; 2026 Austin Nafe. Built with Astro<button class="settings-trigger" id="settingsBtn" aria-label="Theme settings" title="Theme settings">.</button></p>
       <p class="legal-notice">
         ⚖️ Every pixel, paragraph, and pun on this site is the exclusive intellectual property of Austin Nafe.
         Unauthorized reproduction, distribution, or vibe-stealing will result in litigation, hexes, and at minimum
@@ -7698,17 +7684,19 @@
     if (urlTheme && themes[urlTheme]) localStorage.setItem('theme', urlTheme);
 
     const settingsBtn = document.getElementById('settingsBtn');
-    const settingsPanel = document.getElementById('settingsPanel');
+    const settingsOverlay = document.getElementById('settingsOverlay');
 
     settingsBtn?.addEventListener('click', (e) => {
       e.stopPropagation();
-      settingsPanel?.classList.toggle('open');
+      settingsOverlay?.classList.add('open');
     });
 
-    document.addEventListener('click', (e) => {
-      if (!settingsPanel?.contains(e.target as Node) && e.target !== settingsBtn) {
-        settingsPanel?.classList.remove('open');
-      }
+    settingsOverlay?.addEventListener('click', (e) => {
+      if (e.target === settingsOverlay) settingsOverlay.classList.remove('open');
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') settingsOverlay?.classList.remove('open');
     });
 
     document.querySelectorAll<HTMLElement>('.theme-option').forEach(btn => {
@@ -7717,6 +7705,7 @@
         if (!theme) return;
         localStorage.setItem('theme', theme);
         applyTheme(theme);
+        settingsOverlay?.classList.remove('open');
       });
     });
 
