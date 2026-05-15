@@ -2385,6 +2385,104 @@
       line-height: 1.55;
     }
 
+    .garden-cats {
+      display: flex;
+      flex-direction: column;
+      gap: 2.25rem;
+    }
+
+    .garden-loading {
+      text-align: center;
+      color: var(--text-dim);
+      font-style: italic;
+    }
+
+    .garden-cat-title {
+      font-family: var(--font-heading);
+      font-size: 1.35rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      color: var(--text);
+    }
+
+    .garden-cat-count {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      font-weight: 400;
+      font-family: var(--font-mono);
+    }
+
+    .garden-plants {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 0.6rem;
+    }
+
+    .plant {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.65rem 0.85rem;
+      transition: border-color 0.2s;
+    }
+
+    .plant:hover {
+      border-color: var(--forest);
+    }
+
+    .plant-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .plant-dot.growing { background: #6b8e23; }
+    .plant-dot.died { background: #b94a3a; }
+    .plant-dot.harvesting { background: #c97b4c; }
+    .plant-dot.established { background: #d4a017; }
+    .plant-dot.flowering { background: #db2777; }
+
+    .plant.is-died { opacity: 0.5; }
+
+    .plant-info {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.25;
+    }
+
+    .plant-n {
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+
+    .plant-v {
+      font-size: 0.74rem;
+      color: var(--text-dim);
+      font-style: italic;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .plant-meta {
+      font-size: 0.62rem;
+      color: var(--text-dim);
+      text-align: right;
+      font-family: var(--font-mono);
+      flex-shrink: 0;
+      max-width: 90px;
+      line-height: 1.3;
+    }
+
     .garden-footnote {
       margin-top: 2rem;
       text-align: center;
@@ -5843,51 +5941,10 @@
         <h2>The Garden</h2>
         <p>Slow projects. Planted, watered, observed.</p>
       </div>
-      <div class="garden-grid">
-        <div class="plant-card">
-          <span class="plant-icon">🍅</span>
-          <div class="plant-name">Tomato</div>
-          <div class="plant-variety">San Marzano</div>
-          <div class="plant-status growing">Growing</div>
-          <p class="plant-note">Started indoors in March. Transplanted after last frost. First trusses setting fruit.</p>
-        </div>
-        <div class="plant-card">
-          <span class="plant-icon">🌿</span>
-          <div class="plant-name">Basil</div>
-          <div class="plant-variety">Genovese</div>
-          <div class="plant-status harvesting">Harvesting</div>
-          <p class="plant-note">Pinch the flowers, pinch the flowers, pinch the flowers. Pesto every Sunday.</p>
-        </div>
-        <div class="plant-card">
-          <span class="plant-icon">🫛</span>
-          <div class="plant-name">Sugar Snap Peas</div>
-          <div class="plant-variety">Cascadia</div>
-          <div class="plant-status harvesting">Harvesting</div>
-          <p class="plant-note">Trellised against the south fence. Eat raw, standing in the dirt, no shame.</p>
-        </div>
-        <div class="plant-card">
-          <span class="plant-icon">🌶</span>
-          <div class="plant-name">Padron Pepper</div>
-          <div class="plant-variety">Spanish heirloom</div>
-          <div class="plant-status flowering">Flowering</div>
-          <p class="plant-note">One in ten is spicy. The rest are perfect blistered with sea salt.</p>
-        </div>
-        <div class="plant-card">
-          <span class="plant-icon">🌱</span>
-          <div class="plant-name">Kale</div>
-          <div class="plant-variety">Lacinato (dinosaur)</div>
-          <div class="plant-status growing">Growing</div>
-          <p class="plant-note">Cold-tolerant workhorse. Sweeter after a frost.</p>
-        </div>
-        <div class="plant-card">
-          <span class="plant-icon">💜</span>
-          <div class="plant-name">Lavender</div>
-          <div class="plant-variety">French (Provence)</div>
-          <div class="plant-status established">Established</div>
-          <p class="plant-note">Third year. Drought-tolerant once rooted. Bees in love with it.</p>
-        </div>
+      <div class="garden-cats" id="gardenGrid">
+        <p class="garden-loading">Loading the plot…</p>
       </div>
-      <p class="garden-footnote">USDA zone 5b · Denver, CO · April–October growing window · Updated May 2026</p>
+      <p class="garden-footnote">USDA zone 5b · Denver, CO · April–October growing window</p>
     </div>
   </section>
 
@@ -6245,6 +6302,7 @@
     const NOTEBOOK_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/1DaOwzQCLs8GkE0U6zqUb1rfI-AmZLA84ooYTggGdPA0/gviz/tq?tqx=out:csv';
     const PHOTOS_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/1uGSQM-TjzktzoqBhSsgeh7peNZJNlkkKMqLnTnIzzO4/gviz/tq?tqx=out:csv';
     const TRACKS_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/11LrsaEV5jS6V8MUJLyHt1pr5pplqXy1Aa0-wEQSS2mI/gviz/tq?tqx=out:csv';
+    const GARDEN_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/1TCxN-787xienbvq4028u6IgBMaukw0QRHAGojS2j8OA/gviz/tq?tqx=out:csv';
 
     async function fetchSheet(url: string): Promise<Record<string, string>[]> {
       if (!url) return [];
@@ -6738,6 +6796,51 @@
         });
       });
       if (foot) foot.style.display = 'none';
+    }
+
+    async function syncGarden() {
+      const rows = await fetchSheet(GARDEN_SHEET_CSV);
+      if (!rows.length) return;
+      const grid = document.getElementById('gardenGrid');
+      if (!grid) return;
+      const catEmoji: Record<string, string> = {
+        'Fruit Tree': '🌳', 'Berry': '🫐', 'Vine': '🍇',
+        'Perennial': '🌿', 'Vegetable': '🥬', 'Herb': '🌱', 'Flower': '🌸'
+      };
+      const catOrder = ['Fruit Tree', 'Berry', 'Vine', 'Perennial', 'Vegetable', 'Herb', 'Flower'];
+      const groups: Record<string, Record<string, string>[]> = {};
+      rows.forEach(r => {
+        const c = r.category || 'Other';
+        (groups[c] ||= []).push(r);
+      });
+      const cats = [
+        ...catOrder.filter(c => groups[c]),
+        ...Object.keys(groups).filter(c => !catOrder.includes(c))
+      ];
+      grid.innerHTML = cats.map(cat => {
+        const items = groups[cat];
+        const label = cat.endsWith('s') ? cat : cat + 's';
+        return `
+          <div class="garden-cat">
+            <h3 class="garden-cat-title">${catEmoji[cat] || '🌱'} ${escapeHTML(label)} <span class="garden-cat-count">${items.length}</span></h3>
+            <div class="garden-plants">
+              ${items.map(p => {
+                const status = (p.status || 'growing').toLowerCase();
+                return `
+                  <div class="plant ${status === 'died' ? 'is-died' : ''}">
+                    <span class="plant-dot ${escapeHTML(status)}" title="${escapeHTML(status)}"></span>
+                    <div class="plant-info">
+                      <span class="plant-n">${escapeHTML(p.name || '')}</span>
+                      ${p.variety ? `<span class="plant-v">${escapeHTML(p.variety)}</span>` : ''}
+                    </div>
+                    <span class="plant-meta">${escapeHTML([p.planted, p.zone].filter(Boolean).join(' · '))}</span>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
     }
 
     async function syncRoutines() {
@@ -7453,6 +7556,7 @@
     syncNotebook();
     syncPhotos();
     syncTracks();
+    syncGarden();
 
     // Map pulse keyframe (injected once)
     const styleEl = document.createElement('style');
