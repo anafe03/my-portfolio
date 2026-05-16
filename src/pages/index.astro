@@ -1248,7 +1248,7 @@
       height: 56px;
       border-radius: 12px;
       overflow: hidden;
-      background: linear-gradient(135deg, var(--bg-card), var(--bg));
+      background: #fff;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1261,6 +1261,12 @@
       height: 100%;
       object-fit: cover;
       display: block;
+    }
+
+    .pick-photo img.pick-logo {
+      object-fit: contain;
+      padding: 9px;
+      box-sizing: border-box;
     }
 
     .pick-photo-fallback {
@@ -2006,7 +2012,6 @@
       border-radius: 16px;
       overflow: hidden;
       padding: 0;
-      position: relative;
       transition: all 0.3s;
       cursor: pointer;
       display: flex;
@@ -2019,51 +2024,64 @@
       box-shadow: 0 16px 36px rgba(232, 93, 74, 0.2);
     }
 
-    .bucket-photo {
-      aspect-ratio: 16 / 10;
-      background: linear-gradient(135deg, var(--bg-card), var(--bg));
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .bucket-cover {
       position: relative;
-      overflow: hidden;
+      min-height: 108px;
+      background: linear-gradient(135deg, var(--coral), var(--forest));
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.6rem;
+      padding: 0.95rem 1.15rem;
     }
 
-    .bucket-photo img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .bucket-photo-emoji {
-      font-size: 4rem;
-      opacity: 0.45;
+    .bucket-cover.has-photo::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(160deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.55));
     }
 
     .bucket-num {
-      position: absolute;
-      top: 0.85rem;
-      right: 1rem;
+      position: relative;
+      z-index: 1;
       font-family: var(--font-heading);
       font-style: italic;
-      font-size: 2rem;
+      font-size: 2.6rem;
       font-weight: 700;
       color: #fff;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
-      line-height: 1;
+      line-height: 0.85;
+      text-shadow: 0 2px 14px rgba(0, 0, 0, 0.35);
+    }
+
+    .bucket-when {
+      position: relative;
+      z-index: 1;
+      font-size: 0.6rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      padding: 0.32rem 0.6rem;
+      border-radius: 999px;
+      white-space: nowrap;
     }
 
     .bucket-body {
-      padding: 1.25rem 1.5rem 1.5rem;
+      padding: 1.1rem 1.3rem 1.3rem;
       display: flex;
       flex-direction: column;
-      gap: 0.4rem;
+      gap: 0.35rem;
+      flex: 1;
     }
 
     .bucket-card h4 {
       font-family: var(--font-heading);
-      font-size: 1.35rem;
+      font-size: 1.3rem;
       margin: 0;
       color: var(--text);
       line-height: 1.15;
@@ -2073,25 +2091,24 @@
       font-style: italic;
       color: var(--text-dim);
       font-size: 0.85rem;
-      margin-bottom: 0.85rem;
     }
 
     .bucket-why {
       color: var(--text);
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       line-height: 1.55;
-      margin-bottom: 1rem;
+      margin-top: 0.15rem;
     }
 
-    .bucket-when {
-      font-size: 0.7rem;
-      font-weight: 800;
-      letter-spacing: 0.12em;
+    .bucket-more {
+      margin-top: auto;
+      padding-top: 0.7rem;
+      font-family: var(--font-mono);
+      font-size: 0.64rem;
+      font-weight: 700;
+      letter-spacing: 0.09em;
       text-transform: uppercase;
-      color: var(--forest);
-      padding: 0.3rem 0.7rem;
-      border: 1px solid var(--forest);
-      border-radius: 10px;
+      color: var(--coral);
     }
 
     /* ─── What I Pack (Adventure only) ──────────────────── */
@@ -2404,45 +2421,11 @@
       line-height: 1.55;
     }
 
-    .garden-cats {
-      display: flex;
-      flex-direction: column;
-      gap: 2.25rem;
-    }
-
     .garden-loading {
       text-align: center;
       color: var(--text-dim);
       font-style: italic;
-    }
-
-    .garden-cat-title {
-      font-family: var(--font-heading);
-      font-size: 1.4rem;
-      margin-bottom: 1.1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      color: var(--text);
-    }
-
-    .garden-cat-title::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-      margin-left: 0.2rem;
-    }
-
-    .garden-cat-count {
-      font-size: 0.72rem;
-      color: var(--text-dim);
-      font-weight: 700;
-      font-family: var(--font-mono);
-      background: var(--bg-light);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 0.1rem 0.55rem;
+      grid-column: 1 / -1;
     }
 
     .garden-summary {
@@ -2451,7 +2434,7 @@
       align-items: center;
       gap: 0.6rem 1.6rem;
       padding: 1rem 1.3rem;
-      margin-bottom: 2.25rem;
+      margin-bottom: 1.25rem;
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: 14px;
@@ -2489,29 +2472,75 @@
       text-transform: capitalize;
     }
 
-    .garden-plants {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-      gap: 0.6rem;
+    /* search + category filters */
+    .garden-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.7rem;
+      margin-bottom: 1.5rem;
     }
 
-    .plant {
-      display: flex;
-      align-items: center;
-      gap: 0.65rem;
+    .garden-search {
+      flex: 1;
+      min-width: 210px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      color: var(--text);
       background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 0.7rem 0.9rem;
-      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+      border-radius: 999px;
+      padding: 0.62rem 1.15rem;
     }
 
-    .plant:hover {
+    .garden-search:focus {
+      outline: none;
       border-color: var(--forest);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(107, 142, 35, 0.13);
     }
 
+    .garden-search::placeholder { color: var(--text-dim); }
+
+    .garden-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .garden-filter {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--text-dim);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.42rem 0.8rem;
+      cursor: pointer;
+      transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+    }
+
+    .garden-filter:hover { border-color: var(--forest); color: var(--text); }
+
+    .garden-filter.active {
+      background: var(--forest);
+      border-color: var(--forest);
+      color: #fff;
+    }
+
+    .garden-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(178px, 1fr));
+      gap: 1rem;
+    }
+
+    .garden-empty {
+      text-align: center;
+      color: var(--text-dim);
+      font-style: italic;
+      padding: 2rem 0;
+    }
+
+    /* legend dots in the garden summary */
     .plant-dot {
       width: 9px;
       height: 9px;
@@ -2527,39 +2556,89 @@
     .plant-dot.seedling { background: #84cc16; }
     .plant-dot.dormant { background: #78716c; }
 
-    .plant.is-died { opacity: 0.5; }
-
-    .plant-info {
-      flex: 1;
-      min-width: 0;
+    .garden-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      cursor: pointer;
       display: flex;
       flex-direction: column;
-      line-height: 1.25;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
     }
 
-    .plant-n {
+    .garden-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--forest);
+      box-shadow: 0 12px 26px rgba(107, 142, 35, 0.18);
+    }
+
+    .garden-card.s-died { opacity: 0.62; }
+
+    .garden-card-art {
+      aspect-ratio: 4 / 3;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .garden-card-emoji {
+      font-size: 3.1rem;
+      filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.22));
+    }
+
+    .garden-card-badge {
+      position: absolute;
+      top: 0.55rem;
+      right: 0.55rem;
+      font-size: 0.53rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.2rem 0.5rem;
+      border-radius: 999px;
+      color: #fff;
+    }
+
+    .garden-card-badge.growing     { background: #5d7d1e; }
+    .garden-card-badge.seedling    { background: #6ba312; }
+    .garden-card-badge.flowering   { background: #db2777; }
+    .garden-card-badge.harvesting  { background: #c2682f; }
+    .garden-card-badge.established { background: #b88b1a; }
+    .garden-card-badge.dormant     { background: #78716c; }
+    .garden-card-badge.died        { background: #b94a3a; }
+
+    .garden-card-body {
+      padding: 0.7rem 0.85rem 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.12rem;
+      flex: 1;
+    }
+
+    .garden-card-name {
+      font-family: var(--font-heading);
+      font-size: 1.02rem;
       font-weight: 700;
-      font-size: 0.9rem;
+      line-height: 1.15;
       color: var(--text);
     }
 
-    .plant-v {
-      font-size: 0.74rem;
-      color: var(--text-dim);
+    .garden-card-variety {
       font-style: italic;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      font-size: 0.76rem;
+      color: var(--text-dim);
     }
 
-    .plant-meta {
-      font-size: 0.62rem;
-      color: var(--text-dim);
-      text-align: right;
+    .garden-card-cat {
+      margin-top: auto;
+      padding-top: 0.45rem;
+      font-size: 0.65rem;
       font-family: var(--font-mono);
-      flex-shrink: 0;
-      max-width: 90px;
-      line-height: 1.3;
+      color: var(--text-dim);
     }
 
     .garden-footnote {
@@ -2625,6 +2704,22 @@
     .cal-bar.harvesting { background: linear-gradient(90deg, #c97b4c, #d99a6c); }
     .cal-bar.flowering { background: linear-gradient(90deg, #db2777, #e75aa0); }
     .cal-bar.established { background: linear-gradient(90deg, #b88b1a, #d4a017); }
+    .cal-bar.seedling { background: linear-gradient(90deg, #6ba312, #84cc16); }
+    .cal-bar.dormant { background: linear-gradient(90deg, #78716c, #9a938c); }
+    .cal-bar.died { background: linear-gradient(90deg, #a59f97, #c2bcb2); }
+
+    .cal-group {
+      font-family: var(--font-heading);
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-dim);
+      padding: 0.6rem 0 0.1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .cal-group:first-child { padding-top: 0; }
 
     /* Harvest log */
     .harvest-list {
@@ -3024,8 +3119,9 @@
 
     .tracks-list {
       display: grid;
-      gap: 0.75rem;
-      max-width: 900px;
+      grid-template-columns: repeat(auto-fill, minmax(228px, 1fr));
+      gap: 1.15rem;
+      max-width: 1000px;
       margin: 0 auto;
     }
 
@@ -3110,6 +3206,129 @@
     .track-row-wrap {
       display: flex;
       flex-direction: column;
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .track-row-wrap:hover {
+      transform: translateY(-4px);
+      border-color: var(--coral);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
+    }
+
+    .song-art {
+      aspect-ratio: 1 / 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .song-art-key {
+      font-family: var(--font-heading);
+      font-size: 2.7rem;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.94);
+      text-shadow: 0 2px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .song-num {
+      position: absolute;
+      top: 0.6rem;
+      left: 0.7rem;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.88);
+      text-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
+    }
+
+    .song-play {
+      position: absolute;
+      bottom: 0.7rem;
+      right: 0.7rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.5);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.55);
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: transform 0.18s ease, background 0.18s ease;
+    }
+
+    .song-play:hover {
+      transform: scale(1.12);
+      background: var(--coral);
+    }
+
+    .song-body {
+      padding: 0.85rem 1rem 1rem;
+    }
+
+    .song-status {
+      display: inline-block;
+      font-size: 0.56rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--coral);
+      border: 1px solid var(--coral);
+      border-radius: 999px;
+      padding: 0.14rem 0.5rem;
+      margin-bottom: 0.45rem;
+    }
+
+    .song-title {
+      font-family: var(--font-heading);
+      font-size: 1.12rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.15;
+    }
+
+    .song-stats {
+      display: flex;
+      gap: 0.38rem;
+      margin-top: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .song-stats span {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      color: var(--text-dim);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.15rem 0.44rem;
+    }
+
+    .song-tags {
+      display: flex;
+      gap: 0.36rem;
+      margin-top: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .song-tag {
+      font-size: 0.64rem;
+      color: var(--text-dim);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.13rem 0.52rem;
+    }
+
+    .song-tag.place {
+      color: var(--coral);
+      border-color: var(--coral);
     }
 
     .track-embed {
@@ -5441,6 +5660,28 @@
           <a class="agent-try" href="https://github.com/anafe03" target="_blank">GitHub →</a>
         </div>
 
+        <div class="agent-card" data-theme-only="midnight,agents,creative">
+          <div class="agent-head">
+            <span class="agent-avatar">🎛</span>
+            <div>
+              <div class="agent-name">StemDeck</div>
+              <div class="agent-role">Stem-splitter agent · isolate, remix, rebuild any track</div>
+            </div>
+            <span class="agent-status live">Live demo</span>
+          </div>
+          <p class="agent-quote">"Hand me a track and I'll hand back its parts — vocals, drums, bass, the rest. What you rebuild from there is your problem."</p>
+          <div class="agent-tags">
+            <span class="tag">Python</span>
+            <span class="tag">Audio ML</span>
+            <span class="tag">Demucs</span>
+            <span class="tag">Streamlit</span>
+          </div>
+          <div class="agent-caps">
+            <span>🎚 stems</span><span>🎵 audio</span><span>🌐 live</span>
+          </div>
+          <a class="agent-try" href="https://rlagents-stemdeck.streamlit.app" target="_blank">Try it →</a>
+        </div>
+
       </div>
     </div>
   </section>
@@ -5802,14 +6043,7 @@
         <p>Places I haven't been yet · roughly in priority order</p>
       </div>
       <div class="bucket-grid">
-        <div class="bucket-card"><span class="bucket-num">01</span><h4>Patagonia</h4><p class="bucket-where">Argentina · Chile</p><p class="bucket-why">Torres del Paine W-trek, end of the world feeling.</p><span class="bucket-when">Target: 2026</span></div>
-        <div class="bucket-card"><span class="bucket-num">02</span><h4>Iceland (winter)</h4><p class="bucket-where">North Atlantic</p><p class="bucket-why">Northern lights, ring road, geothermal springs.</p><span class="bucket-when">Target: 2026</span></div>
-        <div class="bucket-card"><span class="bucket-num">03</span><h4>Morocco</h4><p class="bucket-where">Marrakech &amp; Sahara</p><p class="bucket-why">Medina labyrinth, camel + dune sleep.</p><span class="bucket-when">Target: 2027</span></div>
-        <div class="bucket-card"><span class="bucket-num">04</span><h4>Kyoto (in fall)</h4><p class="bucket-where">Japan</p><p class="bucket-why">Maple season, temple gardens, kaiseki at least once.</p><span class="bucket-when">Target: 2027</span></div>
-        <div class="bucket-card"><span class="bucket-num">05</span><h4>Bhutan</h4><p class="bucket-where">Himalayas</p><p class="bucket-why">Tiger's Nest. The country that measures gross national happiness.</p><span class="bucket-when">Target: 2027</span></div>
-        <div class="bucket-card"><span class="bucket-num">06</span><h4>Faroe Islands</h4><p class="bucket-where">North Atlantic</p><p class="bucket-why">Eighteen islands, cliffside grass-roof homes, complete silence.</p><span class="bucket-when">Target: 2028</span></div>
-        <div class="bucket-card"><span class="bucket-num">07</span><h4>Madagascar</h4><p class="bucket-where">Indian Ocean</p><p class="bucket-why">Avenue of Baobabs, lemurs, ecosystems found nowhere else.</p><span class="bucket-when">Target: 2028</span></div>
-        <div class="bucket-card"><span class="bucket-num">08</span><h4>Antarctica</h4><p class="bucket-where">Seventh continent</p><p class="bucket-why">Cross it off. Penguins. Silence of a different kind.</p><span class="bucket-when">Target: someday</span></div>
+        <p class="garden-loading">Loading the list…</p>
       </div>
     </div>
   </section>
@@ -6021,10 +6255,15 @@
         <p>Slow projects. Planted, watered, observed.</p>
       </div>
       <div class="garden-summary" id="gardenSummary" hidden></div>
-      <div class="garden-cats" id="gardenGrid">
+      <div class="garden-toolbar" id="gardenToolbar" hidden>
+        <input type="search" id="gardenSearch" class="garden-search" placeholder="Search plants, varieties, care…" aria-label="Search plants" />
+        <div class="garden-filters" id="gardenFilters"></div>
+      </div>
+      <div class="garden-cards" id="gardenGrid">
         <p class="garden-loading">Loading the plot…</p>
       </div>
-      <p class="garden-footnote">USDA zone 5b · Denver, CO · April–October growing window</p>
+      <p class="garden-empty" id="gardenEmpty" hidden>Nothing matches — try another search.</p>
+      <p class="garden-footnote">USDA zone 5b · Denver, CO · April–October growing window · click any plant for how it's grown</p>
     </div>
   </section>
 
@@ -6034,46 +6273,8 @@
         <h2>Seasonal Calendar</h2>
         <p>What happens when. Plan in seasons, not sprints.</p>
       </div>
-      <div class="cal">
-        <div class="cal-row cal-head">
-          <div class="cal-label"></div>
-          <div class="cal-month">J</div>
-          <div class="cal-month">F</div>
-          <div class="cal-month current">M</div>
-          <div class="cal-month">A</div>
-          <div class="cal-month current">M</div>
-          <div class="cal-month">J</div>
-          <div class="cal-month">J</div>
-          <div class="cal-month">A</div>
-          <div class="cal-month">S</div>
-          <div class="cal-month">O</div>
-          <div class="cal-month">N</div>
-          <div class="cal-month">D</div>
-        </div>
-        <div class="cal-row">
-          <div class="cal-label">🍅 Tomato</div>
-          <div class="cal-bar growing" style="grid-column: 4 / 12">Start indoors · transplant · fruit · harvest</div>
-        </div>
-        <div class="cal-row">
-          <div class="cal-label">🌿 Basil</div>
-          <div class="cal-bar harvesting" style="grid-column: 6 / 12">Transplant · pinch · harvest</div>
-        </div>
-        <div class="cal-row">
-          <div class="cal-label">🫛 Peas</div>
-          <div class="cal-bar harvesting" style="grid-column: 4 / 9">Direct sow · climb · harvest</div>
-        </div>
-        <div class="cal-row">
-          <div class="cal-label">🌶 Padron</div>
-          <div class="cal-bar flowering" style="grid-column: 5 / 12">Indoors · transplant · flower · harvest</div>
-        </div>
-        <div class="cal-row">
-          <div class="cal-label">🌱 Kale</div>
-          <div class="cal-bar growing" style="grid-column: 4 / 13">Direct sow · grow · frost-sweet harvest</div>
-        </div>
-        <div class="cal-row">
-          <div class="cal-label">💜 Lavender</div>
-          <div class="cal-bar established" style="grid-column: 2 / 14">Perennial · bloom Jun–Aug</div>
-        </div>
+      <div class="cal" id="gardenCal">
+        <p class="garden-loading">Loading the calendar…</p>
       </div>
     </div>
   </section>
@@ -6475,22 +6676,21 @@
       if (!grid) return;
       grid.innerHTML = bucketData.map(b => {
         const padded = String(b.priority).padStart(2, '0');
-        const photoHtml = b.photo
-          ? `<img src="${escapeHTML(b.photo)}" alt="${escapeHTML(b.name)}" loading="lazy">`
-          : `<span class="bucket-photo-emoji">🌍</span>`;
+        const coverClass = b.photo ? 'bucket-cover has-photo' : 'bucket-cover';
+        const coverStyle = b.photo ? ` style="background-image:url('${escapeHTML(b.photo)}')"` : '';
         return `
-          <div class="bucket-card" data-priority="${escapeHTML(b.priority)}">
-            <div class="bucket-photo">
-              ${photoHtml}
+          <article class="bucket-card" data-priority="${escapeHTML(b.priority)}">
+            <div class="${coverClass}"${coverStyle}>
               <span class="bucket-num">${escapeHTML(padded)}</span>
+              ${b.when ? `<span class="bucket-when">${escapeHTML(b.when)}</span>` : ''}
             </div>
             <div class="bucket-body">
               <h4>${escapeHTML(b.name)}</h4>
-              <p class="bucket-where">${escapeHTML(b.where)}</p>
-              <p class="bucket-why">${escapeHTML(b.why)}</p>
-              <span class="bucket-when">${escapeHTML(b.when)}</span>
+              ${b.where ? `<p class="bucket-where">📍 ${escapeHTML(b.where)}</p>` : ''}
+              ${b.why ? `<p class="bucket-why">${escapeHTML(b.why)}</p>` : ''}
+              <span class="bucket-more">Details →</span>
             </div>
-          </div>
+          </article>
         `;
       }).join('');
       grid.querySelectorAll<HTMLElement>('.bucket-card').forEach(el => {
@@ -6762,6 +6962,15 @@
       }
     }
 
+    // Ticker → company domain, used to pull brand logos for the picks cards.
+    const TICKER_DOMAIN: Record<string, string> = {
+      WMT: 'walmart.com', QCOM: 'qualcomm.com', RDDT: 'redditinc.com', INTC: 'intel.com',
+      GOOG: 'google.com', GOOGL: 'google.com', NVDA: 'nvidia.com', PLTR: 'palantir.com',
+      TSM: 'tsmc.com', ANET: 'arista.com', VOO: 'vanguard.com', AAPL: 'apple.com',
+      MSFT: 'microsoft.com', AMZN: 'amazon.com', META: 'meta.com', TSLA: 'tesla.com',
+      AMD: 'amd.com', AVGO: 'broadcom.com', MU: 'micron.com', ARM: 'arm.com'
+    };
+
     async function syncFinance() {
       const rows = await fetchSheet(FINANCE_SHEET_CSV);
       if (!rows.length) return;
@@ -6806,9 +7015,18 @@
         picksGrid.innerHTML = pickRows.map(r => {
           const m = pickLabel[r.conviction] || pickLabel.long;
           const photo = normalizePhotoUrl(r.photo || '');
-          const photoHtml = photo
-            ? `<img src="${escapeHTML(photo)}" alt="${escapeHTML(r.ticker || '')}" loading="lazy">`
-            : `<span class="pick-photo-fallback">${escapeHTML((r.ticker || '?').slice(0, 4))}</span>`;
+          const ticker = (r.ticker || '').toUpperCase();
+          const domain = TICKER_DOMAIN[ticker];
+          const fallback = `<span class="pick-photo-fallback">${escapeHTML((r.ticker || '?').slice(0, 4))}</span>`;
+          let photoHtml: string;
+          if (photo) {
+            photoHtml = `<img src="${escapeHTML(photo)}" alt="${escapeHTML(r.ticker || '')}" loading="lazy">`;
+          } else if (domain) {
+            photoHtml = `<img class="pick-logo" src="https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=128" alt="${escapeHTML(r.ticker || '')} logo" loading="lazy" onerror="this.remove();this.parentElement.querySelector('.pick-photo-fallback').hidden=false">`
+              + `<span class="pick-photo-fallback" hidden>${escapeHTML((r.ticker || '?').slice(0, 4))}</span>`;
+          } else {
+            photoHtml = fallback;
+          }
           return `
             <div class="pick-card">
               <div class="pick-photo">${photoHtml}</div>
@@ -6885,68 +7103,244 @@
       if (foot) foot.style.display = 'none';
     }
 
+    interface Plant {
+      category: string; name: string; variety: string; zone: string;
+      planted: string; status: string; note: string; photo: string;
+      light: string; water: string; soil: string; likes: string; care: string;
+    }
+    let plantsData: Plant[] = [];
+    let gardenSearch = '';
+    let gardenCat = 'all';
+
+    const GARDEN_CAT_EMOJI: Record<string, string> = {
+      'Fruit Tree': '🌳', 'Berry': '🫐', 'Vine': '🍇',
+      'Perennial': '🌿', 'Vegetable': '🥬', 'Herb': '🌿', 'Flower': '🌸'
+    };
+    const GARDEN_CAT_GRADIENT: Record<string, string> = {
+      'Fruit Tree': 'linear-gradient(150deg, #efb178, #d4814f)',
+      'Berry': 'linear-gradient(150deg, #8ea9d4, #6573a8)',
+      'Vine': 'linear-gradient(150deg, #93bd8c, #5f9c6f)',
+      'Perennial': 'linear-gradient(150deg, #b1a0d2, #87a06a)',
+      'Vegetable': 'linear-gradient(150deg, #a0c47c, #6c8f40)',
+      'Herb': 'linear-gradient(150deg, #a9c89b, #7ba36a)',
+      'Flower': 'linear-gradient(150deg, #f0a4c0, #e7bf6c)'
+    };
+    const GARDEN_PLANT_EMOJI: Record<string, string> = {
+      Apricot: '🍑', Peach: '🍑', Fig: '🪴', Cherry: '🍒', Pawpaw: '🥭',
+      Serviceberry: '🫐', Blueberry: '🫐', Raspberry: '🍓', Honeyberry: '🫐',
+      Kiwi: '🥝', Grape: '🍇', Rhubarb: '🌿', Asparagus: '🌿', Lavender: '💜',
+      Coneflower: '🌸', Arugula: '🥬', Broccoli: '🥦', Mustard: '🥬', Onion: '🧅',
+      Beet: '🥬', Cauliflower: '🥦', Kale: '🥬', Peas: '🫛', Tomato: '🍅',
+      Pepper: '🌶️', Eggplant: '🍆', Squash: '🥒', Corn: '🌽', Pumpkin: '🎃',
+      'Butternut Squash': '🎃', 'Pole Beans': '🫛', Basil: '🌿', Oregano: '🌿',
+      Thyme: '🌿', Rosemary: '🌿', Garlic: '🧄', Nasturtium: '🌼',
+      Calendula: '🌼', Zinnia: '🌸', Marigold: '🌼', Salvia: '💐', Eucalyptus: '🌿'
+    };
+
+    function plantEmoji(p: Plant): string {
+      return GARDEN_PLANT_EMOJI[p.name] || GARDEN_CAT_EMOJI[p.category] || '🌱';
+    }
+
+    function renderGarden() {
+      const grid = document.getElementById('gardenGrid');
+      const empty = document.getElementById('gardenEmpty');
+      if (!grid) return;
+      const q = gardenSearch.trim().toLowerCase();
+      const matches = plantsData
+        .map((p, i) => ({ p, i }))
+        .filter(({ p }) => gardenCat === 'all' || p.category === gardenCat)
+        .filter(({ p }) => !q || [p.name, p.variety, p.category, p.zone, p.light, p.water, p.soil, p.likes, p.care, p.note]
+          .join(' ').toLowerCase().includes(q));
+      grid.innerHTML = matches.map(({ p, i }) => {
+        const art = p.photo
+          ? `background-image:url('${escapeHTML(p.photo)}')`
+          : `background:${GARDEN_CAT_GRADIENT[p.category] || 'linear-gradient(150deg,#9ec27a,#6b8e3f)'}`;
+        const glyph = p.photo ? '' : `<span class="garden-card-emoji">${plantEmoji(p)}</span>`;
+        return `
+          <article class="garden-card s-${escapeHTML(p.status)}" data-plant-idx="${i}" role="button" tabindex="0">
+            <div class="garden-card-art" style="${art}">
+              ${glyph}
+              <span class="garden-card-badge ${escapeHTML(p.status)}">${escapeHTML(p.status)}</span>
+            </div>
+            <div class="garden-card-body">
+              <div class="garden-card-name">${escapeHTML(p.name)}</div>
+              ${p.variety ? `<div class="garden-card-variety">${escapeHTML(p.variety)}</div>` : ''}
+              <div class="garden-card-cat">${GARDEN_CAT_EMOJI[p.category] || '🌱'} ${escapeHTML(p.category)}</div>
+            </div>
+          </article>
+        `;
+      }).join('');
+      if (empty) empty.hidden = matches.length > 0;
+      grid.querySelectorAll<HTMLElement>('.garden-card').forEach(el => {
+        const open = () => {
+          const idx = Number(el.dataset.plantIdx);
+          if (!Number.isNaN(idx)) openPlantModal(idx);
+        };
+        el.addEventListener('click', open);
+        el.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+        });
+      });
+    }
+
+    function openPlantModal(idx: number) {
+      const p = plantsData[idx];
+      if (!p) return;
+      const overlay = document.getElementById('pmodalOverlay');
+      const photos = document.getElementById('pmodalPhotos');
+      const meta = document.getElementById('pmodalMeta');
+      const city = document.getElementById('pmodalCity');
+      const note = document.getElementById('pmodalNote');
+      const fields = document.getElementById('pmodalFields');
+      const grad = GARDEN_CAT_GRADIENT[p.category] || 'linear-gradient(150deg,#9ec27a,#6b8e3f)';
+      if (photos) {
+        photos.innerHTML = p.photo
+          ? `<div class="pmodal-photo" style="grid-column: 1 / -1"><img src="${escapeHTML(p.photo)}" alt="${escapeHTML(p.name)}"></div>`
+          : `<div class="pmodal-photo" style="grid-column: 1 / -1; font-size: 4.5rem; background:${grad}">${plantEmoji(p)}</div>`;
+      }
+      if (meta) meta.textContent = `${p.category} · ${p.status}`;
+      if (city) city.textContent = p.name;
+      if (note) note.textContent = p.variety ? `‘${p.variety}’` : '';
+      if (fields) {
+        const entries: Array<{ icon: string; label: string; value: string }> = [];
+        if (p.light) entries.push({ icon: '☀️', label: 'Light', value: p.light });
+        if (p.water) entries.push({ icon: '💧', label: 'Water', value: p.water });
+        if (p.soil) entries.push({ icon: '🪴', label: 'Soil', value: p.soil });
+        if (p.likes) entries.push({ icon: '💚', label: 'Likes', value: p.likes });
+        if (p.care) entries.push({ icon: '✂️', label: 'What to do', value: p.care });
+        const mine = [p.zone, p.planted ? `planted ${p.planted}` : ''].filter(Boolean).join(' · ');
+        if (mine || p.note) {
+          entries.push({ icon: '📍', label: 'In my garden', value: [mine, p.note].filter(Boolean).join(' — ') });
+        }
+        fields.innerHTML = entries.map(e => `
+          <div class="pmodal-field">
+            <div class="pmodal-field-label">${e.icon} ${e.label}</div>
+            <div class="pmodal-field-value">${escapeHTML(e.value)}</div>
+          </div>
+        `).join('');
+      }
+      overlay?.classList.add('open');
+    }
+
+    function renderCalendar() {
+      const cal = document.getElementById('gardenCal');
+      if (!cal || !plantsData.length) return;
+      const monthIdx: Record<string, number> = {
+        january: 1, february: 2, march: 3, april: 4, may: 5, june: 6,
+        july: 7, august: 8, september: 9, october: 10, november: 11, december: 12
+      };
+      const coolVeg = ['Arugula', 'Broccoli', 'Mustard', 'Onion', 'Beet', 'Cauliflower', 'Kale', 'Peas'];
+      function season(p: Plant): { s: number; e: number; phase: string } {
+        const start = monthIdx[(p.planted || '').toLowerCase()] || 4;
+        switch (p.category) {
+          case 'Fruit Tree': return { s: 3, e: 11, phase: 'Leaf · blossom · fruit' };
+          case 'Berry': return { s: 3, e: 9, phase: 'Leaf out · flower · berries' };
+          case 'Vine': return { s: 4, e: 10, phase: 'Climb · flower · fruit' };
+          case 'Perennial': return { s: 2, e: 12, phase: 'Comes back every year' };
+          case 'Herb': return { s: start, e: 10, phase: 'Plant · grow · keep snipping' };
+          case 'Flower': return { s: start, e: 10, phase: 'Plant · grow · bloom' };
+          case 'Vegetable':
+            if (coolVeg.includes(p.name)) {
+              return { s: start, e: p.name === 'Kale' ? 11 : 7, phase: 'Sow · grow · cool-season harvest' };
+            }
+            return { s: start, e: 10, phase: 'Transplant · flower · harvest' };
+          default: return { s: start, e: 10, phase: 'Grow · harvest' };
+        }
+      }
+      const monthLetters = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
+      const now = new Date().getMonth() + 1;
+      const catOrder = ['Fruit Tree', 'Berry', 'Vine', 'Perennial', 'Vegetable', 'Herb', 'Flower'];
+      const seen = new Set<string>();
+      const unique: Plant[] = [];
+      plantsData.forEach(p => { if (!seen.has(p.name)) { seen.add(p.name); unique.push(p); } });
+
+      let html = `<div class="cal-row cal-head"><div class="cal-label"></div>` +
+        monthLetters.map((m, i) => `<div class="cal-month${i + 1 === now ? ' current' : ''}">${m}</div>`).join('') +
+        `</div>`;
+      catOrder.forEach(cat => {
+        const inCat = unique.filter(p => p.category === cat).sort((a, b) => a.name.localeCompare(b.name));
+        if (!inCat.length) return;
+        html += `<div class="cal-group">${GARDEN_CAT_EMOJI[cat] || '🌱'} ${escapeHTML(cat)}</div>`;
+        inCat.forEach(p => {
+          const { s, e, phase } = season(p);
+          html += `<div class="cal-row">
+            <div class="cal-label">${plantEmoji(p)} ${escapeHTML(p.name)}</div>
+            <div class="cal-bar ${escapeHTML(p.status)}" style="grid-column: ${s + 1} / ${e + 2}">${escapeHTML(phase)}</div>
+          </div>`;
+        });
+      });
+      cal.innerHTML = html;
+    }
+
     async function syncGarden() {
       const rows = await fetchSheet(GARDEN_SHEET_CSV);
       if (!rows.length) return;
-      const grid = document.getElementById('gardenGrid');
-      if (!grid) return;
-      const catEmoji: Record<string, string> = {
-        'Fruit Tree': '🌳', 'Berry': '🫐', 'Vine': '🍇',
-        'Perennial': '🌿', 'Vegetable': '🥬', 'Herb': '🌱', 'Flower': '🌸'
-      };
+      plantsData = rows.map(r => ({
+        category: r.category || 'Other',
+        name: r.name || '',
+        variety: r.variety || '',
+        zone: r.zone || '',
+        planted: r.planted || '',
+        status: (r.status || 'growing').toLowerCase(),
+        note: r.note || '',
+        photo: normalizePhotoUrl(r.photo || ''),
+        light: r.light || '',
+        water: r.water || '',
+        soil: r.soil || '',
+        likes: r.likes || '',
+        care: r.care || ''
+      })).sort((a, b) => a.name.localeCompare(b.name) || a.variety.localeCompare(b.variety));
+
       const catOrder = ['Fruit Tree', 'Berry', 'Vine', 'Perennial', 'Vegetable', 'Herb', 'Flower'];
-      const groups: Record<string, Record<string, string>[]> = {};
-      rows.forEach(r => {
-        const c = r.category || 'Other';
-        (groups[c] ||= []).push(r);
+      const catCounts: Record<string, number> = {};
+      const statusCounts: Record<string, number> = {};
+      plantsData.forEach(p => {
+        catCounts[p.category] = (catCounts[p.category] || 0) + 1;
+        statusCounts[p.status] = (statusCounts[p.status] || 0) + 1;
       });
       const cats = [
-        ...catOrder.filter(c => groups[c]),
-        ...Object.keys(groups).filter(c => !catOrder.includes(c))
+        ...catOrder.filter(c => catCounts[c]),
+        ...Object.keys(catCounts).filter(c => !catOrder.includes(c))
       ];
+
       const summary = document.getElementById('gardenSummary');
       if (summary) {
-        const statusCounts: Record<string, number> = {};
-        rows.forEach(r => {
-          const s = (r.status || 'growing').toLowerCase();
-          statusCounts[s] = (statusCounts[s] || 0) + 1;
-        });
         const statusOrder = ['seedling', 'growing', 'flowering', 'harvesting', 'established', 'dormant', 'died'];
         const legend = Object.keys(statusCounts)
           .sort((a, b) => statusOrder.indexOf(a) - statusOrder.indexOf(b))
           .map(s => `<span><i class="plant-dot ${escapeHTML(s)}"></i>${escapeHTML(s)} ${statusCounts[s]}</span>`)
           .join('');
         summary.innerHTML = `
-          <span class="g-stat"><strong>${rows.length}</strong> plants</span>
+          <span class="g-stat"><strong>${plantsData.length}</strong> plants</span>
           <span class="g-stat"><strong>${cats.length}</strong> categories</span>
           <div class="g-legend">${legend}</div>
         `;
         summary.hidden = false;
       }
-      grid.innerHTML = cats.map(cat => {
-        const items = groups[cat];
-        const label = cat.endsWith('s') ? cat : cat + 's';
-        return `
-          <div class="garden-cat">
-            <h3 class="garden-cat-title">${catEmoji[cat] || '🌱'} ${escapeHTML(label)} <span class="garden-cat-count">${items.length}</span></h3>
-            <div class="garden-plants">
-              ${items.map(p => {
-                const status = (p.status || 'growing').toLowerCase();
-                return `
-                  <div class="plant ${status === 'died' ? 'is-died' : ''}">
-                    <span class="plant-dot ${escapeHTML(status)}" title="${escapeHTML(status)}"></span>
-                    <div class="plant-info">
-                      <span class="plant-n">${escapeHTML(p.name || '')}</span>
-                      ${p.variety ? `<span class="plant-v">${escapeHTML(p.variety)}</span>` : ''}
-                    </div>
-                    <span class="plant-meta">${escapeHTML([p.planted, p.zone].filter(Boolean).join(' · '))}</span>
-                  </div>
-                `;
-              }).join('')}
-            </div>
-          </div>
-        `;
-      }).join('');
+
+      const filters = document.getElementById('gardenFilters');
+      if (filters) {
+        filters.innerHTML = [
+          `<button class="garden-filter${gardenCat === 'all' ? ' active' : ''}" data-cat="all">All ${plantsData.length}</button>`,
+          ...cats.map(c => `<button class="garden-filter${gardenCat === c ? ' active' : ''}" data-cat="${escapeHTML(c)}">${GARDEN_CAT_EMOJI[c] || '🌱'} ${escapeHTML(c)} ${catCounts[c]}</button>`)
+        ].join('');
+        filters.querySelectorAll<HTMLElement>('.garden-filter').forEach(btn => {
+          btn.addEventListener('click', () => {
+            gardenCat = btn.dataset.cat || 'all';
+            filters.querySelectorAll('.garden-filter').forEach(b => b.classList.toggle('active', b === btn));
+            renderGarden();
+          });
+        });
+      }
+
+      const search = document.getElementById('gardenSearch') as HTMLInputElement | null;
+      if (search) search.addEventListener('input', () => { gardenSearch = search.value; renderGarden(); });
+
+      const toolbar = document.getElementById('gardenToolbar');
+      if (toolbar) toolbar.hidden = false;
+
+      renderGarden();
+      renderCalendar();
     }
 
     interface RoutineItem {
@@ -7230,7 +7624,7 @@
         songs: ['t2'], projects: ['tm-go'] }
     ];
 
-    const tracksData: Track[] = [
+    let tracksData: Track[] = [
       { id: 't1', title: 'Mountain Time', bpm: 128, musicalKey: 'Am', tags: ['synthwave', 'released'], placeId: 'denver', status: 'released' },
       { id: 't2', title: 'Kitchen Table Beats', bpm: 95, musicalKey: 'Cm', tags: ['lo-fi', 'sketch'], placeId: 'south-bend', status: 'sketch' },
       { id: 't3', title: 'Hyperdimensional', bpm: 140, musicalKey: 'Em', tags: ['ambient', 'released'], placeId: 'tucson', status: 'released' },
@@ -7598,6 +7992,14 @@
       });
     }
 
+    // Deterministic gradient from a string seed — used for song cover art.
+    function gradientFor(seed: string): string {
+      let h = 0;
+      for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) % 360;
+      const h2 = (h + 48) % 360;
+      return `linear-gradient(135deg, hsl(${h}, 62%, 56%), hsl(${h2}, 68%, 42%))`;
+    }
+
     function renderTracks() {
       const list = document.getElementById('tracksList');
       if (!list) return;
@@ -7606,29 +8008,35 @@
         : tracksData.filter(t => t.tags.includes(activeFilter));
       list.innerHTML = filtered.map((t, i) => {
         const place = t.placeId ? placesData.find(p => p.id === t.placeId) : null;
-        const placeTag = place ? `<span class="track-meta-tag place">📍 ${escapeHTML(place.city.split(',')[0])}</span>` : '';
-        const bpmTag = t.bpm ? `<span class="track-meta-tag">${t.bpm} BPM</span>` : '';
-        const keyTag = t.musicalKey ? `<span class="track-meta-tag">${escapeHTML(t.musicalKey)}</span>` : '';
-        const tagPills = t.tags.map(tag => `<span class="track-meta-tag">${escapeHTML(tag)}</span>`).join('');
-        const status = t.status ? `<span class="track-status">${escapeHTML(t.status)}</span>` : '';
-        const scBtn = t.soundcloudUrl ? `<button class="track-play" data-toggle="sc" data-track="${escapeHTML(t.id)}" aria-label="Play SoundCloud">▶</button>` : '';
-        const ytBtn = t.youtubeId ? `<button class="track-play yt" data-toggle="yt" data-track="${escapeHTML(t.id)}" aria-label="Watch video">📺</button>` : '';
+        const artStyle = t.coverArt
+          ? `background-image:url('${escapeHTML(t.coverArt)}')`
+          : `background:${gradientFor(t.id + t.title)}`;
+        const artGlyph = t.coverArt ? '' : `<span class="song-art-key">${escapeHTML(t.musicalKey || '♪')}</span>`;
+        const hasMedia = t.youtubeId || t.soundcloudUrl;
+        const playBtn = hasMedia
+          ? `<button class="song-play" data-toggle="${t.youtubeId ? 'yt' : 'sc'}" data-track="${escapeHTML(t.id)}" aria-label="Play">${t.youtubeId ? '📺' : '▶'}</button>`
+          : '';
+        const stats = [
+          t.bpm ? `${t.bpm} BPM` : '',
+          t.musicalKey ? escapeHTML(t.musicalKey) : ''
+        ].filter(Boolean).map(s => `<span>${s}</span>`).join('');
+        const placeTag = place ? `<span class="song-tag place">📍 ${escapeHTML(place.city.split(',')[0])}</span>` : '';
+        const tagPills = t.tags.map(tag => `<span class="song-tag">${escapeHTML(tag)}</span>`).join('');
         return `
-          <div class="track-row-wrap" data-track-id="${escapeHTML(t.id)}">
-            <div class="track-row">
-              <div class="track-num">${String(i + 1).padStart(2, '0')}</div>
-              <div class="track-main">
-                <div class="track-title">${escapeHTML(t.title)}</div>
-                <div class="track-meta">${bpmTag}${keyTag}${placeTag}${tagPills}</div>
-              </div>
-              <div class="track-actions">
-                ${status}
-                ${scBtn}
-                ${ytBtn}
-              </div>
+          <article class="track-row-wrap" data-track-id="${escapeHTML(t.id)}">
+            <div class="song-art" style="${artStyle}">
+              <span class="song-num">${String(i + 1).padStart(2, '0')}</span>
+              ${artGlyph}
+              ${playBtn}
+            </div>
+            <div class="song-body">
+              ${t.status ? `<span class="song-status">${escapeHTML(t.status)}</span>` : ''}
+              <div class="song-title">${escapeHTML(t.title)}</div>
+              ${stats ? `<div class="song-stats">${stats}</div>` : ''}
+              ${placeTag || tagPills ? `<div class="song-tags">${placeTag}${tagPills}</div>` : ''}
             </div>
             <div class="track-embed" data-embed-type=""></div>
-          </div>
+          </article>
         `;
       }).join('');
 
