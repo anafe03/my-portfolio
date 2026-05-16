@@ -1,0 +1,7 @@
+[
+  { "id": "t1", "title": "Mountain Time", "bpm": "128", "musicalKey": "Am", "tags": "synthwave,released", "placeId": "denver", "soundcloudUrl": "", "youtubeId": "", "status": "released", "coverArt": "" },
+  { "id": "t2", "title": "Kitchen Table Beats", "bpm": "95", "musicalKey": "Cm", "tags": "lo-fi,sketch", "placeId": "south-bend", "soundcloudUrl": "", "youtubeId": "", "status": "sketch", "coverArt": "" },
+  { "id": "t3", "title": "Hyperdimensional", "bpm": "140", "musicalKey": "Em", "tags": "ambient,released", "placeId": "tucson", "soundcloudUrl": "", "youtubeId": "", "status": "released", "coverArt": "" },
+  { "id": "t4", "title": "After Hours", "bpm": "110", "musicalKey": "Gm", "tags": "house,released", "placeId": "", "soundcloudUrl": "", "youtubeId": "", "status": "released", "coverArt": "" },
+  { "id": "t5", "title": "Trail Run", "bpm": "174", "musicalKey": "F#m", "tags": "dnb,released", "placeId": "", "soundcloudUrl": "", "youtubeId": "", "status": "released", "coverArt": "" }
+]

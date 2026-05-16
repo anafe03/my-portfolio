@@ -1,0 +1,13 @@
+[
+  { "type": "portfolio", "ticker": "VOO", "alloc": "30%", "entry": "2022", "conviction": "core", "headline": "Index core", "thesis": "The benchmark we're trying to beat — partially by owning it.", "photo": "" },
+  { "type": "portfolio", "ticker": "NVDA", "alloc": "22%", "entry": "2024", "conviction": "long", "headline": "Highest-conviction single-name", "thesis": "Every agent I ship is paying rent to Jensen.", "photo": "" },
+  { "type": "portfolio", "ticker": "ANET", "alloc": "12%", "entry": "2025", "conviction": "long", "headline": "AI capex sleeper", "thesis": "Quiet networking play under the AI capex tsunami. Hyperscaler ramp is the catalyst.", "photo": "" },
+  { "type": "portfolio", "ticker": "TSM", "alloc": "10%", "entry": "2025", "conviction": "long", "headline": "Semis diversification", "thesis": "Beyond NVDA. Geopolitical risk is the discount.", "photo": "" },
+  { "type": "portfolio", "ticker": "PLTR", "alloc": "8%", "entry": "2025", "conviction": "long", "headline": "Sticky gov revenue", "thesis": "Government revenue is stickier than the bears underwrite. Trimmed on rips.", "photo": "" },
+  { "type": "portfolio", "ticker": "CASH", "alloc": "18%", "entry": "Always", "conviction": "watch", "headline": "Dry powder", "thesis": "T-bills paying real yield. Optionality on the next drawdown.", "photo": "" },
+  { "type": "pick", "ticker": "WMT", "alloc": "", "entry": "", "conviction": "long", "headline": "Same-day pickup + parking-lot sleeps", "thesis": "Nothing beats the convenience of same-day pickup. Plus you can sleep in their parking lots.", "photo": "" },
+  { "type": "pick", "ticker": "QCOM", "alloc": "", "entry": "", "conviction": "long", "headline": "They make chips and aren't Nvidia", "thesis": "Picks and shovels of the AI build-out without the trillion-dollar entry price.", "photo": "" },
+  { "type": "pick", "ticker": "RDDT", "alloc": "", "entry": "", "conviction": "watch", "headline": "Bots and social engineering", "thesis": "The training data and the sentiment factory all in one. Risk: also the bots and social engineering.", "photo": "" },
+  { "type": "pick", "ticker": "INTC", "alloc": "", "entry": "", "conviction": "long", "headline": "Government stake in the oldest player", "thesis": "ARMs-race funding. The US needs at least one domestic foundry actually running silicon.", "photo": "" },
+  { "type": "pick", "ticker": "GOOG", "alloc": "", "entry": "", "conviction": "long", "headline": "Search, ChatGPT, or Ask Jeeves", "thesis": "What's the difference. Google owns search, cloud, and most of the consumer surface (Drive, Email, Maps, YouTube).", "photo": "" }
+]

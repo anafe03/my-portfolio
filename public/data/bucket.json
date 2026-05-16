@@ -1,0 +1,11 @@
+[
+  { "priority": "1", "name": "Africa Safari Adventure", "where": "East Africa", "why": "Guide-led traverse — big cats and bigger horizons.", "when": "Someday", "photo": "", "details": "" },
+  { "priority": "2", "name": "Motorcycle South America", "where": "Argentina · Chile", "why": "Ride the Andes spine top to bottom. Pampas, Patagonia, Atacama. The classic.", "when": "Target: 2027", "photo": "", "details": "" },
+  { "priority": "3", "name": "Amazon Permaculture", "where": "Brazil · Peru", "why": "Live on a permaculture farm in the jungle for a season. Learn what canopy actually means.", "when": "Target: 2027", "photo": "", "details": "" },
+  { "priority": "4", "name": "The Stans", "where": "Central Asia", "why": "Kyrgyzstan, Uzbekistan, Tajikistan. Silk Road on horseback or share-taxi.", "when": "Someday", "photo": "", "details": "" },
+  { "priority": "5", "name": "Galápagos", "where": "Ecuador", "why": "Where Darwin had the thought. Boobies, iguanas, hammerheads.", "when": "Target: 2028", "photo": "", "details": "" },
+  { "priority": "6", "name": "New Zealand Hiking", "where": "New Zealand", "why": "Routeburn + Milford Tracks. Land of the Long White Cloud.", "when": "Target: 2027", "photo": "", "details": "" },
+  { "priority": "7", "name": "Australia Mini-Van Living", "where": "Australia", "why": "East coast in a Wicked van. Bondi to the Whitsundays.", "when": "Target: 2028", "photo": "", "details": "" },
+  { "priority": "8", "name": "Bali", "where": "Indonesia", "why": "To escape my life and eat fruit.", "when": "Anytime", "photo": "", "details": "" },
+  { "priority": "9", "name": "Costa Rica", "where": "Costa Rica", "why": "Same deal. Pura vida.", "when": "Anytime", "photo": "", "details": "" }
+]

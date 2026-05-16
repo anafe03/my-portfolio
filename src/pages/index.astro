@@ -6222,7 +6222,9 @@
     // Live link to the Google Sheet "Austin Nafe — Travel Places".
     // Edits to the sheet appear on the site within seconds (no publish-to-web cache).
     // Requires the sheet to be shared "Anyone with the link → Viewer".
-    const PLACES_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/15eRZCGCsDzij2rwgwFNinL5Jp6rWaOXwLuhFnS1XiTA/gviz/tq?tqx=out:csv';
+    // Data lives in /public/data/*.json — versioned in the repo, no external deps.
+    // Places stays in-code (the hardcoded placesData array below is the source).
+    const PLACES_SHEET_CSV = '';
 
     function parseCSVLine(line: string): string[] {
       const out: string[] = [];
@@ -6294,24 +6296,29 @@
     }
 
     // Other data-source sheets (same live-link pattern; require "Anyone with link → Viewer")
-    const FESTS_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/1y43xMQ6rw2Xl65bN1tivP5qVqlTYgyxWfLa1hmqFgeA/gviz/tq?tqx=out:csv';
-    const PARKS_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/1edRZ9zCUnNHbr35_zaeSsFM5bSWl6h_Z6lLPTDNGw3M/gviz/tq?tqx=out:csv';
-    const BUCKET_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/1v9Oy0OFm_1zSEDABx7LG6SsJxP2s_5BPvW7FskOEqm8/gviz/tq?tqx=out:csv';
-    const FINANCE_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/1q83a0z3e8fmp31n9TXGbLn18sIzaytC1XwRm-K6DjSc/gviz/tq?tqx=out:csv';
-    const ROUTINES_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/1o6R_to7wVQAndivz3In-eirSRvWI6-enMbG-8BbO98o/gviz/tq?tqx=out:csv';
-    const NOTEBOOK_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/1DaOwzQCLs8GkE0U6zqUb1rfI-AmZLA84ooYTggGdPA0/gviz/tq?tqx=out:csv';
-    const PHOTOS_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/1uGSQM-TjzktzoqBhSsgeh7peNZJNlkkKMqLnTnIzzO4/gviz/tq?tqx=out:csv';
-    const TRACKS_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/11LrsaEV5jS6V8MUJLyHt1pr5pplqXy1Aa0-wEQSS2mI/gviz/tq?tqx=out:csv';
-    const GARDEN_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/1TCxN-787xienbvq4028u6IgBMaukw0QRHAGojS2j8OA/gviz/tq?tqx=out:csv';
+    const FESTS_SHEET_CSV = '/data/festivals.json';
+    const PARKS_SHEET_CSV = '/data/parks.json';
+    const BUCKET_SHEET_CSV = '/data/bucket.json';
+    const FINANCE_SHEET_CSV = '/data/finance.json';
+    const ROUTINES_SHEET_CSV = '/data/routines.json';
+    const NOTEBOOK_SHEET_CSV = '/data/notebook.json';
+    const PHOTOS_SHEET_CSV = '/data/photos.json';
+    const TRACKS_SHEET_CSV = '/data/tracks.json';
+    const GARDEN_SHEET_CSV = '/data/garden.json';
 
     async function fetchSheet(url: string): Promise<Record<string, string>[]> {
       if (!url) return [];
       try {
         const res = await fetch(url, { cache: 'no-store' });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        // Local JSON data files; legacy CSV path kept for any remaining sheet URLs.
+        if (url.endsWith('.json')) {
+          const data = await res.json();
+          return Array.isArray(data) ? data : [];
+        }
         return parseCSV(await res.text());
       } catch (e) {
-        console.warn('[sheet] fetch failed:', url, e);
+        console.warn('[data] fetch failed:', url, e);
         return [];
       }
     }
