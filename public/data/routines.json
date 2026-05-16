@@ -1,8 +1,115 @@
 [
-  { "name": "Morning Spine Wake-Up", "duration": "10 min", "target": "Spine + shoulders", "level": "Beginner", "note": "Cat-cow into thread-the-needle into low cobra. Five rounds, slow.", "link": "" },
-  { "name": "Hip Opener Sequence", "duration": "20 min", "target": "Hips + low back", "level": "All levels", "note": "Pigeon, lizard, half-frog. Hold longer than feels comfortable.", "link": "" },
-  { "name": "Post-Run Restore", "duration": "15 min", "target": "Hamstrings + IT band", "level": "All levels", "note": "Long forward folds, supine twist, legs-up-the-wall.", "link": "" },
-  { "name": "Pre-Sleep Yin", "duration": "30 min", "target": "Whole-body downregulation", "level": "All levels", "note": "Five poses, three minutes each. Lights out within 20 of finishing.", "link": "" },
-  { "name": "Standing Wake-Up (No Mat)", "duration": "5 min", "target": "Travel-friendly", "level": "Beginner", "note": "Done it on hotel floors and gas-station parking lots. Works.", "link": "" },
-  { "name": "Shoulder Reset", "duration": "12 min", "target": "Upper back + rotator cuff", "level": "All levels", "note": "Banded pulls, prone Y/T/W, gentle thoracic openers.", "link": "" }
+  {
+    "name": "Morning Spine Wake-Up",
+    "duration": "10 min",
+    "target": "Spine + shoulders",
+    "level": "Beginner",
+    "note": "Cat-cow into thread-the-needle into low cobra. Five rounds, slow.",
+    "description": "Ten gentle minutes to take the night out of your spine. Move slowly — the point is to feel each segment wake up, not to stretch hard.",
+    "youtubeId": "",
+    "link": "",
+    "steps": [
+      "Child's Pose · 1 min — settle and find the breath",
+      "Cat–Cow · 8 rounds — move with the breath",
+      "Thread the Needle · 1 min each side",
+      "Low Cobra · 5 rounds — lift only as far as is easy",
+      "Downward Dog · 1 min — pedal the heels out",
+      "Standing Forward Fold · 1 min — soft knees",
+      "Mountain Pose · 5 breaths — finish tall"
+    ]
+  },
+  {
+    "name": "Hip Opener Sequence",
+    "duration": "20 min",
+    "target": "Hips + low back",
+    "level": "All levels",
+    "note": "Pigeon, lizard, half-frog. Hold longer than feels comfortable.",
+    "description": "Twenty minutes to undo a desk. These are longer holds — let the tissue release on its own time instead of forcing it.",
+    "youtubeId": "",
+    "link": "",
+    "steps": [
+      "Low Lunge · 90 sec each side",
+      "Lizard Pose · 2 min each side",
+      "Pigeon Pose · 3 min each side",
+      "Half-Frog · 2 min each side",
+      "Reclined Figure-4 · 2 min each side",
+      "Happy Baby · 90 sec",
+      "Supine Twist · 90 sec each side"
+    ]
+  },
+  {
+    "name": "Post-Run Restore",
+    "duration": "15 min",
+    "target": "Hamstrings + IT band",
+    "level": "All levels",
+    "note": "Long forward folds, supine twist, legs-up-the-wall.",
+    "description": "Fifteen minutes to cash the check your legs just wrote. Best done within an hour of finishing the run.",
+    "youtubeId": "",
+    "link": "",
+    "steps": [
+      "Standing Forward Fold · 2 min — let the hamstrings lengthen",
+      "Half-Split (Ardha Hanumanasana) · 90 sec each side",
+      "Low Lunge with quad reach · 90 sec each side",
+      "Seated Forward Fold · 2 min",
+      "Reclined IT-band stretch · 90 sec each side",
+      "Supine Twist · 90 sec each side",
+      "Legs Up the Wall · 3 min"
+    ]
+  },
+  {
+    "name": "Pre-Sleep Yin",
+    "duration": "30 min",
+    "target": "Whole-body downregulation",
+    "level": "All levels",
+    "note": "Five poses, three minutes each. Lights out within 20 of finishing.",
+    "description": "Long, passive holds to drop the nervous system into park. Dim the lights, breathe slow, and aim to be in bed within twenty minutes of finishing.",
+    "youtubeId": "",
+    "link": "",
+    "steps": [
+      "Butterfly Fold · 4 min",
+      "Caterpillar (seated forward fold) · 4 min",
+      "Sphinx Pose · 4 min",
+      "Reclined Twist · 3 min each side",
+      "Legs Up the Wall · 5 min",
+      "Savasana · 5 min — lights out after"
+    ]
+  },
+  {
+    "name": "Standing Wake-Up (No Mat)",
+    "duration": "5 min",
+    "target": "Travel-friendly",
+    "level": "Beginner",
+    "note": "Done it on hotel floors and gas-station parking lots. Works.",
+    "description": "Five minutes, no mat, no floor required. Built for hotel rooms and parking lots — anywhere you can stand.",
+    "youtubeId": "",
+    "link": "",
+    "steps": [
+      "Standing roll-down · 5 rounds",
+      "Standing Cat–Cow (hands on thighs) · 8 rounds",
+      "Standing side bend · 30 sec each side",
+      "Standing quad stretch · 30 sec each side",
+      "Standing Figure-4 · 30 sec each side",
+      "Standing Forward Fold · 1 min",
+      "Sky reach + big breath · 5 rounds"
+    ]
+  },
+  {
+    "name": "Shoulder Reset",
+    "duration": "12 min",
+    "target": "Upper back + rotator cuff",
+    "level": "All levels",
+    "note": "Banded pulls, prone Y/T/W, gentle thoracic openers.",
+    "description": "Twelve minutes to undo rounded shoulders and keep the rotator cuff honest. Light band, slow tempo, no momentum.",
+    "youtubeId": "",
+    "link": "",
+    "steps": [
+      "Banded pull-apart · 2 × 15",
+      "Prone Y raise · 2 × 10",
+      "Prone T raise · 2 × 10",
+      "Prone W raise · 2 × 10",
+      "Thread the Needle · 1 min each side",
+      "Thoracic extension over a roller · 90 sec",
+      "Doorway pec stretch · 1 min each side"
+    ]
+  }
 ]

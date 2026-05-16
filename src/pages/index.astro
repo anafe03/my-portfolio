@@ -1595,6 +1595,54 @@
       opacity: 1;
     }
 
+    /* Routine sequence — the mapped-out walkthrough in the modal */
+    .rseq {
+      list-style: none;
+      margin: 0.25rem 0 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .rseq-item {
+      display: flex;
+      gap: 0.7rem;
+      align-items: flex-start;
+    }
+
+    .rseq-n {
+      flex-shrink: 0;
+      width: 22px;
+      height: 22px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 800;
+      color: #fff;
+      background: var(--forest);
+      border-radius: 50%;
+    }
+
+    .rseq-body {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.35;
+    }
+
+    .rseq-pose {
+      font-weight: 700;
+      color: var(--text);
+      font-size: 0.93rem;
+    }
+
+    .rseq-cue {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+    }
+
     .routine-duration {
       display: inline-block;
       font-family: var(--font-mono);
@@ -2585,13 +2633,32 @@
       background-position: center;
     }
 
+    .garden-card-art::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(0, 0, 0, 0.16));
+      pointer-events: none;
+    }
+
     .garden-card-emoji {
-      font-size: 3.1rem;
-      filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.22));
+      position: relative;
+      z-index: 1;
+      width: 78px;
+      height: 78px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      background: rgba(255, 255, 255, 0.26);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: 50%;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
     }
 
     .garden-card-badge {
       position: absolute;
+      z-index: 1;
       top: 0.55rem;
       right: 0.55rem;
       font-size: 0.53rem;
@@ -2601,6 +2668,7 @@
       padding: 0.2rem 0.5rem;
       border-radius: 999px;
       color: #fff;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
     }
 
     .garden-card-badge.growing     { background: #5d7d1e; }
@@ -2635,10 +2703,19 @@
 
     .garden-card-cat {
       margin-top: auto;
-      padding-top: 0.45rem;
-      font-size: 0.65rem;
+      padding-top: 0.55rem;
+    }
+
+    .garden-card-cat span {
+      display: inline-block;
+      font-size: 0.62rem;
       font-family: var(--font-mono);
+      font-weight: 700;
       color: var(--text-dim);
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.16rem 0.55rem;
     }
 
     .garden-footnote {
@@ -7156,16 +7233,19 @@
           ? `background-image:url('${escapeHTML(p.photo)}')`
           : `background:${GARDEN_CAT_GRADIENT[p.category] || 'linear-gradient(150deg,#9ec27a,#6b8e3f)'}`;
         const glyph = p.photo ? '' : `<span class="garden-card-emoji">${plantEmoji(p)}</span>`;
+        const badge = p.status && p.status !== 'growing'
+          ? `<span class="garden-card-badge ${escapeHTML(p.status)}">${escapeHTML(p.status)}</span>`
+          : '';
         return `
           <article class="garden-card s-${escapeHTML(p.status)}" data-plant-idx="${i}" role="button" tabindex="0">
             <div class="garden-card-art" style="${art}">
               ${glyph}
-              <span class="garden-card-badge ${escapeHTML(p.status)}">${escapeHTML(p.status)}</span>
+              ${badge}
             </div>
             <div class="garden-card-body">
               <div class="garden-card-name">${escapeHTML(p.name)}</div>
               ${p.variety ? `<div class="garden-card-variety">${escapeHTML(p.variety)}</div>` : ''}
-              <div class="garden-card-cat">${GARDEN_CAT_EMOJI[p.category] || '🌱'} ${escapeHTML(p.category)}</div>
+              <div class="garden-card-cat"><span>${GARDEN_CAT_EMOJI[p.category] || '🌱'} ${escapeHTML(p.category)}</span></div>
             </div>
           </article>
         `;
@@ -7198,7 +7278,9 @@
           ? `<div class="pmodal-photo" style="grid-column: 1 / -1"><img src="${escapeHTML(p.photo)}" alt="${escapeHTML(p.name)}"></div>`
           : `<div class="pmodal-photo" style="grid-column: 1 / -1; font-size: 4.5rem; background:${grad}">${plantEmoji(p)}</div>`;
       }
-      if (meta) meta.textContent = `${p.category} · ${p.status}`;
+      if (meta) meta.textContent = p.status && p.status !== 'growing'
+        ? `${p.category} · ${p.status}`
+        : p.category;
       if (city) city.textContent = p.name;
       if (note) note.textContent = p.variety ? `‘${p.variety}’` : '';
       if (fields) {
@@ -7351,7 +7433,8 @@
       note: string;
       link: string;
       description: string;
-      steps: string;
+      youtubeId: string;
+      steps: string[];
     }
     let routinesData: RoutineItem[] = [];
 
@@ -7360,16 +7443,23 @@
       if (!rows.length) return;
       const grid = document.querySelector('#routines .routines-grid');
       if (!grid) return;
-      routinesData = rows.map(r => ({
-        name: r.name || '',
-        duration: r.duration || '',
-        target: r.target || '',
-        level: r.level || '',
-        note: r.note || '',
-        link: r.link || '',
-        description: r.description || '',
-        steps: r.steps || ''
-      }));
+      routinesData = rows.map(r => {
+        const raw = r as Record<string, unknown>;
+        const steps = Array.isArray(raw.steps)
+          ? (raw.steps as string[])
+          : (typeof raw.steps === 'string' && raw.steps ? raw.steps.split(/\s*[|\n]\s*/).filter(Boolean) : []);
+        return {
+          name: r.name || '',
+          duration: r.duration || '',
+          target: r.target || '',
+          level: r.level || '',
+          note: r.note || '',
+          link: r.link || '',
+          description: r.description || '',
+          youtubeId: r.youtubeId || '',
+          steps
+        };
+      });
       grid.innerHTML = routinesData.map((r, i) => `
         <div class="routine-card" data-routine-idx="${i}" role="button" tabindex="0">
           <div class="routine-duration">${escapeHTML(r.duration)}</div>
@@ -7401,22 +7491,40 @@
       const note = document.getElementById('pmodalNote');
       const fields = document.getElementById('pmodalFields');
 
-      if (photos) photos.innerHTML = `<div class="pmodal-photo" style="grid-column: 1 / -1; font-size: 4rem;">🧘</div>`;
+      if (photos) {
+        photos.innerHTML = item.youtubeId
+          ? `<div class="pmodal-photo" style="grid-column: 1 / -1; padding: 0;"><iframe src="https://www.youtube.com/embed/${encodeURIComponent(item.youtubeId)}" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width:100%;aspect-ratio:16/9;border:0;display:block;border-radius:12px;"></iframe></div>`
+          : `<div class="pmodal-photo" style="grid-column: 1 / -1; font-size: 4rem;">🧘</div>`;
+      }
       if (meta) meta.textContent = ['Routine', item.duration, item.level].filter(Boolean).join(' · ');
       if (city) city.textContent = item.name;
       if (note) note.textContent = item.description || item.note;
       if (fields) {
-        const entries: Array<{ icon: string; label: string; html: string }> = [];
+        const entries: Array<{ icon: string; label: string; html: string; full?: boolean }> = [];
         if (item.target) entries.push({ icon: '🎯', label: 'Focus', html: escapeHTML(item.target) });
         if (item.level) entries.push({ icon: '📈', label: 'Level', html: escapeHTML(item.level) });
         if (item.duration) entries.push({ icon: '⏱', label: 'Duration', html: escapeHTML(item.duration) });
-        if (item.steps) entries.push({ icon: '🧩', label: 'Sequence', html: escapeHTML(item.steps).split(/\s*[|\n]\s*/).filter(Boolean).join('<br>') });
-        if (item.description && item.note && item.description !== item.note) {
-          entries.push({ icon: '📝', label: 'Notes', html: escapeHTML(item.note) });
+        if (item.steps.length) {
+          const seq = item.steps.map((s, n) => {
+            const at = s.indexOf(' · ');
+            const pose = at === -1 ? s : s.slice(0, at);
+            const cue = at === -1 ? '' : s.slice(at + 3);
+            return `<li class="rseq-item">
+              <span class="rseq-n">${n + 1}</span>
+              <span class="rseq-body">
+                <span class="rseq-pose">${escapeHTML(pose)}</span>
+                ${cue ? `<span class="rseq-cue">${escapeHTML(cue)}</span>` : ''}
+              </span>
+            </li>`;
+          }).join('');
+          entries.push({ icon: '🧘', label: 'The sequence', html: `<ol class="rseq">${seq}</ol>`, full: true });
         }
-        if (item.link) entries.push({ icon: '▶', label: 'Video', html: `<a href="${escapeHTML(item.link)}" target="_blank" class="rehab-link">Watch the sequence →</a>` });
+        if (item.description && item.note && item.description !== item.note) {
+          entries.push({ icon: '📝', label: 'Notes', html: escapeHTML(item.note), full: true });
+        }
+        if (item.link) entries.push({ icon: '🔗', label: 'More', html: `<a href="${escapeHTML(item.link)}" target="_blank" class="rehab-link">Open the full walkthrough →</a>` });
         fields.innerHTML = entries.map(e => `
-          <div class="pmodal-field">
+          <div class="pmodal-field"${e.full ? ' style="grid-column: 1 / -1"' : ''}>
             <div class="pmodal-field-label">${e.icon} ${e.label}</div>
             <div class="pmodal-field-value">${e.html}</div>
           </div>
