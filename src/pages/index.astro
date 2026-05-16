@@ -503,8 +503,8 @@
       color: var(--ocean);
     }
 
-    /* ─── Agent Zoo ─────────────────────────────────────── */
-    .zoo-grid {
+    /* ─── Agents ────────────────────────────────────────── */
+    .agents-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
       gap: 1.5rem;
@@ -1563,11 +1563,30 @@
       padding: 1.5rem;
       position: relative;
       transition: all 0.3s;
+      cursor: pointer;
     }
 
     .routine-card:hover {
       transform: translateY(-3px);
       border-color: var(--ocean);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+    }
+
+    .routine-more {
+      display: block;
+      margin-top: 0.85rem;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ocean);
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+
+    .routine-card:hover .routine-more {
+      opacity: 1;
     }
 
     .routine-duration {
@@ -2399,19 +2418,75 @@
 
     .garden-cat-title {
       font-family: var(--font-heading);
-      font-size: 1.35rem;
-      margin-bottom: 1rem;
+      font-size: 1.4rem;
+      margin-bottom: 1.1rem;
       display: flex;
-      align-items: baseline;
-      gap: 0.5rem;
+      align-items: center;
+      gap: 0.6rem;
       color: var(--text);
     }
 
+    .garden-cat-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+      margin-left: 0.2rem;
+    }
+
     .garden-cat-count {
-      font-size: 0.8rem;
+      font-size: 0.72rem;
       color: var(--text-dim);
-      font-weight: 400;
+      font-weight: 700;
       font-family: var(--font-mono);
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.1rem 0.55rem;
+    }
+
+    .garden-summary {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.6rem 1.6rem;
+      padding: 1rem 1.3rem;
+      margin-bottom: 2.25rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+
+    .g-stat {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      display: inline-flex;
+      align-items: baseline;
+      gap: 0.35rem;
+    }
+
+    .g-stat strong {
+      font-family: var(--font-heading);
+      font-size: 1.6rem;
+      color: var(--forest);
+      line-height: 1;
+    }
+
+    .g-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem 1rem;
+      margin-left: auto;
+    }
+
+    .g-legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      text-transform: capitalize;
     }
 
     .garden-plants {
@@ -2427,12 +2502,14 @@
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 0.65rem 0.85rem;
-      transition: border-color 0.2s;
+      padding: 0.7rem 0.9rem;
+      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
     }
 
     .plant:hover {
       border-color: var(--forest);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(107, 142, 35, 0.13);
     }
 
     .plant-dot {
@@ -2447,6 +2524,8 @@
     .plant-dot.harvesting { background: #c97b4c; }
     .plant-dot.established { background: #d4a017; }
     .plant-dot.flowering { background: #db2777; }
+    .plant-dot.seedling { background: #84cc16; }
+    .plant-dot.dormant { background: #78716c; }
 
     .plant.is-died { opacity: 0.5; }
 
@@ -5159,13 +5238,13 @@
     </div>
   </section>
 
-  <section id="zoo">
+  <section id="agents">
     <div class="container">
       <div class="section-header">
-        <h2>Agent Zoo</h2>
-        <p>Every agent I've shipped, with the voice it would have if you asked.</p>
+        <h2>Agents</h2>
+        <p>Every agent I've shipped, each with the voice it would have if you asked.</p>
       </div>
-      <div class="zoo-grid">
+      <div class="agents-grid">
 
         <div class="agent-card" data-theme-only="midnight,agents,founder,adventure">
           <div class="agent-head">
@@ -5941,6 +6020,7 @@
         <h2>The Garden</h2>
         <p>Slow projects. Planted, watered, observed.</p>
       </div>
+      <div class="garden-summary" id="gardenSummary" hidden></div>
       <div class="garden-cats" id="gardenGrid">
         <p class="garden-loading">Loading the plot…</p>
       </div>
@@ -6074,7 +6154,7 @@
     <div class="container">
       <div class="section-header">
         <h2>Journey</h2>
-        <p>Where I've been, where I'm at, what got made along the way</p>
+        <p>Not all who wander are lost — though I have re-entered the same roundabout four times. Where I've been, where I'm at, and what got made along the way.</p>
       </div>
       <div class="travel-stats">
         <div class="travel-stat"><span class="travel-stat-num" id="statStates">—</span><span class="travel-stat-label">States</span></div>
@@ -6824,6 +6904,25 @@
         ...catOrder.filter(c => groups[c]),
         ...Object.keys(groups).filter(c => !catOrder.includes(c))
       ];
+      const summary = document.getElementById('gardenSummary');
+      if (summary) {
+        const statusCounts: Record<string, number> = {};
+        rows.forEach(r => {
+          const s = (r.status || 'growing').toLowerCase();
+          statusCounts[s] = (statusCounts[s] || 0) + 1;
+        });
+        const statusOrder = ['seedling', 'growing', 'flowering', 'harvesting', 'established', 'dormant', 'died'];
+        const legend = Object.keys(statusCounts)
+          .sort((a, b) => statusOrder.indexOf(a) - statusOrder.indexOf(b))
+          .map(s => `<span><i class="plant-dot ${escapeHTML(s)}"></i>${escapeHTML(s)} ${statusCounts[s]}</span>`)
+          .join('');
+        summary.innerHTML = `
+          <span class="g-stat"><strong>${rows.length}</strong> plants</span>
+          <span class="g-stat"><strong>${cats.length}</strong> categories</span>
+          <div class="g-legend">${legend}</div>
+        `;
+        summary.hidden = false;
+      }
       grid.innerHTML = cats.map(cat => {
         const items = groups[cat];
         const label = cat.endsWith('s') ? cat : cat + 's';
@@ -6850,20 +6949,86 @@
       }).join('');
     }
 
+    interface RoutineItem {
+      name: string;
+      duration: string;
+      target: string;
+      level: string;
+      note: string;
+      link: string;
+      description: string;
+      steps: string;
+    }
+    let routinesData: RoutineItem[] = [];
+
     async function syncRoutines() {
       const rows = await fetchSheet(ROUTINES_SHEET_CSV);
       if (!rows.length) return;
       const grid = document.querySelector('#routines .routines-grid');
       if (!grid) return;
-      grid.innerHTML = rows.map(r => `
-        <div class="routine-card">
-          <div class="routine-duration">${escapeHTML(r.duration || '')}</div>
-          <h4>${escapeHTML(r.name || '')}</h4>
+      routinesData = rows.map(r => ({
+        name: r.name || '',
+        duration: r.duration || '',
+        target: r.target || '',
+        level: r.level || '',
+        note: r.note || '',
+        link: r.link || '',
+        description: r.description || '',
+        steps: r.steps || ''
+      }));
+      grid.innerHTML = routinesData.map((r, i) => `
+        <div class="routine-card" data-routine-idx="${i}" role="button" tabindex="0">
+          <div class="routine-duration">${escapeHTML(r.duration)}</div>
+          <h4>${escapeHTML(r.name)}</h4>
           <div class="routine-target">${escapeHTML([r.target, r.level].filter(Boolean).join(' · '))}</div>
-          <p>${escapeHTML(r.note || '')}</p>
-          ${r.link ? `<a href="${escapeHTML(r.link)}" target="_blank" class="rehab-link">Watch →</a>` : ''}
+          <p>${escapeHTML(r.note)}</p>
+          <span class="routine-more">Details →</span>
         </div>
       `).join('');
+      grid.querySelectorAll<HTMLElement>('.routine-card').forEach(el => {
+        const open = () => {
+          const idx = Number(el.dataset.routineIdx);
+          if (!Number.isNaN(idx)) openRoutineModal(idx);
+        };
+        el.addEventListener('click', open);
+        el.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+        });
+      });
+    }
+
+    function openRoutineModal(idx: number) {
+      const item = routinesData[idx];
+      if (!item) return;
+      const overlay = document.getElementById('pmodalOverlay');
+      const photos = document.getElementById('pmodalPhotos');
+      const meta = document.getElementById('pmodalMeta');
+      const city = document.getElementById('pmodalCity');
+      const note = document.getElementById('pmodalNote');
+      const fields = document.getElementById('pmodalFields');
+
+      if (photos) photos.innerHTML = `<div class="pmodal-photo" style="grid-column: 1 / -1; font-size: 4rem;">🧘</div>`;
+      if (meta) meta.textContent = ['Routine', item.duration, item.level].filter(Boolean).join(' · ');
+      if (city) city.textContent = item.name;
+      if (note) note.textContent = item.description || item.note;
+      if (fields) {
+        const entries: Array<{ icon: string; label: string; html: string }> = [];
+        if (item.target) entries.push({ icon: '🎯', label: 'Focus', html: escapeHTML(item.target) });
+        if (item.level) entries.push({ icon: '📈', label: 'Level', html: escapeHTML(item.level) });
+        if (item.duration) entries.push({ icon: '⏱', label: 'Duration', html: escapeHTML(item.duration) });
+        if (item.steps) entries.push({ icon: '🧩', label: 'Sequence', html: escapeHTML(item.steps).split(/\s*[|\n]\s*/).filter(Boolean).join('<br>') });
+        if (item.description && item.note && item.description !== item.note) {
+          entries.push({ icon: '📝', label: 'Notes', html: escapeHTML(item.note) });
+        }
+        if (item.link) entries.push({ icon: '▶', label: 'Video', html: `<a href="${escapeHTML(item.link)}" target="_blank" class="rehab-link">Watch the sequence →</a>` });
+        fields.innerHTML = entries.map(e => `
+          <div class="pmodal-field">
+            <div class="pmodal-field-label">${e.icon} ${e.label}</div>
+            <div class="pmodal-field-value">${e.html}</div>
+          </div>
+        `).join('');
+      }
+      overlay?.classList.add('open');
     }
 
     async function syncNotebook() {
@@ -7580,11 +7745,11 @@
     }
 
     // Section IDs that may be present. Visibility is driven entirely by config.order.
-    const ALL_SECTIONS = ['now', 'businesses', 'projects', 'music', 'contact', 'picks', 'portfolio', 'dispatches', 'studio', 'journey', 'tracks', 'videos', 'garden', 'calendar', 'harvest', 'observations', 'press', 'manifesto', 'stack', 'faq', 'why-healthcare', 'album', 'nowplaying', 'letter', 'charts', 'bucket', 'pack', 'zoo', 'numbers', 'decisions', 'rig', 'parks', 'fests', 'practice', 'routines', 'notebook', 'rehab-tech'];
+    const ALL_SECTIONS = ['now', 'businesses', 'projects', 'music', 'contact', 'picks', 'portfolio', 'dispatches', 'studio', 'journey', 'tracks', 'videos', 'garden', 'calendar', 'harvest', 'observations', 'press', 'manifesto', 'stack', 'faq', 'why-healthcare', 'album', 'nowplaying', 'letter', 'charts', 'bucket', 'pack', 'agents', 'numbers', 'decisions', 'rig', 'parks', 'fests', 'practice', 'routines', 'notebook', 'rehab-tech'];
 
     const themes: Record<string, ThemeConfig> = {
       midnight: {
-        order: ['now', 'businesses', 'projects', 'zoo', 'stack', 'nowplaying', 'faq', 'contact'],
+        order: ['now', 'businesses', 'projects', 'agents', 'stack', 'faq', 'contact'],
         subtitle: 'AI Engineer. Founder. Researcher.',
         bio: 'I build production AI agents in Python, FastAPI, and LangGraph. Currently looking for roles in AI agents, healthcare tech, and AI research.',
         badge: 'Open to work — AI Engineer / Research'
@@ -7596,43 +7761,43 @@
         badge: 'Open to interesting conversations'
       },
       healthcare: {
-        order: ['why-healthcare', 'zoo', 'now', 'projects', 'businesses', 'faq', 'contact', 'music'],
+        order: ['why-healthcare', 'agents', 'now', 'projects', 'businesses', 'faq', 'contact'],
         subtitle: 'AI Engineer building healthcare technology.',
         bio: 'Production AI agents for clinical workflows. Background spans PwC enterprise AI, real-time biosignal processing, and time in clinical settings — focused on tools that fit how medicine is actually practiced.',
         badge: 'Open to work — Healthcare AI / Clinical Tech'
       },
       adventure: {
-        order: ['journey', 'rig', 'fests', 'zoo', 'parks', 'bucket', 'album', 'dispatches', 'pack', 'now', 'music', 'businesses', 'projects', 'contact'],
-        subtitle: 'Builder. Wanderer. Storyteller.',
-        bio: 'I build software between trail miles and time zones. The best ideas tend to show up somewhere with no service — these are the ones I brought back.',
+        order: ['journey', 'rig', 'fests', 'agents', 'parks', 'bucket', 'album', 'dispatches', 'pack', 'now', 'music', 'businesses', 'projects', 'contact'],
+        subtitle: 'Builder. Wanderer. Reportedly not lost.',
+        bio: 'I build software between trail miles and time zones. The best ideas tend to show up somewhere with no service — these are the ones I brought back. Think Eat, Pray, Love, except Liz Gilbert shipped a FastAPI backend from the ashram.',
         badge: 'Currently — building from the road'
       },
       creative: {
-        order: ['music', 'tracks', 'nowplaying', 'videos', 'zoo', 'studio', 'projects', 'businesses', 'now', 'contact'],
+        order: ['music', 'tracks', 'nowplaying', 'videos', 'agents', 'studio', 'projects', 'businesses', 'now', 'contact'],
         subtitle: 'Producer. Engineer. Artist.',
         bio: 'I make music and the tools to make music with. Audio ML, generative systems, and live performance — the rest of the stack is in service of that.',
         badge: 'Open to creative collaborations'
       },
       agents: {
-        order: ['zoo', 'projects', 'stack', 'now', 'businesses', 'faq', 'contact'],
+        order: ['agents', 'projects', 'stack', 'now', 'businesses', 'faq', 'contact'],
         subtitle: 'AI Agent Engineer.',
         bio: 'I ship production multi-step agents — LangGraph, FastAPI, persistent memory, evaluation harnesses, adversarial testing. Reliability over demos.',
         badge: 'Open to work — Agent Infrastructure / Platform'
       },
       cyber: {
-        order: ['projects', 'zoo', 'stack', 'now', 'businesses', 'faq', 'contact'],
+        order: ['projects', 'agents', 'stack', 'now', 'businesses', 'faq', 'contact'],
         subtitle: 'AI Security Researcher.',
         bio: 'I red-team AI agents. Octagon explores RL-driven attack policies against agent stacks. PwC background in compliance and risk underwrites the rigor.',
         badge: 'Open to work — AI Security / Red Team'
       },
       finance: {
-        order: ['now', 'portfolio', 'charts', 'zoo', 'letter', 'picks', 'projects', 'businesses', 'faq', 'contact'],
+        order: ['now', 'portfolio', 'charts', 'agents', 'letter', 'picks', 'projects', 'businesses', 'faq', 'contact'],
         subtitle: 'AI Engineer. Quant-Curious. Former PwC.',
         bio: 'Finance + CS undergrad, PwC Innovation Hub alum building AI for banking clients. Comfortable shipping production systems against regulated environments and senior-stakeholder review cycles.',
         badge: 'Open to work — AI in Financial Services'
       },
       founder: {
-        order: ['businesses', 'numbers', 'press', 'decisions', 'manifesto', 'zoo', 'projects', 'now', 'faq', 'contact'],
+        order: ['businesses', 'numbers', 'press', 'decisions', 'manifesto', 'agents', 'projects', 'now', 'faq', 'contact'],
         subtitle: 'Founder. Builder. Operator.',
         bio: 'Three ventures in motion — Boundless Horizons (stealth), TM Go (tour management), SelfNVest AI (FSBO real estate). Full-stack, from schema to UI to DNS. I ship.',
         badge: 'Open to founder / co-founder conversations'
@@ -7644,7 +7809,7 @@
         badge: 'Currently — tending the plot'
       },
       wellness: {
-        order: ['practice', 'routines', 'notebook', 'rehab-tech', 'zoo', 'now', 'projects', 'contact'],
+        order: ['practice', 'routines', 'notebook', 'rehab-tech', 'agents', 'now', 'projects', 'contact'],
         subtitle: 'Practitioner. Teacher. Self-experimenter.',
         bio: "Yoga teacher, alt-medicine-curious, self-trained on my own anatomy. I write about what I try, what works, and what I don't know — empirical wellness, no snake oil.",
         badge: 'Open to teaching + collaborations'
@@ -7885,7 +8050,7 @@
         stack: 'Stack', faq: 'FAQ', 'why-healthcare': 'Why Healthcare', album: 'Album',
         nowplaying: 'What I\'m Into',
         letter: 'Quarterly Letter', charts: 'Charts I Made',
-        bucket: 'Bucket List', pack: 'What I Pack', zoo: 'Agent Zoo',
+        bucket: 'Bucket List', pack: 'What I Pack', agents: 'Agents',
         numbers: 'The Numbers', decisions: 'Decisions Log',
         rig: 'The Rig', parks: 'National Parks', fests: 'Festivals',
         practice: 'The Practice', routines: 'Routines', notebook: 'Notebook', 'rehab-tech': 'Rehab Tech'
