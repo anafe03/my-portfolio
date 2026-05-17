@@ -3097,43 +3097,64 @@
     .place-card {
       background: var(--bg-light);
       border: 2px solid var(--border);
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 0;
       overflow: hidden;
-      transition: all 0.3s;
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
       display: flex;
       flex-direction: column;
       position: relative;
+      cursor: pointer;
     }
 
     .place-card:hover {
-      transform: translateY(-3px);
+      transform: translateY(-4px);
       border-color: var(--forest);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.16);
     }
 
     .place-card-photo {
-      aspect-ratio: 4 / 3;
+      aspect-ratio: 16 / 10;
       background: linear-gradient(135deg, var(--bg-card), var(--bg));
+      background-size: cover;
+      background-position: center;
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
+      position: relative;
     }
 
-    .place-card-photo.placeholder span {
+    .place-card.has-photo .place-card-photo::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.4));
+    }
+
+    .place-card-pin {
       font-size: 2.25rem;
       opacity: 0.45;
     }
 
-    .place-card-photo img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
+    .place-card-now {
+      position: absolute;
+      z-index: 1;
+      bottom: 0.6rem;
+      left: 0.6rem;
+      background: var(--coral);
+      color: #fff;
+      padding: 0.22rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.62rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
     }
 
     .place-card-count {
       position: absolute;
+      z-index: 1;
       top: 0.6rem;
       right: 0.6rem;
       background: rgba(0, 0, 0, 0.6);
@@ -3146,12 +3167,25 @@
     }
 
     .place-card-body {
-      padding: 1.1rem 1.4rem 1.4rem;
+      padding: 1rem 1.3rem 1.1rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .place-card-meta {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--coral);
+      margin-bottom: 0.3rem;
     }
 
     .place-card h4 {
       font-family: 'Lora', Georgia, serif;
-      font-size: 1.15rem;
+      font-size: 1.2rem;
       margin-bottom: 0.4rem;
     }
 
@@ -3159,6 +3193,34 @@
       color: var(--text-dim);
       font-size: 0.9rem;
       line-height: 1.55;
+    }
+
+    .place-card-foot {
+      margin-top: auto;
+      padding-top: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .place-card-icons {
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+    }
+
+    .place-card-more {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--forest);
+      transition: transform 0.18s ease;
+    }
+
+    .place-card:hover .place-card-more {
+      transform: translateX(3px);
     }
 
     /* ─── Catalog / Tracks (Creative only) ──────────────── */
@@ -7218,6 +7280,49 @@
       return GARDEN_PLANT_EMOJI[p.name] || GARDEN_CAT_EMOJI[p.category] || '🌱';
     }
 
+    // Plant photos: a real photo is pulled from Wikipedia by plant name.
+    // A `photo` set in garden.json always wins — this is just the default.
+    const plantPhotoCache: Record<string, string> = {};
+    const WIKI_TITLE: Record<string, string> = {
+      Beet: 'Beetroot', Corn: 'Maize', Peas: 'Pea', 'Pole Beans': 'Green bean',
+      Squash: 'Cucurbita pepo', Pepper: 'Bell pepper', Mustard: 'Mustard plant',
+      Serviceberry: 'Amelanchier', Coneflower: 'Echinacea', Honeyberry: 'Lonicera caerulea',
+      Pawpaw: 'Asimina triloba', Kiwi: 'Kiwifruit', Rosemary: 'Salvia rosmarinus',
+      Marigold: 'Tagetes', Nasturtium: 'Tropaeolum', Fig: 'Common fig'
+    };
+
+    async function fetchPlantPhoto(name: string): Promise<string> {
+      if (name in plantPhotoCache) return plantPhotoCache[name];
+      plantPhotoCache[name] = '';
+      try {
+        const title = WIKI_TITLE[name] || name;
+        const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`);
+        if (!res.ok) throw new Error('no page');
+        const data = await res.json();
+        const url = (data && (data.thumbnail?.source || data.originalimage?.source)) || '';
+        plantPhotoCache[name] = url;
+        return url;
+      } catch {
+        return '';
+      }
+    }
+
+    function hydratePlantPhotos() {
+      const names = Array.from(new Set(plantsData.filter(p => !p.photo).map(p => p.name)));
+      names.forEach(name => {
+        fetchPlantPhoto(name).then(url => {
+          if (!url) return;
+          document.querySelectorAll<HTMLElement>('.garden-card').forEach(card => {
+            if (card.dataset.plantName !== name) return;
+            const art = card.querySelector<HTMLElement>('.garden-card-art');
+            if (!art) return;
+            art.style.backgroundImage = `url('${url}')`;
+            art.querySelector('.garden-card-emoji')?.remove();
+          });
+        });
+      });
+    }
+
     function renderGarden() {
       const grid = document.getElementById('gardenGrid');
       const empty = document.getElementById('gardenEmpty');
@@ -7229,15 +7334,16 @@
         .filter(({ p }) => !q || [p.name, p.variety, p.category, p.zone, p.light, p.water, p.soil, p.likes, p.care, p.note]
           .join(' ').toLowerCase().includes(q));
       grid.innerHTML = matches.map(({ p, i }) => {
-        const art = p.photo
-          ? `background-image:url('${escapeHTML(p.photo)}')`
+        const photo = p.photo || plantPhotoCache[p.name] || '';
+        const art = photo
+          ? `background-image:url('${escapeHTML(photo)}')`
           : `background:${GARDEN_CAT_GRADIENT[p.category] || 'linear-gradient(150deg,#9ec27a,#6b8e3f)'}`;
-        const glyph = p.photo ? '' : `<span class="garden-card-emoji">${plantEmoji(p)}</span>`;
+        const glyph = photo ? '' : `<span class="garden-card-emoji">${plantEmoji(p)}</span>`;
         const badge = p.status && p.status !== 'growing'
           ? `<span class="garden-card-badge ${escapeHTML(p.status)}">${escapeHTML(p.status)}</span>`
           : '';
         return `
-          <article class="garden-card s-${escapeHTML(p.status)}" data-plant-idx="${i}" role="button" tabindex="0">
+          <article class="garden-card s-${escapeHTML(p.status)}" data-plant-idx="${i}" data-plant-name="${escapeHTML(p.name)}" role="button" tabindex="0">
             <div class="garden-card-art" style="${art}">
               ${glyph}
               ${badge}
@@ -7261,6 +7367,7 @@
           if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
         });
       });
+      hydratePlantPhotos();
     }
 
     function openPlantModal(idx: number) {
@@ -7273,9 +7380,10 @@
       const note = document.getElementById('pmodalNote');
       const fields = document.getElementById('pmodalFields');
       const grad = GARDEN_CAT_GRADIENT[p.category] || 'linear-gradient(150deg,#9ec27a,#6b8e3f)';
+      const modalPhoto = p.photo || plantPhotoCache[p.name] || '';
       if (photos) {
-        photos.innerHTML = p.photo
-          ? `<div class="pmodal-photo" style="grid-column: 1 / -1"><img src="${escapeHTML(p.photo)}" alt="${escapeHTML(p.name)}"></div>`
+        photos.innerHTML = modalPhoto
+          ? `<div class="pmodal-photo" style="grid-column: 1 / -1"><img src="${escapeHTML(modalPhoto)}" alt="${escapeHTML(p.name)}"></div>`
           : `<div class="pmodal-photo" style="grid-column: 1 / -1; font-size: 4.5rem; background:${grad}">${plantEmoji(p)}</div>`;
       }
       if (meta) meta.textContent = p.status && p.status !== 'growing'
@@ -7764,35 +7872,80 @@
     }
 
     // ─── Render: places guide ────────────────────────────────────────
+    // Default place photo from Wikipedia when no travel photo is set.
+    const placePhotoCache: Record<string, string> = {};
+    async function fetchPlacePhoto(p: Place): Promise<string> {
+      if (p.id in placePhotoCache) return placePhotoCache[p.id];
+      placePhotoCache[p.id] = '';
+      try {
+        const title = p.city.split(',')[0].trim();
+        const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`);
+        if (!res.ok) throw new Error('no page');
+        const data = await res.json();
+        placePhotoCache[p.id] = (data && (data.thumbnail?.source || data.originalimage?.source)) || '';
+        return placePhotoCache[p.id];
+      } catch {
+        return '';
+      }
+    }
+
     function renderPlacesGuide() {
       const grid = document.getElementById('placesGrid');
       if (!grid) return;
       const withGuide = placesData.filter(p => p.guide);
       grid.innerHTML = withGuide.map(p => {
         const placePhotos = photosData.filter(ph => ph.placeId === p.id);
-        const photoHtml = placePhotos.length
-          ? `<div class="place-card-photo"><img src="${escapeHTML(placePhotos[0].url)}" alt="${escapeHTML(p.city)}" loading="lazy"></div>`
-          : `<div class="place-card-photo placeholder"><span>📍</span></div>`;
-        const photoCount = placePhotos.length > 1
+        const userPhoto = placePhotos[0]?.url || (p.photos && p.photos[0]) || '';
+        const photo = userPhoto || placePhotoCache[p.id] || '';
+        const count = placePhotos.length > 1
           ? `<span class="place-card-count">+${placePhotos.length - 1}</span>`
           : '';
+        const meta = [p.date, p.country].filter(Boolean).join(' · ');
+        const detailIcons = [
+          p.eat && '🍴', p.drink && '🍺', p.coffee && '☕', p.move && '🥾',
+          p.stay && '🛏', p.hiddenGem && '🎁'
+        ].filter(Boolean).join(' ');
         return `
-          <div class="place-card" data-place-id="${p.id}">
-            ${photoHtml}
-            ${photoCount}
+          <article class="place-card${photo ? ' has-photo' : ''}" data-place-id="${escapeHTML(p.id)}" role="button" tabindex="0">
+            <div class="place-card-photo" style="${photo ? `background-image:url('${escapeHTML(photo)}')` : ''}">
+              ${photo ? '' : '<span class="place-card-pin">📍</span>'}
+              ${p.current ? '<span class="place-card-now">● Here now</span>' : ''}
+              ${count}
+            </div>
             <div class="place-card-body">
+              ${meta ? `<div class="place-card-meta">${escapeHTML(meta)}</div>` : ''}
               <h4>${escapeHTML(p.city)}</h4>
               <p>${escapeHTML(p.guide || '')}</p>
+              <div class="place-card-foot">
+                <span class="place-card-icons">${detailIcons}</span>
+                <span class="place-card-more">Guide →</span>
+              </div>
             </div>
-          </div>
+          </article>
         `;
       }).join('');
       grid.querySelectorAll<HTMLElement>('.place-card').forEach(el => {
-        el.addEventListener('click', () => {
-          const id = el.dataset.placeId;
-          if (id) openPlaceModal(id);
+        const open = () => { const id = el.dataset.placeId; if (id) openPlaceModal(id); };
+        el.addEventListener('click', open);
+        el.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
         });
-        el.style.cursor = 'pointer';
+      });
+      // Pull a default Wikipedia photo for places with no travel photo yet.
+      withGuide.forEach(p => {
+        const hasUser = photosData.some(ph => ph.placeId === p.id) || !!(p.photos && p.photos.length);
+        if (hasUser) return;
+        fetchPlacePhoto(p).then(url => {
+          if (!url) return;
+          grid.querySelectorAll<HTMLElement>('.place-card').forEach(card => {
+            if (card.dataset.placeId !== p.id) return;
+            const ph = card.querySelector<HTMLElement>('.place-card-photo');
+            if (!ph) return;
+            ph.style.backgroundImage = `url('${url}')`;
+            card.classList.add('has-photo');
+            ph.querySelector('.place-card-pin')?.remove();
+          });
+        });
       });
     }
 
@@ -7811,10 +7964,15 @@
         const fromSheet = photosData.filter(ph => ph.placeId === p.id);
         const fromPlace = (p.photos || []).map(src => ({ url: normalizePhotoUrl(src), caption: '' }));
         const merged = fromSheet.length ? fromSheet : fromPlace;
-        const imgs = merged.length
-          ? merged.slice(0, 6).map(ph => `<div class="pmodal-photo"><img src="${escapeHTML(ph.url)}" alt="${escapeHTML(ph.caption || p.city)}" loading="lazy"></div>`)
-          : ['', '', ''].map(() => `<div class="pmodal-photo">📷 photo</div>`);
-        photos.innerHTML = imgs.join('');
+        if (merged.length) {
+          photos.innerHTML = merged.slice(0, 6)
+            .map(ph => `<div class="pmodal-photo"><img src="${escapeHTML(ph.url)}" alt="${escapeHTML(ph.caption || p.city)}" loading="lazy"></div>`)
+            .join('');
+        } else if (placePhotoCache[p.id]) {
+          photos.innerHTML = `<div class="pmodal-photo" style="grid-column: 1 / -1"><img src="${escapeHTML(placePhotoCache[p.id])}" alt="${escapeHTML(p.city)}" loading="lazy"></div>`;
+        } else {
+          photos.innerHTML = ['', '', ''].map(() => `<div class="pmodal-photo">📷 photo</div>`).join('');
+        }
       }
       if (meta) meta.textContent = `${p.date}${p.country ? ' · ' + p.country : ''}${p.current ? ' · here now' : ''}`;
       if (city) city.textContent = p.city;
@@ -7837,13 +7995,15 @@
       const songsField = songs.length
         ? `<div class="pmodal-field"><div class="pmodal-field-label">🎵 Made here</div><div class="pmodal-field-value">${songs.map(s => s!.title).join(' · ')}</div></div>`
         : '';
+      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${p.coords[0]},${p.coords[1]}`;
+      const mapField = `<div class="pmodal-field"><div class="pmodal-field-label">📍 On the map</div><div class="pmodal-field-value"><a href="${mapsUrl}" target="_blank" rel="noopener" class="rehab-link">Open ${escapeHTML(p.city)} in Maps →</a></div></div>`;
       if (fields) {
         fields.innerHTML = filledFields.map(f => `
           <div class="pmodal-field">
             <div class="pmodal-field-label">${f.icon} ${f.label}</div>
             <div class="pmodal-field-value">${p[f.key]}</div>
           </div>
-        `).join('') + songsField;
+        `).join('') + songsField + mapField;
       }
       overlay?.classList.add('open');
     }
