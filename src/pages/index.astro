@@ -776,6 +776,32 @@
       line-height: 1.4;
     }
 
+    .hc-stat-icon {
+      font-size: 1.5rem;
+      line-height: 1;
+      margin-bottom: 0.2rem;
+    }
+
+    .hc-lead {
+      max-width: 720px;
+      margin: 0 auto 2.5rem;
+      text-align: center;
+    }
+
+    .hc-lead p {
+      font-size: 1.06rem;
+      line-height: 1.7;
+      color: var(--text-dim);
+      margin-bottom: 1rem;
+    }
+
+    .hc-lead p:last-child { margin-bottom: 0; }
+
+    .hc-lead strong {
+      color: var(--text);
+      font-weight: 700;
+    }
+
     .hc-quote {
       max-width: 760px;
       margin: 0 auto;
@@ -791,21 +817,15 @@
       color: var(--text);
     }
 
-    /* ECG-style divider above the why-healthcare section (Healthcare only) */
-    [data-theme="healthcare"] #why-healthcare {
-      position: relative;
-    }
-
-    [data-theme="healthcare"] #why-healthcare::before {
-      content: "";
-      position: absolute;
-      top: 2.5rem;
-      left: 0;
-      right: 0;
-      height: 30px;
-      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 30' preserveAspectRatio='none'><path d='M0 15 L40 15 L48 5 L56 25 L64 15 L120 15 L128 8 L132 22 L136 15 L200 15' stroke='%2314b8a6' stroke-width='1.5' fill='none' opacity='0.5'/></svg>");
+    /* ECG-style divider inside the why-healthcare section */
+    .hc-ecg {
+      height: 26px;
+      max-width: 760px;
+      margin: 0 auto 2.25rem;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 30' preserveAspectRatio='none'><path d='M0 15 L40 15 L48 5 L56 25 L64 15 L120 15 L128 8 L132 22 L136 15 L200 15' stroke='%2314b8a6' stroke-width='1.5' fill='none' opacity='0.7'/></svg>");
       background-repeat: repeat-x;
-      background-size: 200px 30px;
+      background-size: 200px 26px;
+      background-position: center;
     }
 
     /* ─── Album / Photo wall (Adventure only) ───────────── */
@@ -3264,6 +3284,19 @@
       margin: 0 auto;
     }
 
+    .soundcloud-embed {
+      max-width: 900px;
+      margin: 0 auto;
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      background: var(--bg-light);
+    }
+
+    .soundcloud-embed iframe {
+      display: block;
+    }
+
     .track-row {
       display: grid;
       grid-template-columns: 50px 1fr auto;
@@ -4718,6 +4751,19 @@
       line-height: 1.5;
     }
 
+    .pmodal-field.pmodal-field-recipe {
+      grid-column: 1 / -1;
+      background: linear-gradient(135deg, rgba(107, 142, 35, 0.12), rgba(201, 123, 76, 0.1));
+      border-color: var(--forest);
+      border-left: 3px solid var(--forest);
+    }
+
+    .pmodal-field-recipe .pmodal-field-value {
+      font-family: var(--font-heading);
+      font-size: 1.05rem;
+      font-style: italic;
+    }
+
     .legal-notice {
       max-width: 720px;
       margin: 1rem auto 0;
@@ -4956,14 +5002,6 @@
                 </div>
                 <div class="theme-name">Founder</div>
               </button>
-              <button class="theme-option" data-set-theme="garden">
-                <div class="theme-swatch">
-                  <span style="background: #faf5e6"></span>
-                  <span style="background: #6b8e23"></span>
-                  <span style="background: #c97b4c"></span>
-                </div>
-                <div class="theme-name">Garden</div>
-              </button>
               <button class="theme-option" data-set-theme="wellness">
                 <div class="theme-swatch">
                   <span style="background: #f5ede3"></span>
@@ -4983,7 +5021,7 @@
         <div class="hero-text">
           <span class="open-to-work" id="openToWork">Open to work — AI Engineer / Research</span>
           <h1>Austin Nafe</h1>
-          <p class="subtitle" id="heroSubtitle">AI Engineer. Founder. Researcher.</p>
+          <p class="subtitle" id="heroSubtitle">AI Engineer. Founder. Technologist.</p>
           <p class="bio" id="heroBio">
             I build production AI agents in Python, FastAPI, and LangGraph. Currently looking for roles in AI agents, healthcare tech, and AI research.
           </p>
@@ -5158,6 +5196,92 @@
             <span class="tag">Enterprise</span>
           </div>
           <span class="project-link" style="color: var(--text-dim);">2023 – 2024</span>
+        </div>
+        <div class="project-card" data-theme-only="midnight,agents,founder,adventure" data-category="ai,agents">
+          <h3>TM Go</h3>
+          <p>Stateful, SMS-native tour-manager agent — keeps the bus on schedule and the band fed. Group SMS is its native interface.</p>
+          <div class="project-tags">
+            <span class="tag">LangGraph</span>
+            <span class="tag">FastAPI</span>
+            <span class="tag">Supabase</span>
+            <span class="tag">Stripe</span>
+          </div>
+          <a href="https://toursync-deploy.vercel.app/" target="_blank" class="project-link">Try it →</a>
+        </div>
+        <div class="project-card" data-theme-only="midnight,agents,founder,finance" data-category="ai,agents">
+          <h3>SelfNVest Agent</h3>
+          <p>Real-estate FSBO agent — reads the contract twice, answers buyer questions around the clock, and pulls neighborhood comps.</p>
+          <div class="project-tags">
+            <span class="tag">LangGraph</span>
+            <span class="tag">React</span>
+            <span class="tag">FastAPI</span>
+            <span class="tag">Supabase</span>
+          </div>
+          <a href="https://www.selfnvestai.com/" target="_blank" class="project-link">Try it →</a>
+        </div>
+        <div class="project-card" data-theme-only="midnight,agents,healthcare,wellness" data-category="ai,agents,health">
+          <h3>Prior Auth Agent</h3>
+          <p>Healthcare advocate that reads insurance policies, cites the exact CMS reg, and files appeals when care is denied — with receipts.</p>
+          <div class="project-tags">
+            <span class="tag">LangGraph</span>
+            <span class="tag">FastAPI</span>
+            <span class="tag">Healthcare</span>
+            <span class="tag">RAG</span>
+          </div>
+          <a href="https://rlagents-prioraut.streamlit.app" target="_blank" class="project-link">Try it →</a>
+        </div>
+        <div class="project-card" data-theme-only="midnight,agents,adventure,creative" data-category="ai,agents">
+          <h3>Festival Companion</h3>
+          <p>Festival co-pilot — finds your friends in an 80,000-person crowd, tracks set times, and reminds you to drink water.</p>
+          <div class="project-tags">
+            <span class="tag">LangGraph</span>
+            <span class="tag">Streamlit</span>
+            <span class="tag">Real-time</span>
+          </div>
+          <a href="https://rlagents-festivals.streamlit.app" target="_blank" class="project-link">Try it →</a>
+        </div>
+        <div class="project-card" data-theme-only="midnight,agents,finance" data-category="ai,agents,finance">
+          <h3>Earnings Inspector</h3>
+          <p>Earnings-call analyzer — scores management tone, flags the CFO dodge, and surfaces what the press release left out.</p>
+          <div class="project-tags">
+            <span class="tag">LangGraph</span>
+            <span class="tag">NLP</span>
+            <span class="tag">Finance</span>
+            <span class="tag">Streamlit</span>
+          </div>
+          <a href="https://rlagents-earnings.streamlit.app" target="_blank" class="project-link">Try it →</a>
+        </div>
+        <div class="project-card" data-theme-only="midnight,agents,healthcare,wellness" data-category="ai,agents,health">
+          <h3>AutoFill Claims</h3>
+          <p>Insurance form filler for patients — does the first thirty-eight of the forty hours you'd otherwise spend fighting your insurer.</p>
+          <div class="project-tags">
+            <span class="tag">LangGraph</span>
+            <span class="tag">FastAPI</span>
+            <span class="tag">Healthcare</span>
+            <span class="tag">Forms</span>
+          </div>
+          <a href="https://rlagents-hc.streamlit.app" target="_blank" class="project-link">Try it →</a>
+        </div>
+        <div class="project-card" data-theme-only="midnight,agents,creative" data-category="ai,agents,music">
+          <h3>StemDeck</h3>
+          <p>Stem-splitter agent — hand it a track, get back isolated vocals, drums, and bass to remix and rebuild.</p>
+          <div class="project-tags">
+            <span class="tag">Python</span>
+            <span class="tag">Audio ML</span>
+            <span class="tag">Demucs</span>
+            <span class="tag">Streamlit</span>
+          </div>
+          <a href="https://rlagents-stemdeck.streamlit.app" target="_blank" class="project-link">Try it →</a>
+        </div>
+        <div class="project-card" data-theme-only="midnight,agents,creative" data-category="ai,music">
+          <h3>tunelab</h3>
+          <p>Open-source music experiments — where songs go before they're songs. Audio ML and MIDI sketches, most of which don't make it.</p>
+          <div class="project-tags">
+            <span class="tag">Python</span>
+            <span class="tag">Audio ML</span>
+            <span class="tag">MIDI</span>
+          </div>
+          <a href="https://github.com/anafe03" target="_blank" class="project-link">GitHub →</a>
         </div>
       </div>
     </div>
@@ -5596,235 +5720,6 @@
     </div>
   </section>
 
-  <section id="agents">
-    <div class="container">
-      <div class="section-header">
-        <h2>Agents</h2>
-        <p>Every agent I've shipped, each with the voice it would have if you asked.</p>
-      </div>
-      <div class="agents-grid">
-
-        <div class="agent-card" data-theme-only="midnight,agents,founder,adventure">
-          <div class="agent-head">
-            <span class="agent-avatar">🚐</span>
-            <div>
-              <div class="agent-name">TM Go</div>
-              <div class="agent-role">Tour Manager · stateful, SMS-native</div>
-            </div>
-            <span class="agent-status deployed">Deployed</span>
-          </div>
-          <p class="agent-quote">"I keep the bus on schedule and the band fed. Group SMS is my native tongue. Don't lose the driver."</p>
-          <div class="agent-tags">
-            <span class="tag">LangGraph</span>
-            <span class="tag">FastAPI</span>
-            <span class="tag">Supabase</span>
-            <span class="tag">Stripe</span>
-          </div>
-          <div class="agent-caps">
-            <span>🧠 memory</span><span>🛠 tools</span><span>💬 multi-turn</span><span>📱 SMS</span>
-          </div>
-          <a class="agent-try" href="https://toursync-deploy.vercel.app/" target="_blank">Try it →</a>
-        </div>
-
-        <div class="agent-card" data-theme-only="midnight,agents,founder,finance">
-          <div class="agent-head">
-            <span class="agent-avatar">🏠</span>
-            <div>
-              <div class="agent-name">SelfNVest Agent</div>
-              <div class="agent-role">Real-estate FSBO · contracts, showings, comps</div>
-            </div>
-            <span class="agent-status deployed">Deployed</span>
-          </div>
-          <p class="agent-quote">"I read the contract twice. I'll answer the buyer's question at 11 PM so you don't have to. And I know what your neighbor's place sold for."</p>
-          <div class="agent-tags">
-            <span class="tag">LangGraph</span>
-            <span class="tag">React</span>
-            <span class="tag">FastAPI</span>
-            <span class="tag">Supabase</span>
-          </div>
-          <div class="agent-caps">
-            <span>🧠 memory</span><span>🛠 tools</span><span>📅 scheduling</span><span>🔐 auth</span>
-          </div>
-          <a class="agent-try" href="https://www.selfnvestai.com/" target="_blank">Try it →</a>
-        </div>
-
-        <div class="agent-card" data-theme-only="midnight,agents,cyber">
-          <div class="agent-head">
-            <span class="agent-avatar">🥊</span>
-            <div>
-              <div class="agent-name">Octagon</div>
-              <div class="agent-role">Red-team agent · RL-driven attack policies</div>
-            </div>
-            <span class="agent-status live">Live demo</span>
-          </div>
-          <p class="agent-quote">"I attack agents for a living. Prompt-injection, tool-misuse, jailbreak — I'm the one your security team wishes they'd hired before launch."</p>
-          <div class="agent-tags">
-            <span class="tag">Python</span>
-            <span class="tag">RL</span>
-            <span class="tag">AI Security</span>
-            <span class="tag">Streamlit</span>
-          </div>
-          <div class="agent-caps">
-            <span>🎯 adversarial</span><span>📊 evals</span><span>🌐 live</span>
-          </div>
-          <a class="agent-try" href="https://octagon-redcell.streamlit.app" target="_blank">Try it →</a>
-        </div>
-
-        <div class="agent-card" data-theme-only="midnight,agents">
-          <div class="agent-head">
-            <span class="agent-avatar">🎲</span>
-            <div>
-              <div class="agent-name">Simulacrum</div>
-              <div class="agent-role">Multi-agent scene simulator · emergence at scale</div>
-            </div>
-            <span class="agent-status live">Live demo</span>
-          </div>
-          <p class="agent-quote">"I run thousands of agents against each other and tell you which strategies survive. Emergence is my hobby. Cooperation is the surprise."</p>
-          <div class="agent-tags">
-            <span class="tag">Python</span>
-            <span class="tag">Multi-Agent RL</span>
-            <span class="tag">Streamlit</span>
-          </div>
-          <div class="agent-caps">
-            <span>🌀 simulation</span><span>📊 evals</span><span>📺 viz</span>
-          </div>
-          <a class="agent-try" href="https://simulacrum-scenes.streamlit.app" target="_blank">Try it →</a>
-        </div>
-
-        <div class="agent-card" data-theme-only="midnight,agents,healthcare,wellness">
-          <div class="agent-head">
-            <span class="agent-avatar">🩺</span>
-            <div>
-              <div class="agent-name">Prior Auth Agent</div>
-              <div class="agent-role">Healthcare advocate · policies, appeals, citations</div>
-            </div>
-            <span class="agent-status live">Live demo</span>
-          </div>
-          <p class="agent-quote">"I read every page of your insurance policy so the patient doesn't have to. When they deny, I cite the exact CMS reg and file the appeal — with receipts."</p>
-          <div class="agent-tags">
-            <span class="tag">LangGraph</span>
-            <span class="tag">FastAPI</span>
-            <span class="tag">Healthcare</span>
-            <span class="tag">RAG</span>
-          </div>
-          <div class="agent-caps">
-            <span>🧠 memory</span><span>🛠 tools</span><span>📚 lookup</span><span>⚖ appeals</span>
-          </div>
-          <a class="agent-try" href="https://rlagents-prioraut.streamlit.app" target="_blank">Try it →</a>
-        </div>
-
-        <div class="agent-card" data-theme-only="midnight,agents,adventure,creative">
-          <div class="agent-head">
-            <span class="agent-avatar">🎪</span>
-            <div>
-              <div class="agent-name">Festival Companion</div>
-              <div class="agent-role">Festival co-pilot · lineups, lost friends, water reminders</div>
-            </div>
-            <span class="agent-status live">Live demo</span>
-          </div>
-          <p class="agent-quote">"I'll find your friends in a crowd of 80,000, tell you when to drink water, and remind you which stage Bonobo is on. I'm the festival you actually wanted."</p>
-          <div class="agent-tags">
-            <span class="tag">LangGraph</span>
-            <span class="tag">Streamlit</span>
-            <span class="tag">Real-time</span>
-          </div>
-          <div class="agent-caps">
-            <span>🗺 maps</span><span>📅 schedule</span><span>📍 location</span><span>🧠 memory</span>
-          </div>
-          <a class="agent-try" href="https://rlagents-festivals.streamlit.app" target="_blank">Try it →</a>
-        </div>
-
-        <div class="agent-card" data-theme-only="midnight,agents,finance">
-          <div class="agent-head">
-            <span class="agent-avatar">📈</span>
-            <div>
-              <div class="agent-name">Earnings Inspector</div>
-              <div class="agent-role">Earnings-call analyzer · transcripts, tone, signals</div>
-            </div>
-            <span class="agent-status live">Live demo</span>
-          </div>
-          <p class="agent-quote">"I read every earnings call so you don't have to. I score management tone, flag the CFO dodge, and surface what the press release didn't say."</p>
-          <div class="agent-tags">
-            <span class="tag">LangGraph</span>
-            <span class="tag">NLP</span>
-            <span class="tag">Finance</span>
-            <span class="tag">Streamlit</span>
-          </div>
-          <div class="agent-caps">
-            <span>📚 RAG</span><span>🎙 tone</span><span>📊 signals</span><span>🔍 search</span>
-          </div>
-          <a class="agent-try" href="https://rlagents-earnings.streamlit.app" target="_blank">Try it →</a>
-        </div>
-
-        <div class="agent-card" data-theme-only="midnight,agents,healthcare,wellness">
-          <div class="agent-head">
-            <span class="agent-avatar">📝</span>
-            <div>
-              <div class="agent-name">AutoFill Claims</div>
-              <div class="agent-role">Insurance form filler · for patients, by patients</div>
-            </div>
-            <span class="agent-status live">Live demo</span>
-          </div>
-          <p class="agent-quote">"You spent forty hours fighting insurance last year. I'll do the first thirty-eight."</p>
-          <div class="agent-tags">
-            <span class="tag">LangGraph</span>
-            <span class="tag">FastAPI</span>
-            <span class="tag">Healthcare</span>
-            <span class="tag">Forms</span>
-          </div>
-          <div class="agent-caps">
-            <span>🗂 forms</span><span>🧠 memory</span><span>🔐 auth</span><span>📤 submit</span>
-          </div>
-          <a class="agent-try" href="https://rlagents-hc.streamlit.app" target="_blank">Try it →</a>
-        </div>
-
-        <div class="agent-card" data-theme-only="midnight,agents,creative">
-          <div class="agent-head">
-            <span class="agent-avatar">🎚</span>
-            <div>
-              <div class="agent-name">tunelab</div>
-              <div class="agent-role">Music experiments · open source · pre-release ideas</div>
-            </div>
-            <span class="agent-status archived">Source</span>
-          </div>
-          <p class="agent-quote">"I'm where the songs go before they're songs. Not every experiment is a hit. Most aren't. The point is to try."</p>
-          <div class="agent-tags">
-            <span class="tag">Python</span>
-            <span class="tag">Audio ML</span>
-            <span class="tag">MIDI</span>
-          </div>
-          <div class="agent-caps">
-            <span>🎵 audio</span><span>🧪 experiments</span><span>📂 repo</span>
-          </div>
-          <a class="agent-try" href="https://github.com/anafe03" target="_blank">GitHub →</a>
-        </div>
-
-        <div class="agent-card" data-theme-only="midnight,agents,creative">
-          <div class="agent-head">
-            <span class="agent-avatar">🎛</span>
-            <div>
-              <div class="agent-name">StemDeck</div>
-              <div class="agent-role">Stem-splitter agent · isolate, remix, rebuild any track</div>
-            </div>
-            <span class="agent-status live">Live demo</span>
-          </div>
-          <p class="agent-quote">"Hand me a track and I'll hand back its parts — vocals, drums, bass, the rest. What you rebuild from there is your problem."</p>
-          <div class="agent-tags">
-            <span class="tag">Python</span>
-            <span class="tag">Audio ML</span>
-            <span class="tag">Demucs</span>
-            <span class="tag">Streamlit</span>
-          </div>
-          <div class="agent-caps">
-            <span>🎚 stems</span><span>🎵 audio</span><span>🌐 live</span>
-          </div>
-          <a class="agent-try" href="https://rlagents-stemdeck.streamlit.app" target="_blank">Try it →</a>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
   <section id="stack">
     <div class="container">
       <div class="section-header">
@@ -5930,11 +5825,20 @@
 
   <section id="why-healthcare">
     <div class="container">
+      <div class="section-header">
+        <h2>Why Healthcare</h2>
+        <p>Where I want the work to actually matter.</p>
+      </div>
+      <div class="hc-ecg" aria-hidden="true"></div>
+      <div class="hc-lead">
+        <p>I've shipped enterprise AI at <strong>PwC</strong>, spent two years on biosignal-adjacent research, and a year volunteering at <strong>Shirley Ryan AbilityLab</strong> — the top rehabilitation hospital in the country. That last one taught me the most: I watched good technology fail, not because it didn't work, but because it didn't fit how the clinic actually runs.</p>
+        <p>So I build for the workflow first. Agents that read the policy and file the appeal. Tools that capture a biosignal without a wearable. Systems that survive contact with a real clinical day — the interruptions, the EHR, the staffing. The AI is the easy part.</p>
+      </div>
       <div class="hc-stats">
-        <div class="hc-stat"><span class="hc-stat-num">5+</span><span class="hc-stat-label">Production AI systems shipped</span></div>
-        <div class="hc-stat"><span class="hc-stat-num">8</span><span class="hc-stat-label">PwC client-facing engagements</span></div>
-        <div class="hc-stat"><span class="hc-stat-num">2</span><span class="hc-stat-label">Years biosignal-adjacent research</span></div>
-        <div class="hc-stat"><span class="hc-stat-num">1</span><span class="hc-stat-label">Year volunteer rehab hospital (Shirley Ryan)</span></div>
+        <div class="hc-stat"><span class="hc-stat-icon">🚀</span><span class="hc-stat-num">5+</span><span class="hc-stat-label">Production AI systems shipped</span></div>
+        <div class="hc-stat"><span class="hc-stat-icon">💼</span><span class="hc-stat-num">8</span><span class="hc-stat-label">PwC client-facing engagements</span></div>
+        <div class="hc-stat"><span class="hc-stat-icon">📡</span><span class="hc-stat-num">2</span><span class="hc-stat-label">Years biosignal-adjacent research</span></div>
+        <div class="hc-stat"><span class="hc-stat-icon">🏥</span><span class="hc-stat-num">1</span><span class="hc-stat-label">Year volunteer rehab hospital (Shirley Ryan)</span></div>
       </div>
       <div class="hc-quote">
         <p>"The hardest part of healthcare AI isn't the AI — it's the workflow. I build for the clinic the way it actually runs, not the way a deck says it does."</p>
@@ -6039,6 +5943,11 @@
           <span class="rehab-icon">🧠</span>
           <h4>HDC for cross-modal signals</h4>
           <p>Hyperdimensional computing as an efficient substrate for integrating biosignals (EEG, HRV, motion). Presented at Science of Consciousness, July 2025.</p>
+        </div>
+        <div class="rehab-card">
+          <span class="rehab-icon">🧫</span>
+          <h4>Stem Cells &amp; Regenerative Medicine</h4>
+          <p>Coursework — the biology of tissue repair: stem-cell differentiation, scaffolds, and where regenerative therapy actually stands today. The science under the rehab tech.</p>
         </div>
       </div>
     </div>
@@ -6516,10 +6425,13 @@
     <div class="container">
       <div class="section-header">
         <h2>Catalog</h2>
-        <p>Every track. Tagged by mood, BPM, and where it was made.</p>
+        <p>Straight from SoundCloud — it updates whenever I post.</p>
       </div>
-      <div class="track-filters" id="trackFilters"></div>
-      <div class="tracks-list" id="tracksList"></div>
+      <div class="soundcloud-embed">
+        <iframe width="100%" height="500" scrolling="no" frameborder="no" allow="autoplay"
+          title="Austin Nafe on SoundCloud"
+          src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/user-611195779&color=%23ec4899&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false"></iframe>
+      </div>
     </div>
   </section>
 
@@ -7246,6 +7158,7 @@
       category: string; name: string; variety: string; zone: string;
       planted: string; status: string; note: string; photo: string;
       light: string; water: string; soil: string; likes: string; care: string;
+      recipe: string;
     }
     let plantsData: Plant[] = [];
     let gardenSearch = '';
@@ -7291,29 +7204,49 @@
       Marigold: 'Tagetes', Nasturtium: 'Tropaeolum', Fig: 'Common fig'
     };
 
-    async function fetchPlantPhoto(name: string): Promise<string> {
-      if (name in plantPhotoCache) return plantPhotoCache[name];
-      plantPhotoCache[name] = '';
+    function plantKey(p: Plant): string {
+      return p.name + '|' + p.variety;
+    }
+
+    async function fetchPlantPhoto(p: Plant): Promise<string> {
+      const key = plantKey(p);
+      if (key in plantPhotoCache) return plantPhotoCache[key];
+      plantPhotoCache[key] = '';
+      // 1. Openverse — variety-specific search (e.g. "Sungold Tomato")
       try {
-        const title = WIKI_TITLE[name] || name;
+        const q = [p.variety, p.name].filter(Boolean).join(' ');
+        const res = await fetch(`https://api.openverse.org/v1/images/?q=${encodeURIComponent(q)}&page_size=4&mature=false`);
+        if (res.ok) {
+          const data = await res.json();
+          const hit = ((data && data.results) || []).find((r: { thumbnail?: string; url?: string }) => r && (r.thumbnail || r.url));
+          if (hit) {
+            plantPhotoCache[key] = hit.thumbnail || hit.url || '';
+            if (plantPhotoCache[key]) return plantPhotoCache[key];
+          }
+        }
+      } catch { /* fall through to Wikipedia */ }
+      // 2. Wikipedia — accurate species photo as the fallback
+      try {
+        const title = WIKI_TITLE[p.name] || p.name;
         const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`);
-        if (!res.ok) throw new Error('no page');
-        const data = await res.json();
-        const url = (data && (data.thumbnail?.source || data.originalimage?.source)) || '';
-        plantPhotoCache[name] = url;
-        return url;
-      } catch {
-        return '';
-      }
+        if (res.ok) {
+          const data = await res.json();
+          plantPhotoCache[key] = (data && (data.thumbnail?.source || data.originalimage?.source)) || '';
+        }
+      } catch { /* keep '' */ }
+      return plantPhotoCache[key];
     }
 
     function hydratePlantPhotos() {
-      const names = Array.from(new Set(plantsData.filter(p => !p.photo).map(p => p.name)));
-      names.forEach(name => {
-        fetchPlantPhoto(name).then(url => {
+      const seen = new Set<string>();
+      plantsData.filter(p => !p.photo).forEach(p => {
+        const key = plantKey(p);
+        if (seen.has(key)) return;
+        seen.add(key);
+        fetchPlantPhoto(p).then(url => {
           if (!url) return;
           document.querySelectorAll<HTMLElement>('.garden-card').forEach(card => {
-            if (card.dataset.plantName !== name) return;
+            if (card.dataset.plantKey !== key) return;
             const art = card.querySelector<HTMLElement>('.garden-card-art');
             if (!art) return;
             art.style.backgroundImage = `url('${url}')`;
@@ -7331,10 +7264,10 @@
       const matches = plantsData
         .map((p, i) => ({ p, i }))
         .filter(({ p }) => gardenCat === 'all' || p.category === gardenCat)
-        .filter(({ p }) => !q || [p.name, p.variety, p.category, p.zone, p.light, p.water, p.soil, p.likes, p.care, p.note]
+        .filter(({ p }) => !q || [p.name, p.variety, p.category, p.zone, p.light, p.water, p.soil, p.likes, p.care, p.recipe, p.note]
           .join(' ').toLowerCase().includes(q));
       grid.innerHTML = matches.map(({ p, i }) => {
-        const photo = p.photo || plantPhotoCache[p.name] || '';
+        const photo = p.photo || plantPhotoCache[plantKey(p)] || '';
         const art = photo
           ? `background-image:url('${escapeHTML(photo)}')`
           : `background:${GARDEN_CAT_GRADIENT[p.category] || 'linear-gradient(150deg,#9ec27a,#6b8e3f)'}`;
@@ -7343,7 +7276,7 @@
           ? `<span class="garden-card-badge ${escapeHTML(p.status)}">${escapeHTML(p.status)}</span>`
           : '';
         return `
-          <article class="garden-card s-${escapeHTML(p.status)}" data-plant-idx="${i}" data-plant-name="${escapeHTML(p.name)}" role="button" tabindex="0">
+          <article class="garden-card s-${escapeHTML(p.status)}" data-plant-idx="${i}" data-plant-key="${escapeHTML(plantKey(p))}" role="button" tabindex="0">
             <div class="garden-card-art" style="${art}">
               ${glyph}
               ${badge}
@@ -7380,7 +7313,7 @@
       const note = document.getElementById('pmodalNote');
       const fields = document.getElementById('pmodalFields');
       const grad = GARDEN_CAT_GRADIENT[p.category] || 'linear-gradient(150deg,#9ec27a,#6b8e3f)';
-      const modalPhoto = p.photo || plantPhotoCache[p.name] || '';
+      const modalPhoto = p.photo || plantPhotoCache[plantKey(p)] || '';
       if (photos) {
         photos.innerHTML = modalPhoto
           ? `<div class="pmodal-photo" style="grid-column: 1 / -1"><img src="${escapeHTML(modalPhoto)}" alt="${escapeHTML(p.name)}"></div>`
@@ -7392,7 +7325,8 @@
       if (city) city.textContent = p.name;
       if (note) note.textContent = p.variety ? `‘${p.variety}’` : '';
       if (fields) {
-        const entries: Array<{ icon: string; label: string; value: string }> = [];
+        const entries: Array<{ icon: string; label: string; value: string; recipe?: boolean }> = [];
+        if (p.recipe) entries.push({ icon: '🍴', label: 'Recipe', value: p.recipe, recipe: true });
         if (p.light) entries.push({ icon: '☀️', label: 'Light', value: p.light });
         if (p.water) entries.push({ icon: '💧', label: 'Water', value: p.water });
         if (p.soil) entries.push({ icon: '🪴', label: 'Soil', value: p.soil });
@@ -7403,7 +7337,7 @@
           entries.push({ icon: '📍', label: 'In my garden', value: [mine, p.note].filter(Boolean).join(' — ') });
         }
         fields.innerHTML = entries.map(e => `
-          <div class="pmodal-field">
+          <div class="pmodal-field${e.recipe ? ' pmodal-field-recipe' : ''}">
             <div class="pmodal-field-label">${e.icon} ${e.label}</div>
             <div class="pmodal-field-value">${escapeHTML(e.value)}</div>
           </div>
@@ -7478,7 +7412,8 @@
         water: r.water || '',
         soil: r.soil || '',
         likes: r.likes || '',
-        care: r.care || ''
+        care: r.care || '',
+        recipe: r.recipe || ''
       })).sort((a, b) => a.name.localeCompare(b.name) || a.variety.localeCompare(b.variety));
 
       const catOrder = ['Fruit Tree', 'Berry', 'Vine', 'Perennial', 'Vegetable', 'Herb', 'Flower'];
@@ -8421,12 +8356,12 @@
     }
 
     // Section IDs that may be present. Visibility is driven entirely by config.order.
-    const ALL_SECTIONS = ['now', 'businesses', 'projects', 'music', 'contact', 'picks', 'portfolio', 'dispatches', 'studio', 'journey', 'tracks', 'videos', 'garden', 'calendar', 'harvest', 'observations', 'press', 'manifesto', 'stack', 'faq', 'why-healthcare', 'album', 'nowplaying', 'letter', 'charts', 'bucket', 'pack', 'agents', 'numbers', 'decisions', 'rig', 'parks', 'fests', 'practice', 'routines', 'notebook', 'rehab-tech'];
+    const ALL_SECTIONS = ['now', 'businesses', 'projects', 'music', 'contact', 'picks', 'portfolio', 'dispatches', 'studio', 'journey', 'tracks', 'videos', 'garden', 'calendar', 'harvest', 'observations', 'press', 'manifesto', 'stack', 'faq', 'why-healthcare', 'album', 'nowplaying', 'letter', 'charts', 'bucket', 'pack', 'numbers', 'decisions', 'rig', 'parks', 'fests', 'practice', 'routines', 'notebook', 'rehab-tech'];
 
     const themes: Record<string, ThemeConfig> = {
       midnight: {
-        order: ['now', 'businesses', 'projects', 'agents', 'stack', 'faq', 'contact'],
-        subtitle: 'AI Engineer. Founder. Researcher.',
+        order: ['now', 'businesses', 'projects', 'stack', 'faq', 'contact'],
+        subtitle: 'AI Engineer. Founder. Technologist.',
         bio: 'I build production AI agents in Python, FastAPI, and LangGraph. Currently looking for roles in AI agents, healthcare tech, and AI research.',
         badge: 'Open to work — AI Engineer / Research'
       },
@@ -8437,57 +8372,51 @@
         badge: 'Open to interesting conversations'
       },
       healthcare: {
-        order: ['why-healthcare', 'agents', 'now', 'projects', 'businesses', 'faq', 'contact'],
+        order: ['rehab-tech', 'now', 'projects', 'businesses', 'faq', 'contact'],
         subtitle: 'AI Engineer building healthcare technology.',
         bio: 'Production AI agents for clinical workflows. Background spans PwC enterprise AI, real-time biosignal processing, and time in clinical settings — focused on tools that fit how medicine is actually practiced.',
         badge: 'Open to work — Healthcare AI / Clinical Tech'
       },
       adventure: {
-        order: ['journey', 'rig', 'fests', 'agents', 'parks', 'bucket', 'album', 'dispatches', 'pack', 'now', 'music', 'businesses', 'projects', 'contact'],
+        order: ['journey', 'rig', 'fests', 'parks', 'bucket', 'album', 'dispatches', 'pack', 'now', 'music', 'businesses', 'projects', 'contact'],
         subtitle: 'Builder. Wanderer. Reportedly not lost.',
         bio: 'I build software between trail miles and time zones. The best ideas tend to show up somewhere with no service — these are the ones I brought back. Think Eat, Pray, Love, except Liz Gilbert shipped a FastAPI backend from the ashram.',
         badge: 'Currently — building from the road'
       },
       creative: {
-        order: ['music', 'tracks', 'nowplaying', 'videos', 'agents', 'studio', 'projects', 'businesses', 'now', 'contact'],
+        order: ['music', 'tracks', 'nowplaying', 'videos', 'studio', 'projects', 'businesses', 'now', 'contact'],
         subtitle: 'Producer. Engineer. Artist.',
         bio: 'I make music and the tools to make music with. Audio ML, generative systems, and live performance — the rest of the stack is in service of that.',
         badge: 'Open to creative collaborations'
       },
       agents: {
-        order: ['agents', 'projects', 'stack', 'now', 'businesses', 'faq', 'contact'],
+        order: ['projects', 'stack', 'now', 'businesses', 'faq', 'contact'],
         subtitle: 'AI Agent Engineer.',
         bio: 'I ship production multi-step agents — LangGraph, FastAPI, persistent memory, evaluation harnesses, adversarial testing. Reliability over demos.',
         badge: 'Open to work — Agent Infrastructure / Platform'
       },
       cyber: {
-        order: ['projects', 'agents', 'stack', 'now', 'businesses', 'faq', 'contact'],
+        order: ['projects', 'stack', 'now', 'businesses', 'faq', 'contact'],
         subtitle: 'AI Security Researcher.',
         bio: 'I red-team AI agents. Octagon explores RL-driven attack policies against agent stacks. PwC background in compliance and risk underwrites the rigor.',
         badge: 'Open to work — AI Security / Red Team'
       },
       finance: {
-        order: ['now', 'portfolio', 'charts', 'agents', 'letter', 'picks', 'projects', 'businesses', 'faq', 'contact'],
+        order: ['now', 'portfolio', 'charts', 'letter', 'picks', 'projects', 'businesses', 'faq', 'contact'],
         subtitle: 'AI Engineer. Quant-Curious. Former PwC.',
         bio: 'Finance + CS undergrad, PwC Innovation Hub alum building AI for banking clients. Comfortable shipping production systems against regulated environments and senior-stakeholder review cycles.',
         badge: 'Open to work — AI in Financial Services'
       },
       founder: {
-        order: ['businesses', 'numbers', 'press', 'decisions', 'manifesto', 'agents', 'projects', 'now', 'faq', 'contact'],
+        order: ['businesses', 'numbers', 'press', 'decisions', 'manifesto', 'projects', 'now', 'faq', 'contact'],
         subtitle: 'Founder. Builder. Operator.',
         bio: 'Three ventures in motion — Boundless Horizons (stealth), TM Go (tour management), SelfNVest AI (FSBO real estate). Full-stack, from schema to UI to DNS. I ship.',
         badge: 'Open to founder / co-founder conversations'
       },
-      garden: {
-        order: ['garden', 'calendar', 'harvest', 'observations', 'now', 'projects', 'businesses', 'contact'],
-        subtitle: 'Gardener. Grower. Patient about it.',
-        bio: 'Slow projects. Plants, compost, observation. The garden teaches you to plan in seasons, not sprints — every other project I work on borrows that rhythm.',
-        badge: 'Currently — tending the plot'
-      },
       wellness: {
-        order: ['practice', 'routines', 'notebook', 'rehab-tech', 'agents', 'now', 'projects', 'contact'],
-        subtitle: 'Practitioner. Teacher. Self-experimenter.',
-        bio: "Yoga teacher, alt-medicine-curious, self-trained on my own anatomy. I write about what I try, what works, and what I don't know — empirical wellness, no snake oil.",
+        order: ['practice', 'routines', 'rehab-tech', 'garden', 'calendar', 'harvest', 'observations', 'notebook', 'now', 'projects', 'contact'],
+        subtitle: 'Practitioner. Grower. Patient about it.',
+        bio: "Yoga teacher and gardener — slow, embodied projects. The mat and the plot teach the same thing: plan in seasons, pay attention, and stay honest about what actually works.",
         badge: 'Open to teaching + collaborations'
       }
     };
@@ -8705,7 +8634,7 @@
       const themeLabels: Record<string, string> = {
         midnight: 'Midnight', cream: 'Cream', healthcare: 'Healthcare',
         adventure: 'Adventure', creative: 'Creative', agents: 'AI Agents',
-        cyber: 'Cyber Risk', finance: 'Finance', founder: 'Founder', garden: 'Garden'
+        cyber: 'Cyber Risk', finance: 'Finance', founder: 'Founder', wellness: 'Wellness'
       };
       Object.keys(themes).forEach(t => {
         items.push({
@@ -8726,7 +8655,7 @@
         stack: 'Stack', faq: 'FAQ', 'why-healthcare': 'Why Healthcare', album: 'Album',
         nowplaying: 'What I\'m Into',
         letter: 'Quarterly Letter', charts: 'Charts I Made',
-        bucket: 'Bucket List', pack: 'What I Pack', agents: 'Agents',
+        bucket: 'Bucket List', pack: 'What I Pack',
         numbers: 'The Numbers', decisions: 'Decisions Log',
         rig: 'The Rig', parks: 'National Parks', fests: 'Festivals',
         practice: 'The Practice', routines: 'Routines', notebook: 'Notebook', 'rehab-tech': 'Rehab Tech'
