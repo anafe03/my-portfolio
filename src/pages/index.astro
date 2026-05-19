@@ -3822,32 +3822,14 @@
       overflow: hidden;
     }
 
-    .project-card::before {
-      content: '';
-      position: absolute;
-      top: -2px;
-      left: -2px;
-      right: -2px;
-      bottom: -2px;
-      background: linear-gradient(135deg, var(--forest), var(--ocean), var(--coral));
-      border-radius: 24px;
-      opacity: 0;
-      transition: opacity 0.4s;
-      z-index: -1;
-    }
-
-    .project-card:hover::before {
-      opacity: 1;
-    }
-
     .project-card:hover {
-      transform: translateY(-10px);
-      border-color: transparent;
-      box-shadow: 0 20px 60px rgba(255, 107, 107, 0.3);
+      transform: translateY(-6px);
+      border-color: var(--forest);
     }
 
     .project-card.has-domain:hover {
-      box-shadow: 0 18px 52px color-mix(in srgb, var(--domain, var(--coral)) 34%, transparent);
+      border-color: var(--domain);
+      box-shadow: 0 16px 44px color-mix(in srgb, var(--domain, var(--coral)) 32%, transparent);
     }
 
     /* Domain identity header on each project card */
@@ -4182,6 +4164,23 @@
       transform: translateY(-5px);
       border-color: var(--coral);
       box-shadow: 0 20px 60px rgba(255, 107, 107, 0.3);
+    }
+
+    /* ─── Unified card system — one shell for every card ─── */
+    .project-card, .business-card, .bucket-card, .place-card, .pick-card,
+    .rehab-card, .routine-card, .garden-card, .fest, .video-card,
+    .music-card, .track-row-wrap {
+      border-radius: 16px;
+      border-width: 2px;
+      transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+    }
+
+    .project-card:hover, .business-card:hover, .bucket-card:hover, .place-card:hover,
+    .pick-card:hover, .rehab-card:hover, .routine-card:hover, .garden-card:hover,
+    .fest:hover, .video-card:hover, .music-card:hover, .track-row-wrap:hover {
+      transform: translateY(-6px);
+      border-color: var(--forest);
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.17);
     }
 
     .music-embed {
