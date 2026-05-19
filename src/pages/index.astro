@@ -3846,10 +3846,47 @@
       box-shadow: 0 20px 60px rgba(255, 107, 107, 0.3);
     }
 
+    .project-card.has-domain:hover {
+      box-shadow: 0 18px 52px color-mix(in srgb, var(--domain, var(--coral)) 34%, transparent);
+    }
+
+    /* Domain identity header on each project card */
+    .project-domain {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin-bottom: 1.4rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .project-domain-icon {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      border-radius: 11px;
+      background: color-mix(in srgb, var(--domain, var(--forest)) 16%, transparent);
+      border: 1px solid color-mix(in srgb, var(--domain, var(--forest)) 45%, transparent);
+    }
+
+    .project-domain-label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--domain, var(--forest));
+    }
+
     .project-card h3 {
       font-size: 1.6rem;
       margin-bottom: 1rem;
       color: var(--text);
+      position: relative;
+      z-index: 1;
     }
 
     .project-card p {
@@ -4303,7 +4340,7 @@
     }
 
     /* Halftone grain overlay (Creative only) */
-    [data-theme="creative"] body::after {
+    body[data-theme="creative"]::after {
       content: "";
       position: fixed;
       inset: 0;
@@ -4312,6 +4349,63 @@
       background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
       opacity: 0.35;
       mix-blend-mode: overlay;
+    }
+
+    /* ─── Per-theme signature motifs ──────────────────────── */
+    body[data-theme]::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* Midnight — dot grid */
+    body[data-theme="midnight"]::before {
+      background-image: radial-gradient(color-mix(in srgb, var(--text) 8%, transparent) 1px, transparent 1.6px);
+      background-size: 34px 34px;
+    }
+
+    /* Cream — ruled notebook lines */
+    body[data-theme="cream"]::before {
+      background-image: repeating-linear-gradient(0deg, transparent 0 31px, color-mix(in srgb, var(--text) 6%, transparent) 31px 32px);
+    }
+
+    /* Healthcare — ECG trace */
+    body[data-theme="healthcare"]::before {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='90'><path d='M0 45 L62 45 L74 20 L86 70 L98 45 L150 45 L162 32 L168 58 L174 45 L240 45' stroke='%2314b8a6' stroke-width='2' fill='none'/></svg>");
+      background-size: 240px 90px;
+      opacity: 0.4;
+    }
+
+    /* Adventure — topographic contours */
+    body[data-theme="adventure"]::before {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><g fill='none' stroke='%23ffffff' stroke-width='1.4'><path d='M-20 80 Q70 20 160 70 T340 60'/><path d='M-20 150 Q80 95 170 140 T340 130'/><path d='M-20 220 Q60 170 160 210 T340 200'/><path d='M-20 290 Q90 245 180 280 T340 270'/></g></svg>");
+      background-size: 320px 320px;
+      opacity: 0.07;
+    }
+
+    /* Agents — terminal scanlines */
+    body[data-theme="agents"]::before {
+      background-image: repeating-linear-gradient(0deg, transparent 0 3px, color-mix(in srgb, var(--text) 6%, transparent) 3px 4px);
+    }
+
+    /* Finance — graph paper */
+    body[data-theme="finance"]::before {
+      background-image:
+        linear-gradient(color-mix(in srgb, var(--text) 6%, transparent) 1px, transparent 1px),
+        linear-gradient(90deg, color-mix(in srgb, var(--text) 6%, transparent) 1px, transparent 1px);
+      background-size: 26px 26px;
+    }
+
+    /* Founder — boardroom pinstripe */
+    body[data-theme="founder"]::before {
+      background-image: repeating-linear-gradient(90deg, transparent 0 13px, color-mix(in srgb, var(--text) 7%, transparent) 13px 14px);
+    }
+
+    /* Wellness — concentric ripples */
+    body[data-theme="wellness"]::before {
+      background-image: repeating-radial-gradient(circle at 82% 12%, transparent 0 46px, color-mix(in srgb, var(--text) 6%, transparent) 46px 48px);
     }
 
     /* Equalizer bars at the bottom of track rows */
@@ -8331,6 +8425,39 @@
     });
 
     // Live-sync the other live data sections from their Google Sheets.
+    // Give each project card a domain identity (icon + colored label).
+    function enhanceProjectCards() {
+      const DOMAINS: Record<string, { color: string; icon: string; label: string }> = {
+        security:   { color: '#ef4444', icon: '🛡️', label: 'Security' },
+        health:     { color: '#14b8a6', icon: '🩺', label: 'Healthcare' },
+        finance:    { color: '#16a34a', icon: '📈', label: 'Finance' },
+        music:      { color: '#ec4899', icon: '🎵', label: 'Music' },
+        game:       { color: '#8b5cf6', icon: '🎮', label: 'Game' },
+        infra:      { color: '#64748b', icon: '⚙️', label: 'Infrastructure' },
+        enterprise: { color: '#d4a017', icon: '🏢', label: 'Enterprise' },
+        signal:     { color: '#06b6d4', icon: '📡', label: 'Signal' },
+        agents:     { color: '#6366f1', icon: '🤖', label: 'AI Agent' },
+        ai:         { color: '#3b82f6', icon: '🧠', label: 'AI' }
+      };
+      const PRIORITY = ['security', 'health', 'finance', 'music', 'game', 'infra', 'enterprise', 'signal'];
+      document.querySelectorAll<HTMLElement>('.project-card').forEach(card => {
+        if (card.querySelector('.project-domain')) return;
+        const cats = (card.dataset.category || '').split(',').map(s => s.trim()).filter(Boolean);
+        if (!cats.length) return;
+        const isAgent = cats.includes('agents') || cats.includes('multi-agent');
+        const key = PRIORITY.find(d => cats.includes(d)) || (isAgent ? 'agents' : 'ai');
+        const d = DOMAINS[key];
+        const label = (isAgent && key !== 'agents') ? `${d.label} Agent` : d.label;
+        card.style.setProperty('--domain', d.color);
+        card.classList.add('has-domain');
+        const head = document.createElement('div');
+        head.className = 'project-domain';
+        head.innerHTML = `<span class="project-domain-icon">${d.icon}</span><span class="project-domain-label">${label}</span>`;
+        card.insertBefore(head, card.firstChild);
+      });
+    }
+    enhanceProjectCards();
+
     syncFestivals();
     syncParks();
     syncBucket();
