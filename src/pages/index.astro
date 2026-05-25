@@ -4407,6 +4407,72 @@
       background-image: repeating-radial-gradient(circle at 82% 12%, transparent 0 46px, color-mix(in srgb, var(--text) 6%, transparent) 46px 48px);
     }
 
+    /* ─── Per-theme hero signature (under the subtitle) ──── */
+    body[data-theme="midnight"] .hero .subtitle::after,
+    body[data-theme="cream"] .hero .subtitle::after,
+    body[data-theme="healthcare"] .hero .subtitle::after,
+    body[data-theme="adventure"] .hero .subtitle::after,
+    body[data-theme="creative"] .hero .subtitle::after,
+    body[data-theme="agents"] .hero .subtitle::after,
+    body[data-theme="finance"] .hero .subtitle::after,
+    body[data-theme="founder"] .hero .subtitle::after,
+    body[data-theme="wellness"] .hero .subtitle::after {
+      content: '';
+      display: block;
+      width: 100%;
+      max-width: 320px;
+      height: 34px;
+      margin-top: 0.85rem;
+      background-repeat: no-repeat;
+      background-position: left center;
+    }
+
+    /* Midnight — dots streaming into a caret */
+    body[data-theme="midnight"] .hero .subtitle::after {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 24'><g fill='%23627ad6'><circle cx='10' cy='12' r='3'/><circle cx='30' cy='12' r='3' opacity='0.75'/><circle cx='50' cy='12' r='3' opacity='0.5'/></g><rect x='180' y='4' width='4' height='16' fill='%23627ad6'/></svg>");
+    }
+
+    /* Cream — hand-drawn squiggle underline */
+    body[data-theme="cream"] .hero .subtitle::after {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 18'><path d='M4 11 Q19 3 34 11 T64 11 T94 11 T124 11 T154 11 T184 11 T214 11 T236 11' stroke='%23c97b4c' stroke-width='2' fill='none' stroke-linecap='round'/></svg>");
+    }
+
+    /* Healthcare — ECG sweep with a single blip */
+    body[data-theme="healthcare"] .hero .subtitle::after {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 280 32'><path d='M2 16 L90 16 L102 6 L114 26 L126 16 L170 16 L182 11 L188 21 L194 16 L278 16' stroke='%2314b8a6' stroke-width='2' fill='none'/></svg>");
+    }
+
+    /* Adventure — topographic swoop with a pin */
+    body[data-theme="adventure"] .hero .subtitle::after {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 260 34'><g fill='none' stroke='%23a3c08a' stroke-width='1.5'><path d='M2 22 Q70 10 140 18 T258 14'/><path d='M2 30 Q80 18 150 26 T258 22' opacity='0.6'/></g><circle cx='220' cy='16' r='4' fill='%23e85d4a'/></svg>");
+    }
+
+    /* Creative — equalizer bars */
+    body[data-theme="creative"] .hero .subtitle::after {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 28'><g fill='%23ec4899'><rect x='4' y='10' width='4' height='14'/><rect x='14' y='2' width='4' height='22'/><rect x='24' y='14' width='4' height='10'/><rect x='34' y='6' width='4' height='18'/><rect x='44' y='12' width='4' height='12'/><rect x='54' y='4' width='4' height='20'/><rect x='64' y='14' width='4' height='10'/><rect x='74' y='2' width='4' height='22'/><rect x='84' y='10' width='4' height='14'/><rect x='94' y='6' width='4' height='18'/><rect x='104' y='12' width='4' height='12'/><rect x='114' y='4' width='4' height='20'/><rect x='124' y='8' width='4' height='16'/><rect x='134' y='14' width='4' height='10'/><rect x='144' y='6' width='4' height='18'/><rect x='154' y='10' width='4' height='14'/><rect x='164' y='2' width='4' height='22'/><rect x='174' y='12' width='4' height='12'/><rect x='184' y='6' width='4' height='18'/></g></svg>");
+    }
+
+    /* Agents — chevron + cursor */
+    body[data-theme="agents"] .hero .subtitle::after {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 24'><polygon points='4,4 14,12 4,20' fill='%2300d9b2'/><rect x='22' y='10' width='44' height='2' fill='%2300d9b2' opacity='0.6'/><rect x='74' y='10' width='32' height='2' fill='%2300d9b2' opacity='0.5'/><rect x='126' y='4' width='4' height='16' fill='%2300d9b2'/></svg>");
+    }
+
+    /* Finance — candlestick sparkline */
+    body[data-theme="finance"] .hero .subtitle::after {
+      max-width: 280px;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 32'><g stroke='%2316a34a'><line x1='12' y1='6' x2='12' y2='26' stroke-width='1'/><line x1='34' y1='8' x2='34' y2='28' stroke-width='1'/></g><g fill='%2316a34a'><rect x='8' y='12' width='8' height='10'/><rect x='30' y='14' width='8' height='8'/></g><g stroke='%23ef4444'><line x1='56' y1='4' x2='56' y2='24' stroke-width='1'/></g><g fill='%23ef4444'><rect x='52' y='8' width='8' height='12'/></g><g stroke='%2316a34a'><line x1='78' y1='6' x2='78' y2='22' stroke-width='1'/><line x1='100' y1='2' x2='100' y2='20' stroke-width='1'/><line x1='122' y1='4' x2='122' y2='18' stroke-width='1'/></g><g fill='%2316a34a'><rect x='74' y='10' width='8' height='8'/><rect x='96' y='6' width='8' height='10'/><rect x='118' y='7' width='8' height='8'/></g><g stroke='%23ef4444'><line x1='144' y1='2' x2='144' y2='16' stroke-width='1'/></g><g fill='%23ef4444'><rect x='140' y='6' width='8' height='8'/></g><g stroke='%2316a34a'><line x1='166' y1='0' x2='166' y2='14' stroke-width='1'/><line x1='188' y1='-2' x2='188' y2='12' stroke-width='1'/></g><g fill='%2316a34a'><rect x='162' y='4' width='8' height='8'/><rect x='184' y='2' width='8' height='8'/></g></svg>");
+    }
+
+    /* Founder — upward trend with arrow */
+    body[data-theme="founder"] .hero .subtitle::after {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 32'><polyline points='4,26 44,20 84,22 124,10 164,8 210,2' stroke='%23d4a017' stroke-width='2' fill='none' stroke-linejoin='round'/><polygon points='200,8 214,2 218,16' fill='%23d4a017'/></svg>");
+    }
+
+    /* Wellness — botanical sprig */
+    body[data-theme="wellness"] .hero .subtitle::after {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 36'><path d='M4 30 Q42 18 92 22 T196 10' stroke='%236b9ba0' stroke-width='1.6' fill='none'/><ellipse cx='44' cy='22' rx='6' ry='2.6' transform='rotate(-30 44 22)' fill='%236b9ba0' opacity='0.75'/><ellipse cx='98' cy='20' rx='6' ry='2.6' transform='rotate(-15 98 20)' fill='%236b9ba0' opacity='0.75'/><ellipse cx='152' cy='14' rx='6' ry='2.6' transform='rotate(-10 152 14)' fill='%236b9ba0' opacity='0.75'/><circle cx='196' cy='10' r='3' fill='%23b56b6b'/></svg>");
+    }
+
     /* Equalizer bars at the bottom of track rows */
     [data-theme="creative"] .track-row {
       position: relative;
