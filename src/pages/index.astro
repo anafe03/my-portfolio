@@ -7,7 +7,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Austin Nafe - Builder & Creator</title>
+  <title>Austin Nafe — AI Engineer</title>
+  <meta name="description" content="AI Engineer building production agents with Python, FastAPI, and LangGraph. Founder of TM Go. Formerly PwC Innovation Hub.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Austin Nafe — AI Engineer">
+  <meta property="og:description" content="AI Engineer building production agents with Python, FastAPI, and LangGraph. Founder of TM Go. Formerly PwC Innovation Hub.">
+  <meta property="og:image" content="/profile.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Austin Nafe — AI Engineer">
+  <meta name="twitter:description" content="AI Engineer building production agents with Python, FastAPI, and LangGraph. Founder of TM Go. Formerly PwC Innovation Hub.">
+  <meta name="twitter:image" content="/profile.jpg">
+
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <script is:inline src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
@@ -19,11 +31,6 @@
   <!-- Vercel Web Analytics — auto-enabled once you flip the toggle in your Vercel project's Analytics tab. No token needed. -->
   <script is:inline defer src="/_vercel/insights/script.js"></script>
 
-  <!-- Cloudflare Web Analytics — paste your beacon token below to enable.
-       Get one at https://www.cloudflare.com/web-analytics/
-       <script is:inline defer src="https://static.cloudflareinsights.com/beacon.min.js"
-         data-cf-beacon='{"token": "PASTE_TOKEN_HERE"}'></script>
-  -->
   <style>
     * {
       margin: 0;
@@ -316,6 +323,11 @@
       75% { transform: translate(40px, 10px) rotate(270deg); }
     }
 
+    @keyframes heroBob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+
     .hero .container {
       position: relative;
       z-index: 1;
@@ -337,7 +349,7 @@
       border-radius: 50%;
       padding: 4px;
       background: linear-gradient(135deg, var(--forest), var(--ocean), var(--coral));
-      animation: float 6s infinite ease-in-out;
+      animation: heroBob 6s infinite ease-in-out;
       box-shadow: 0 20px 60px rgba(0, 119, 190, 0.4);
       flex-shrink: 0;
     }
@@ -385,6 +397,12 @@
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       gap: 1.5rem;
       max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    /* One card, so it gets its own width rather than stretching across .now-grid's full track. */
+    .blog-soon {
+      max-width: 620px;
       margin: 0 auto;
     }
 
@@ -3578,11 +3596,19 @@
       font-weight: 900;
       margin-bottom: 1rem;
       line-height: 1;
-      background: linear-gradient(135deg, var(--forest), var(--ocean), var(--coral));
+      background: linear-gradient(135deg, var(--hero-grad-start, var(--forest)), var(--ocean), var(--coral));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
       animation: slideUp 0.8s ease-out;
+    }
+
+    /* Midnight's --forest (#2d5016) is only 2.06:1 on its --bg, so the name opens on --ocean
+       (3.97:1) instead. Other themes use a lighter --forest and keep the three-stop gradient.
+       :not([data-theme]) covers the pre-hydration paint, which renders midnight's colors. */
+    body:not([data-theme]) .hero h1,
+    body[data-theme="midnight"] .hero h1 {
+      --hero-grad-start: var(--ocean);
     }
 
     @keyframes slideUp {
@@ -5065,6 +5091,15 @@
         grid-template-columns: 1fr;
       }
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -5244,14 +5279,6 @@
             Visit Site →
           </a>
         </div>
-        <div class="business-card">
-          <span class="business-icon">🏠</span>
-          <h3>SelfNVest AI</h3>
-          <p>Full-stack FSBO real estate platform. React + FastAPI + Supabase + Stripe with a LangGraph AI backend handling property inquiries, showing scheduling, and negotiation support with persistent per-user memory.</p>
-          <a href="https://www.selfnvestai.com/" target="_blank" class="business-link">
-            Visit Site →
-          </a>
-        </div>
       </div>
     </div>
   </section>
@@ -5335,16 +5362,6 @@
             <span class="tag">Embeddings</span>
           </div>
         </div>
-        <div class="project-card" data-theme-only="midnight,creative,agents" data-category="ai,game,wip">
-          <span class="wip-badge">In Progress</span>
-          <h3>Dating Game</h3>
-          <p>An interactive dating game with AI-driven characters and dynamic dialogue — exploring agent personality consistency and player-driven narrative branching.</p>
-          <div class="project-tags">
-            <span class="tag">LangGraph</span>
-            <span class="tag">LLMs</span>
-            <span class="tag">Game Design</span>
-          </div>
-        </div>
         <div class="project-card" data-theme-only="midnight,agents,founder,finance" data-category="ai,enterprise">
           <h3>PwC Innovation Hub</h3>
           <p>Shipped 5+ production AI plugins end-to-end as Senior Associate AI Engineer — RFP generator, internal knowledge base connector, EDGAR search. Spearheaded the AI Factory upskilling program for the data science team.</p>
@@ -5366,17 +5383,6 @@
             <span class="tag">Stripe</span>
           </div>
           <a href="https://toursync-deploy.vercel.app/" target="_blank" class="project-link">Try it →</a>
-        </div>
-        <div class="project-card" data-theme-only="midnight,agents,founder,finance" data-category="ai,agents">
-          <h3>SelfNVest Agent</h3>
-          <p>Real-estate FSBO agent — reads the contract twice, answers buyer questions around the clock, and pulls neighborhood comps.</p>
-          <div class="project-tags">
-            <span class="tag">LangGraph</span>
-            <span class="tag">React</span>
-            <span class="tag">FastAPI</span>
-            <span class="tag">Supabase</span>
-          </div>
-          <a href="https://www.selfnvestai.com/" target="_blank" class="project-link">Try it →</a>
         </div>
         <div class="project-card" data-theme-only="midnight,agents,healthcare,wellness" data-category="ai,agents,health">
           <h3>Prior Auth Agent</h3>
@@ -5446,6 +5452,22 @@
     </div>
   </section>
 
+  <section id="blog">
+    <div class="container">
+      <div class="section-header">
+        <h2>Blog</h2>
+        <p>Notes on agents, evals, and what actually ships</p>
+      </div>
+      <div class="blog-soon">
+        <div class="now-card">
+          <div class="now-label">Incoming</div>
+          <h4>First posts landing soon</h4>
+          <p>Writing up what I've learned building production agents — when retrieval beats fine-tuning, how I evaluate an agent before trusting it, and the failure modes that never show up in a demo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section id="music">
     <div class="container">
       <div class="section-header">
@@ -5491,7 +5513,7 @@
           <span class="contact-label">GitHub</span>
           <span class="contact-detail">@anafe03</span>
         </a>
-        <a href="https://soundcloud.com/user-611195779" target="_blank" class="contact-link">
+        <a href="https://soundcloud.com/user-611195779" target="_blank" class="contact-link" data-theme-only="cream,adventure,creative,wellness">
           <span class="contact-icon">🎵</span>
           <span class="contact-label">SoundCloud</span>
           <span class="contact-detail">Listen Now</span>
@@ -5968,14 +5990,14 @@
         </details>
         <details class="faq-item">
           <summary>What's your stack?</summary>
-          <p>Python, FastAPI, LangGraph for backends. React + Astro for frontends. Postgres / Supabase for data. Render / Vercel for deploy. Stripe for billing. Switch the theme to AI Agents for the long version with the Stack section.</p>
+          <p>Python, FastAPI, LangGraph for backends. React + Astro for frontends. Postgres / Supabase for data. Render / Vercel for deploy. Stripe for billing. The Stack section above has the full breakdown.</p>
         </details>
         <details class="faq-item">
           <summary>Where can I hear your music?</summary>
-          <p>Switch to the Creative theme — full catalog there. SoundCloud is linked in Contact.</p>
+          <p>Switch to the Creative theme — full catalog and SoundCloud live there.</p>
         </details>
         <details class="faq-item">
-          <summary>Why does this site have nine themes?</summary>
+          <summary>Why does this site have ten themes?</summary>
           <p>Because different audiences care about different things. Send a recruiter the Finance link, a friend the Adventure link, a VC the Founder link. Same person, focused lens.</p>
         </details>
       </div>
@@ -6415,15 +6437,6 @@
           </div>
           <h4>Killed TM Go's "events module" pre-launch.</h4>
           <p>Customers had asked. The feature would have shipped. But it dragged the core flow toward configurability and away from the SMS-first experience that was working. Cut it, refocused. Three customers later, no one missed it.</p>
-        </article>
-
-        <article class="decision">
-          <div class="decision-meta">
-            <span class="decision-date">Dec 2025</span>
-            <span class="decision-outcome reversed">Reversed</span>
-          </div>
-          <h4>Tried to ship TM Go and SelfNVest in parallel sprints.</h4>
-          <p>For three weeks I split focus 60/40, then 50/50, then 40/60. Both products got worse. Reversed in early Jan — TM Go takes priority, SelfNVest goes to maintenance mode. Lesson: parallel founders are rare for a reason.</p>
         </article>
 
       </div>
@@ -7883,8 +7896,7 @@
       { id: 'barcelona', city: 'Barcelona, Spain', coords: [41.3851, 2.1734], date: '2025', country: 'Spain',
         note: 'Gaudí, pintxos, Mediterranean swims at 11pm.' },
       { id: 'louisville', city: 'Louisville, KY', coords: [38.2527, -85.7585], date: '2025', country: 'USA',
-        note: 'SelfNVest weekends. Built the auth tier on a hotel desk.',
-        projects: ['selfnvest'] },
+        note: 'Long build weekends. Shipped the auth tier from a hotel desk.' },
       { id: 'asheville', city: 'Asheville, NC', coords: [35.5951, -82.5515], date: '2025-12', country: 'USA',
         note: 'Blue Ridge weekend. Wedge brewery, Biltmore lights.' },
 
@@ -8548,11 +8560,11 @@
     }
 
     // Section IDs that may be present. Visibility is driven entirely by config.order.
-    const ALL_SECTIONS = ['now', 'businesses', 'projects', 'music', 'contact', 'picks', 'portfolio', 'dispatches', 'studio', 'journey', 'tracks', 'videos', 'garden', 'calendar', 'harvest', 'observations', 'press', 'manifesto', 'stack', 'faq', 'why-healthcare', 'album', 'nowplaying', 'letter', 'charts', 'bucket', 'pack', 'numbers', 'decisions', 'rig', 'parks', 'fests', 'practice', 'routines', 'notebook', 'rehab-tech'];
+    const ALL_SECTIONS = ['now', 'businesses', 'projects', 'blog', 'music', 'contact', 'picks', 'portfolio', 'dispatches', 'studio', 'journey', 'tracks', 'videos', 'garden', 'calendar', 'harvest', 'observations', 'press', 'manifesto', 'stack', 'faq', 'why-healthcare', 'album', 'nowplaying', 'letter', 'charts', 'bucket', 'pack', 'numbers', 'decisions', 'rig', 'parks', 'fests', 'practice', 'routines', 'notebook', 'rehab-tech'];
 
     const themes: Record<string, ThemeConfig> = {
       midnight: {
-        order: ['now', 'businesses', 'projects', 'stack', 'faq', 'contact'],
+        order: ['now', 'businesses', 'projects', 'blog', 'stack', 'faq', 'contact'],
         subtitle: 'AI Engineer. Founder. Technologist.',
         bio: 'I build production AI agents in Python, FastAPI, and LangGraph. Currently looking for roles in AI agents, healthcare tech, and AI research.',
         badge: 'Open to work — AI Engineer / Research'
@@ -8582,7 +8594,7 @@
         badge: 'Open to creative collaborations'
       },
       agents: {
-        order: ['projects', 'stack', 'now', 'businesses', 'faq', 'contact'],
+        order: ['projects', 'stack', 'blog', 'now', 'businesses', 'faq', 'contact'],
         subtitle: 'AI Agent Engineer.',
         bio: 'I ship production multi-step agents — LangGraph, FastAPI, persistent memory, evaluation harnesses, adversarial testing. Reliability over demos.',
         badge: 'Open to work — Agent Infrastructure / Platform'
@@ -8602,7 +8614,7 @@
       founder: {
         order: ['businesses', 'numbers', 'press', 'decisions', 'manifesto', 'projects', 'now', 'faq', 'contact'],
         subtitle: 'Founder. Builder. Operator.',
-        bio: 'Three ventures in motion — Boundless Horizons (stealth), TM Go (tour management), SelfNVest AI (FSBO real estate). Full-stack, from schema to UI to DNS. I ship.',
+        bio: 'Two ventures in motion — Boundless Horizons (stealth) and TM Go (tour management). Full-stack, from schema to UI to DNS. I ship.',
         badge: 'Open to founder / co-founder conversations'
       },
       wellness: {
@@ -8785,7 +8797,13 @@
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function (e) {
         e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
+        const href = this.getAttribute('href');
+        // Bare "#" is the logo — scroll to top rather than feed querySelector an invalid selector.
+        if (!href || href === '#') {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          return;
+        }
+        const target = document.querySelector(href);
         if (target) {
           target.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
