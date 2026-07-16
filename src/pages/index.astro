@@ -406,6 +406,36 @@
       margin: 0 auto;
     }
 
+    .blog-posts {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .blog-post {
+      display: block;
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 1.9rem;
+      transition: all 0.3s;
+      text-decoration: none;
+      color: inherit;
+    }
+    .blog-post:hover { border-color: var(--ocean); transform: translateY(-4px); }
+    .blog-kind {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ocean);
+      margin-bottom: 0.85rem;
+    }
+    .blog-post h3 { margin-bottom: 0.6rem; }
+    .blog-post p { color: var(--text-dim); font-size: 0.96rem; line-height: 1.6; }
+    .blog-go { display: inline-block; margin-top: 1.1rem; color: var(--ocean); font-weight: 600; }
+
     .now-card {
       background: var(--bg-light);
       border: 2px solid var(--border);
@@ -5114,7 +5144,7 @@
         <li><a href="#now">Now</a></li>
         <li><a href="#businesses">Ventures</a></li>
         <li><a href="#projects">Projects</a></li>
-        <li><a href="/intelligence">Explainer</a></li>
+        <li><a href="#blog">Writing</a></li>
         <li><a href="/RESUME_2026.pdf" target="_blank">Resume</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
@@ -5331,29 +5361,6 @@
             <span class="tag">AWS</span>
           </div>
         </div>
-        <div class="project-card" data-theme-only="midnight,agents,founder,finance" data-category="ai,enterprise">
-          <h3>PwC Innovation Hub</h3>
-          <p>Shipped 5+ production AI plugins end-to-end as Senior Associate AI Engineer — RFP generator, internal knowledge base connector, EDGAR search. Ran hands-on upskilling sessions for the data science team through the AI Factory program.</p>
-          <div class="project-tags">
-            <span class="tag">Python</span>
-            <span class="tag">Azure</span>
-            <span class="tag">LLMs</span>
-            <span class="tag">Enterprise</span>
-          </div>
-          <span class="project-link" style="color: var(--text-dim);">2023 – 2024</span>
-        </div>
-        <div class="project-card" data-theme-only="midnight,agents,founder,adventure" data-category="ai,agents">
-          <h3>TM Go</h3>
-          <p>Stateful, SMS-native tour-manager agent — keeps the bus on schedule and the band fed. Group SMS is its native interface.</p>
-          <div class="project-tags">
-            <span class="tag">LangGraph</span>
-            <span class="tag">FastAPI</span>
-            <span class="tag">Supabase</span>
-            <span class="tag">Twilio</span>
-          </div>
-          <a href="/tmgo" class="project-link">Architecture case study →</a>
-          <a href="https://toursync-deploy.vercel.app/" target="_blank" class="project-link" style="margin-left:1rem;">Live app ↗</a>
-        </div>
         <div class="project-card" data-theme-only="midnight,agents,healthcare,wellness" data-category="ai,agents,health">
           <h3>Prior Auth Agent</h3>
           <p>Healthcare advocate that reads insurance policies, cites the exact CMS reg, and files appeals when care is denied — with receipts.</p>
@@ -5362,16 +5369,6 @@
             <span class="tag">FastAPI</span>
             <span class="tag">Healthcare</span>
             <span class="tag">RAG</span>
-          </div>
-        </div>
-        <div class="project-card" data-theme-only="midnight,agents,finance" data-category="ai,agents,finance">
-          <h3>Earnings Inspector</h3>
-          <p>Earnings-call analyzer — scores management tone, flags the CFO dodge, and surfaces what the press release left out.</p>
-          <div class="project-tags">
-            <span class="tag">LangGraph</span>
-            <span class="tag">NLP</span>
-            <span class="tag">Finance</span>
-            <span class="tag">Streamlit</span>
           </div>
         </div>
         <div class="project-card" data-theme-only="midnight,agents,healthcare,wellness" data-category="ai,agents,health">
@@ -5384,16 +5381,6 @@
             <span class="tag">Forms</span>
           </div>
         </div>
-        <div class="project-card" data-theme-only="midnight,agents,creative" data-category="ai,agents,music">
-          <h3>StemDeck</h3>
-          <p>Stem-splitter agent — hand it a track, get back isolated vocals, drums, and bass to remix and rebuild.</p>
-          <div class="project-tags">
-            <span class="tag">Python</span>
-            <span class="tag">Audio ML</span>
-            <span class="tag">Demucs</span>
-            <span class="tag">Streamlit</span>
-          </div>
-        </div>
       </div>
     </div>
   </section>
@@ -5401,15 +5388,22 @@
   <section id="blog">
     <div class="container">
       <div class="section-header">
-        <h2>Blog</h2>
-        <p>Notes on agents, evals, and what actually ships</p>
+        <h2>Writing</h2>
+        <p>Long-form, scroll-through pieces — how I think, and what I've shipped</p>
       </div>
-      <div class="blog-soon">
-        <div class="now-card">
-          <div class="now-label">Incoming</div>
-          <h4>First posts landing soon</h4>
-          <p>Writing up what I've learned building production agents — when retrieval beats fine-tuning, how I evaluate an agent before trusting it, and the failure modes that never show up in a demo.</p>
-        </div>
+      <div class="blog-posts">
+        <a href="/intelligence" class="blog-post">
+          <div class="blog-kind">Explainer · scroll-through</div>
+          <h3>Austin's Intelligence</h3>
+          <p>What AI actually is — tokens, embeddings, attention — through agents and production, then the energy wall and what comes after silicon. Starts from zero.</p>
+          <span class="blog-go">Read →</span>
+        </a>
+        <a href="/tmgo" class="blog-post">
+          <div class="blog-kind">Case study · scroll-through</div>
+          <h3>TM Go — Architecture Case Study</h3>
+          <p>How I bounded an AI agent so it could be trusted with real data: the seven engineering decisions, the closed-loop eval harness, and how it scales.</p>
+          <span class="blog-go">Read →</span>
+        </a>
       </div>
     </div>
   </section>
