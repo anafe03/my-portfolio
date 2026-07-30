@@ -4028,6 +4028,29 @@
       animation: pulse 2s infinite;
     }
 
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 1rem;
+    }
+    .game-card {
+      display: flex; flex-direction: column;
+      padding: 1.4rem; border-radius: 14px;
+      background: var(--card-bg, rgba(255,255,255,0.03));
+      border: 1px solid var(--border, rgba(255,255,255,0.08));
+      text-decoration: none; color: inherit;
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+    .game-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent, #ff7edb);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+    }
+    .game-emoji { font-size: 2rem; line-height: 1; margin-bottom: .5rem; }
+    .game-card h3 { margin: 0 0 .35rem; font-size: 1.05rem; }
+    .game-card p { margin: 0 0 .9rem; font-size: .85rem; opacity: .72; line-height: 1.45; }
+    .game-go { margin-top: auto; font-size: .85rem; font-weight: 600; color: var(--accent, #ff7edb); }
+
     .personal-projects-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -5365,6 +5388,28 @@
           </div>
           <a href="https://github.com/anafe03/octagon" target="_blank" class="project-link">View Project →</a>
         </div>
+        <div class="project-card" data-theme-only="midnight,agents,creative" data-category="ai,agents">
+          <h3>Festival Companion</h3>
+          <p>Snap a festival lineup poster → Claude <strong>vision</strong> reads the artists, days, and tiers into structured data → a from-scratch <strong>weighted-interval scheduler</strong> picks your best conflict-free sets per day, with regret notes for the ones you had to skip. LLM reads, code decides.</p>
+          <div class="project-tags">
+            <span class="tag">Claude Vision</span>
+            <span class="tag">Python</span>
+            <span class="tag">Scheduling / DP</span>
+            <span class="tag">Streamlit</span>
+          </div>
+          <a href="https://github.com/anafe03/festival-companion" target="_blank" class="project-link">View Project →</a>
+        </div>
+        <div class="project-card" data-theme-only="midnight,agents,cyber" data-category="ai,agents">
+          <h3>TripTalk — Travel Concierge</h3>
+          <p>A travel agent built the same safe way as Meridian: a LangGraph router sorts each request into one lane — flights, policy RAG, trip lookups — and anything that <strong>spends money or can't be undone</strong> is staged and <strong>waits for your approval</strong> before it acts.</p>
+          <div class="project-tags">
+            <span class="tag">LangGraph</span>
+            <span class="tag">LangChain</span>
+            <span class="tag">RAG</span>
+            <span class="tag">Streamlit</span>
+          </div>
+          <a href="https://github.com/anafe03/triptalk" target="_blank" class="project-link">View Project →</a>
+        </div>
         <div class="project-card" data-theme-only="midnight,agents,cyber" data-category="ai,infra,wip">
           <span class="wip-badge">In Progress</span>
           <h3>LangGraph Eval Harness</h3>
@@ -5376,6 +5421,41 @@
             <span class="tag">AWS</span>
           </div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="games">
+    <div class="container">
+      <div class="section-header">
+        <h2>Games &amp; Toys</h2>
+        <p>Small self-contained things I built for fun — all playable right here in the browser</p>
+      </div>
+      <div class="games-grid">
+        <a href="/games/nightdrive.html" target="_blank" class="game-card">
+          <span class="game-emoji">🌃</span><h3>Night Drive</h3>
+          <p>An endless neon highway. Dodge traffic, chase the synthwave horizon.</p><span class="game-go">Play →</span>
+        </a>
+        <a href="/games/neonbloom.html" target="_blank" class="game-card">
+          <span class="game-emoji">🌸</span><h3>Neon Bloom</h3>
+          <p>A generative garden that grows and pulses to its own rhythm. Click to seed it.</p><span class="game-go">Play →</span>
+        </a>
+        <a href="/games/emergence.html" target="_blank" class="game-card">
+          <span class="game-emoji">🐦</span><h3>Emergence</h3>
+          <p>A flocking simulation — hundreds of boids, three simple rules, complex behavior.</p><span class="game-go">Play →</span>
+        </a>
+        <a href="/games/abyssdiver.html" target="_blank" class="game-card">
+          <span class="game-emoji">🌊</span><h3>Abyss Diver</h3>
+          <p>Descend into the deep. How far down can you get before the pressure wins?</p><span class="game-go">Play →</span>
+        </a>
+        <a href="/games/flappybeer.html" target="_blank" class="game-card">
+          <span class="game-emoji">🍺</span><h3>Flappy Beer</h3>
+          <p>Flappy Bird, but it's a beer. Tap to fly, don't spill.</p><span class="game-go">Play →</span>
+        </a>
+        <a href="/games/drunkwalk.html" target="_blank" class="game-card">
+          <span class="game-emoji">🍺</span><h3>Drunk Walk Home</h3>
+          <p>A random-walk physics toy — get home while the sidewalk fights back.</p><span class="game-go">Play →</span>
+        </a>
       </div>
     </div>
   </section>
@@ -8496,11 +8576,11 @@
     }
 
     // Section IDs that may be present. Visibility is driven entirely by config.order.
-    const ALL_SECTIONS = ['now', 'businesses', 'projects', 'blog', 'music', 'contact', 'picks', 'portfolio', 'dispatches', 'studio', 'journey', 'tracks', 'videos', 'garden', 'calendar', 'harvest', 'observations', 'press', 'manifesto', 'stack', 'faq', 'why-healthcare', 'album', 'nowplaying', 'letter', 'charts', 'bucket', 'pack', 'numbers', 'decisions', 'rig', 'parks', 'fests', 'practice', 'routines', 'notebook', 'rehab-tech'];
+    const ALL_SECTIONS = ['now', 'businesses', 'projects', 'blog', 'music', 'contact', 'picks', 'portfolio', 'dispatches', 'studio', 'journey', 'tracks', 'videos', 'garden', 'calendar', 'harvest', 'observations', 'press', 'manifesto', 'stack', 'faq', 'why-healthcare', 'games', 'album', 'nowplaying', 'letter', 'charts', 'bucket', 'pack', 'numbers', 'decisions', 'rig', 'parks', 'fests', 'practice', 'routines', 'notebook', 'rehab-tech'];
 
     const themes: Record<string, ThemeConfig> = {
       midnight: {
-        order: ['now', 'businesses', 'projects', 'blog', 'stack', 'faq', 'contact'],
+        order: ['now', 'businesses', 'projects', 'games', 'blog', 'stack', 'faq', 'contact'],
         subtitle: 'AI Engineer. Founder. Technologist.',
         bio: 'I build production AI agents in Python, FastAPI, and LangGraph. Currently looking for roles in AI agents, healthcare tech, and AI research.',
         badge: 'Open to work — AI Engineer / Research'
@@ -8524,13 +8604,13 @@
         badge: 'Currently — building from the road'
       },
       creative: {
-        order: ['music', 'tracks', 'nowplaying', 'videos', 'studio', 'projects', 'businesses', 'now', 'contact'],
+        order: ['music', 'tracks', 'nowplaying', 'videos', 'studio', 'projects', 'games', 'businesses', 'now', 'contact'],
         subtitle: 'Producer. Engineer. Artist.',
         bio: 'I make music and the tools to make music with. Audio ML, generative systems, and live performance — the rest of the stack is in service of that.',
         badge: 'Open to creative collaborations'
       },
       agents: {
-        order: ['projects', 'stack', 'blog', 'now', 'businesses', 'faq', 'contact'],
+        order: ['projects', 'games', 'stack', 'blog', 'now', 'businesses', 'faq', 'contact'],
         subtitle: 'AI Agent Engineer.',
         bio: 'I ship production multi-step agents — LangGraph, FastAPI, persistent memory, evaluation harnesses, adversarial testing. Reliability over demos.',
         badge: 'Open to work — Agent Infrastructure / Platform'

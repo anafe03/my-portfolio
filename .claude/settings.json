@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git commit -q -m ' *)",
+      "Bash(git push *)",
+      "Bash('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --headless --disable-gpu --screenshot=/private/tmp/claude-501/-Users-austinnafe-Documents-GitHub-my-portfolio/7b1d7ba4-d67c-4b7a-b087-e80f3e860cc8/scratchpad/prop1.png --window-size=920,1500 --hide-scrollbars --virtual-time-budget=2000 file:///Users/austinnafe/Documents/GitHub/my-portfolio/ARMANINO-PROPOSAL.html)"
+    ]
+  }
+}

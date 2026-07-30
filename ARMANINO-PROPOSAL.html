@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>An AI Playbook for Armanino Valuation Services · Austin Nafe</title>
+<style>
+  :root {
+    --ink: #1f2229; --text: #3a3f4c; --muted: #6a7080; --faint: #939aa8;
+    --line: #e5e7ec; --line-soft: #eff1f5; --alt: #f8f8f6;
+    --accent: #d9691a; --accent-deep: #b8560f; --accent-tint: #fdf2e8;
+    --green: #2c7a52;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #e9ebef; color: var(--text); font-family: var(--sans); font-size: 14.5px; line-height: 1.58; -webkit-font-smoothing: antialiased; }
+  .page { max-width: 8.5in; margin: 26px auto; background: #fff; padding: 0.8in 0.85in 0.6in; box-shadow: 0 2px 14px rgba(0,0,0,.12); }
+
+  .head { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid var(--accent); padding-bottom: 16px; }
+  .head .name { font-size: 19px; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .head .role { font-size: 12px; color: var(--accent); font-weight: 600; margin-top: 1px; }
+  .head .contact { font-size: 11px; color: var(--muted); text-align: right; line-height: 1.7; }
+
+  .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin: 26px 0 8px; }
+  h1 { font-size: 27px; line-height: 1.12; font-weight: 800; color: var(--ink); letter-spacing: -0.02em; }
+  .subtitle { font-size: 15px; color: var(--muted); margin-top: 8px; max-width: 62ch; }
+  .meta { font-size: 12px; color: var(--muted); margin-top: 12px; }
+  .meta b { color: var(--ink); font-weight: 600; }
+
+  .lead { font-size: 15px; color: var(--text); margin-top: 22px; max-width: 68ch; }
+  .lead strong { color: var(--ink); font-weight: 600; }
+  .premise { background: var(--accent-tint); border-radius: 8px; padding: 13px 18px; margin-top: 14px; font-size: 13.5px; max-width: 72ch; }
+  .premise b { color: var(--accent-deep); }
+
+  h2 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink); margin: 30px 0 14px; padding-bottom: 7px; border-bottom: 1px solid var(--line); }
+
+  /* pattern blocks */
+  .pattern { display: grid; grid-template-columns: 42px 1fr; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--line-soft); break-inside: avoid; }
+  .pattern:last-of-type { border-bottom: none; }
+  .pnum { font-size: 26px; font-weight: 800; color: var(--accent); line-height: 1; letter-spacing: -0.02em; }
+  .pbody h3 { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 5px; }
+  .pbody h3 .shape { font-weight: 400; color: var(--muted); font-size: 13.5px; }
+  .pex { font-size: 13.5px; color: var(--text); }
+  .pex b { color: var(--ink); font-weight: 600; }
+  .pex .arrow { color: var(--accent); font-weight: 600; }
+  .pmeta { display: flex; flex-wrap: wrap; gap: 4px 20px; margin-top: 7px; font-size: 12px; color: var(--muted); }
+  .pmeta b { color: var(--ink); font-weight: 600; }
+  .pmeta .never b { color: var(--accent-deep); }
+  .flow { display: flex; align-items: stretch; gap: 5px; margin-top: 12px; flex-wrap: wrap; }
+  .flow .fb { flex: 1; min-width: 88px; border: 1px solid var(--line); border-radius: 6px; padding: 7px 9px; font-size: 11px; color: var(--text); text-align: center; display: flex; flex-direction: column; justify-content: center; line-height: 1.35; }
+  .flow .fb .fl { font-size: 8.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--faint); margin-bottom: 3px; }
+  .flow .fb.model { background: var(--accent-tint); border-color: var(--accent); color: var(--accent-deep); font-weight: 600; }
+  .flow .fb.model .fl { color: var(--accent); }
+  .flow .fb.human { background: var(--alt); }
+  .flow .fa { align-self: center; color: var(--accent); font-weight: 700; font-size: 13px; }
+  .floop { margin-top: 6px; font-size: 11px; color: var(--accent-deep); background: var(--accent-tint); border: 1px solid #f2dcc4; border-radius: 6px; padding: 6px 11px; display: flex; align-items: center; gap: 8px; }
+  .floop .lp { font-weight: 700; font-size: 13px; }
+
+  .sixth { margin-top: 16px; background: var(--alt); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 13px 18px; font-size: 13.5px; break-inside: avoid; }
+  .sixth b { color: var(--ink); }
+  .sixth .tag { display: block; font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 5px; }
+
+  /* architecture strip */
+  .arch { display: flex; align-items: stretch; gap: 0; margin-top: 14px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; break-inside: avoid; }
+  .arch .box { flex: 1; padding: 11px 12px; border-right: 1px solid var(--line-soft); font-size: 11px; }
+  .arch .box:last-child { border-right: none; }
+  .arch .box.model { background: var(--accent); color: #fff; }
+  .arch .box .bt { font-weight: 700; color: var(--ink); font-size: 11.5px; display: block; margin-bottom: 2px; }
+  .arch .box.model .bt { color: #fff; }
+  .arch .box .bs { color: var(--muted); }
+  .arch .box.model .bs { color: #ffe9d6; }
+  .arch-note { font-size: 13px; margin-top: 10px; }
+  .arch-note b { color: var(--ink); }
+  .guards { display: flex; flex-wrap: wrap; gap: 8px 10px; margin-top: 12px; }
+  .guard { font-size: 11.5px; border: 1px solid var(--line); border-radius: 20px; padding: 5px 12px; color: var(--text); }
+  .guard b { color: var(--green); }
+
+  /* pilot */
+  .scope { background: var(--accent-tint); border-radius: 8px; padding: 12px 18px; margin-top: 4px; display: flex; justify-content: space-between; align-items: center; font-size: 13.5px; break-inside: avoid; }
+  .scope .sc { font-weight: 700; color: var(--ink); }
+  .scope .wk { font-weight: 800; color: var(--accent); font-size: 16px; }
+  .phases { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 14px; break-inside: avoid; }
+  .ph { border: 1px solid var(--line); border-radius: 8px; padding: 12px 13px; }
+  .ph .pw { font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--faint); }
+  .ph .pt { font-weight: 700; color: var(--ink); font-size: 13.5px; margin: 3px 0; }
+  .ph .pd { font-size: 12px; color: var(--muted); }
+  .stopline { font-size: 13px; color: var(--text); margin-top: 12px; }
+  .stopline b { color: var(--ink); }
+
+  .need { display: grid; grid-template-columns: 26px 1fr; gap: 12px; padding: 9px 0; break-inside: avoid; }
+  .need .nn { font-weight: 800; color: var(--accent); }
+  .need .nt { font-weight: 700; color: var(--ink); font-size: 13.5px; }
+  .need .nd { font-size: 13px; color: var(--muted); margin-top: 1px; }
+
+  .close-box { margin-top: 22px; padding: 16px 20px; background: var(--ink); color: #fff; border-radius: 8px; break-inside: avoid; }
+  .close-box b { color: #fff; }
+  .close-box .cl { font-size: 15px; font-weight: 700; }
+  .close-box .cs { font-size: 13px; color: #c4c9d4; margin-top: 4px; }
+  .foot { margin-top: 26px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 11px; color: var(--faint); }
+  a { color: var(--accent-deep); }
+
+  .print-hint { max-width: 8.5in; margin: 0 auto 8px; font-size: 12px; color: #5a6072; text-align: center; }
+  .print-hint b { color: #16181d; }
+
+  @media print {
+    body { background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .page { box-shadow: none; margin: 0; max-width: none; padding: 0.5in 0.55in; }
+    .print-hint { display: none; }
+    h2 { break-after: avoid; }
+    @page { size: letter; margin: 0.45in; }
+  }
+</style>
+</head>
+<body>
+<div class="print-hint">Screen preview. To make the PDF: <b>⌘P → Save as PDF</b>. Then attach to your email.</div>
+
+<div class="page">
+  <div class="head">
+    <div>
+      <div class="name">Austin Nafe</div>
+      <div class="role">AI Integration Contractor</div>
+    </div>
+    <div class="contact">austinnafe@aol.com<br>github.com/anafe03 · linkedin.com/in/austinnafe</div>
+  </div>
+
+  <div class="eyebrow">Proposal · Discussion draft</div>
+  <h1>An AI Playbook for Armanino Valuation Services</h1>
+  <div class="subtitle">Three patterns in the work <em>around</em> the valuation — and a six-week pilot to prove one out.</div>
+  <div class="meta"><b>Prepared for</b> Armanino — Business Valuation Services &nbsp;·&nbsp; <b>July 2026</b></div>
+
+  <p class="lead">The judgment in a valuation — methodology, inputs, defensibility — is your team's, and stays that way. But that judgment is wrapped in a great deal of <strong>repeatable document and data labor</strong>: re-keying facts, drafting boilerplate, screening lists, tying out numbers, chasing intake. That labor is where AI helps. Below are three recurring shapes of it, each with one worked example.</p>
+  <div class="premise"><b>The pattern is the asset.</b> Solve a shape once for 409A and the same machinery serves PPA, goodwill, and ESOP work at a fraction of the cost — inside this practice, on this P&amp;L.</div>
+
+  <h2>The three patterns</h2>
+
+  <div class="pattern">
+    <div class="pnum">01</div>
+    <div class="pbody">
+      <h3>Structured extraction <span class="shape">— facts that exist in prose, re-keyed by hand before anything can use them.</span></h3>
+      <div class="pex"><b>Cap table → OPM inputs · 409A.</b> Today an analyst reads the charter and every SPA and types the preference stack into the model by hand — hours per deal, and a transcription error moves the number. Instead: parse the docs <span class="arrow">→</span> extract each term to a fixed schema with the document, page, and quoted span <span class="arrow">→</span> the analyst reviews only low-confidence rows. The OPM references the tab; nothing writes into your model.</div>
+      <div class="flow">
+        <div class="fb"><span class="fl">Input</span>Charter + SPAs</div>
+        <div class="fa">→</div>
+        <div class="fb model"><span class="fl">Model</span>Extract to schema</div>
+        <div class="fa">→</div>
+        <div class="fb"><span class="fl">Output</span>Facts tab · term · page · quote</div>
+        <div class="fa">→</div>
+        <div class="fb human"><span class="fl">Human</span>Reviews low-confidence rows</div>
+      </div>
+      <div class="floop"><span class="lp">↩</span> Every override feeds back — it becomes the accuracy number, and trains the model to stop asking about the rows the human keeps fixing.</div>
+      <div class="pmeta"><span><b>Measured by</b> field accuracy vs an analyst baseline on ten past deals.</span> <span class="never"><b>Never</b> chooses inputs or touches a model cell.</span> <span><b>Reuses on</b> PPA, ESOP, and litigation deal files.</span></div>
+    </div>
+  </div>
+
+  <div class="pattern">
+    <div class="pnum">02</div>
+    <div class="pbody">
+      <h3>Grounded drafting <span class="shape">— prose that is mostly pattern and a little fact, written from a blank page every time.</span></h3>
+      <div class="pex"><b>RFP responses &amp; engagement proposals.</b> Today, written from scratch or salvaged from an old one each time — slow turnaround costs deals. Instead: retrieval over your library of past proposals, credentials, and case studies <span class="arrow">→</span> a tailored draft in your template and voice <span class="arrow">→</span> every claim cited to a real past engagement <span class="arrow">→</span> BD reviews and sends.</div>
+      <div class="flow">
+        <div class="fb"><span class="fl">Input</span>Past proposals + credentials</div>
+        <div class="fa">→</div>
+        <div class="fb model"><span class="fl">Model</span>Draft, cited</div>
+        <div class="fa">→</div>
+        <div class="fb"><span class="fl">Output</span>Tailored draft · every claim cited</div>
+        <div class="fa">→</div>
+        <div class="fb human"><span class="fl">Human</span>BD reviews &amp; sends</div>
+      </div>
+      <div class="floop"><span class="lp">↩</span> Every edit feeds back — the sent version becomes a new example, so the next draft starts closer to what you'd actually send.</div>
+      <div class="pmeta"><span><b>Measured by</b> hours to first draft; share of text surviving review; uncited claims (target zero).</span> <span class="never"><b>Never</b> chooses the sources or writes the conclusion.</span> <span><b>Reuses on</b> repeatable report sections — company description, methodology narrative.</span></div>
+    </div>
+  </div>
+
+  <div class="pattern">
+    <div class="pnum">03</div>
+    <div class="pbody">
+      <h3>Compliance &amp; consistency checking <span class="shape">— read a document against the rules it must follow, mark the evidence, and suggest the fix for a person to review.</span></h3>
+      <div class="pex"><b>Compliance review · 409A / ASC 718.</b> Today a human reads a hundred pages against the standards and the model, hunting for the required element that's missing and the number that didn't get updated — either one becomes the auditor's finding. Instead: check the draft against each requirement <span class="arrow">→</span> mark it met or missing, with the exact supporting text quoted, and suggest language for the gaps <span class="arrow">→</span> tie every narrative number back to its model cell and flag what doesn't reconcile <span class="arrow">→</span> hand the reviewer a marked-up exception list, each item citing the rule or the cell. A person accepts, edits, or rejects every item.</div>
+      <div class="flow">
+        <div class="fb"><span class="fl">Input</span>Draft + 409A/ASC 718 rules</div>
+        <div class="fa">→</div>
+        <div class="fb model"><span class="fl">Model</span>Check &amp; mark evidence</div>
+        <div class="fa">→</div>
+        <div class="fb"><span class="fl">Output</span>Exception list · gap + suggested fix</div>
+        <div class="fa">→</div>
+        <div class="fb human"><span class="fl">Human</span>Accepts / edits / rejects</div>
+      </div>
+      <div class="floop"><span class="lp">↩</span> Every accept and reject feeds back — each becomes a labeled check, so the review gets sharper on the gaps your reviewers actually catch.</div>
+      <div class="pmeta"><span><b>Measured by</b> defects caught before review vs after; review cycles per report.</span> <span class="never"><b>Never</b> edits the report — it suggests, a human decides.</span></div>
+    </div>
+  </div>
+
+  <h2>The architecture, once</h2>
+  <div class="arch">
+    <div class="box"><span class="bt">Documents in</span><span class="bs">charter, SPAs, exports</span></div>
+    <div class="box"><span class="bt">Parse &amp; retrieve</span><span class="bs">chunk, index, permission</span></div>
+    <div class="box"><span class="bt">Extract or draft</span><span class="bs">the model — cites everything</span></div>
+    <div class="box"><span class="bt">Facts + citations</span><span class="bs">typed store, source spans</span></div>
+    <div class="box"><span class="bt">Deterministic writer</span><span class="bs">code, not a model</span></div>
+    <div class="box"><span class="bt">Analyst surface</span><span class="bs">Excel tab · draft · list</span></div>
+  </div>
+  <div class="arch-note"><b>The model occupies one box.</b> It reads and drafts — it never computes, and never writes anywhere a person can't see what it changed and why. Every reviewer override becomes the accuracy number, built from work your team already does.</div>
+  <div class="arch-note" style="margin-top:8px;color:var(--muted)">Built the way I build regulated agents: retrieval with permissions, typed extraction schemas, a human review step before anything is trusted, and audit logging on every model call — so any output can be traced and defended.</div>
+
+  <h2>The pilot — one pattern, six weeks, a stop condition agreed up front</h2>
+  <div class="scope"><span class="sc">One of the three patterns — we decide together, on the clearest ground truth and the highest leverage</span><span class="wk">6 weeks</span></div>
+  <div class="phases">
+    <div class="ph"><div class="pw">Weeks 1–2</div><div class="pt">Ground truth</div><div class="pd">A set of past examples with their known-good outputs; a reviewer defines "good."</div></div>
+    <div class="ph"><div class="pw">Weeks 3–4</div><div class="pt">Build</div><div class="pd">Build the tool for the chosen pattern — cited and evaluated throughout.</div></div>
+    <div class="ph"><div class="pw">Week 5</div><div class="pt">Bake-off</div><div class="pd">Live engagements, side by side. Reviewer marks up blind.</div></div>
+    <div class="ph"><div class="pw">Week 6</div><div class="pt">Decide</div><div class="pd">Go, adjust, or stop — on the numbers.</div></div>
+  </div>
+  <div class="stopline"><b>Success is defined on day one:</b> hours to first draft, share of text surviving review, zero uncited factual claims. If it misses, we say so and stop.</div>
+
+  <h2>To scope this, I'd want to understand</h2>
+  <div class="need"><div class="nn">1</div><div><div class="nt">Where your information lives, and how it moves</div><div class="nd">Where documents and data sit today, how you track status across an engagement, and how things get ingested now — plus what can leave the tenant and who signs off on that.</div></div></div>
+  <div class="need"><div class="nn">2</div><div><div class="nt">A few examples for ground truth</div><div class="nd">Real input-and-output pairs to build against — past RFPs and the responses that were sent, a charter + SPAs + cap table alongside the OPM inputs they produced, or past reports with the reviewer's markups. The known-good output is what makes accuracy measurable.</div></div></div>
+  <div class="need"><div class="nn">3</div><div><div class="nt">Someone close to the work to define "good"</div><div class="nd">A few hours across the pilot from a person who does this daily. Their judgment is the target; their corrections become the accuracy number.</div></div></div>
+
+  <div class="close-box">
+    <div class="cl">Give me a pilot window and someone who knows the work.</div>
+    <div class="cs">You'll have a number to decide on, either way. And the patterns compound — extraction feeds drafting, checking closes the loop — so each one reuses the same retrieval, store, and audit logging, and every engagement type after the first costs less than the last. &nbsp;<b>austinnafe@aol.com</b></div>
+  </div>
+
+  <div class="foot">Austin Nafe · AI Integration Contractor · Prepared for Armanino Business Valuation Services, July 2026. A discussion draft outlining an approach — scope and terms to be agreed following the pilot's ground-truth phase.</div>
+</div>
+</body>
+</html>
