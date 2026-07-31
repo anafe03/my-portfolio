@@ -198,6 +198,7 @@
     <div class="rail-brand"><span class="nm">Austin Nafe</span><b>TM Go</b><i>Architecture case study</i></div>
     <ul class="rail-list" id="railList">
       <li><button class="rail-item" data-goto="hero"><span class="rn">00</span> Overview</button></li>
+      <li><button class="rail-item" data-goto="diagram"><span class="rn">◆</span> Interactive diagram</button></li>
       <li><button class="rail-item" data-goto="stack"><span class="rn">01</span> System &amp; stack</button></li>
       <li class="rail-div">Key engineering decisions</li>
       <li><button class="rail-item" data-goto="d1"><span class="rn">01</span> Agent design</button></li>
@@ -235,6 +236,22 @@
           <div class="cell"><div class="n">2</div><div class="l">LLM providers with automatic failover</div></div>
           <div class="cell"><div class="n">59</div><div class="l">API routes; Pydantic-validated, containerized</div></div>
         </div>
+      </div>
+    </section>
+
+    <!-- INTERACTIVE DIAGRAM -->
+    <section class="panel" id="diagram" data-rung="diagram">
+      <div class="panel-inner reveal">
+        <div class="eyebrow"><span class="sec">Overview · 01</span> Interactive architecture</div>
+        <h2>See it two ways — the loop today, and the refactor</h2>
+        <p class="lede">Toggle between <strong>how it works now</strong> (the ReAct loop and its ~25-tool belt) and <strong>the refactor</strong> (a bounded node graph). The graph is live — click any node for what it does; the amber trail animates the real "advance a show" path.</p>
+        <div style="border:1px solid var(--line,#e5e2dc);border-radius:14px;overflow:hidden;background:#0b0f14;box-shadow:0 10px 30px rgba(0,0,0,.18)">
+          <iframe src="/tmgo-architecture.html" title="TM Go interactive architecture"
+                  style="width:100%;height:860px;border:0;display:block" loading="lazy"></iframe>
+        </div>
+        <p style="margin-top:10px;font-size:13px;color:var(--muted)">
+          <a href="/tmgo-architecture.html" target="_blank" rel="noopener">Open the diagram full-screen →</a>
+        </p>
       </div>
     </section>
 
@@ -458,7 +475,7 @@
 
   var panels = [].slice.call(document.querySelectorAll('.panel'));
   var railItems = [].slice.call(document.querySelectorAll('.rail-item'));
-  var order = ['hero','stack','d1','d2','d3','d4','d5','d6','d7','scale','talk'];
+  var order = ['hero','diagram','stack','d1','d2','d3','d4','d5','d6','d7','scale','talk'];
   var progBar = document.getElementById('progBar');
   function railFor(r){ return railItems.find(function(b){ return b.getAttribute('data-goto')===r; }); }
   var ao = new IntersectionObserver(function (entries) {

@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TM GO — Architecture</title>
+<meta name="description" content="How the TM GO tour-manager agent works today (a ReAct loop) and the refactor into one capability-core StateGraph. Click any node to see what it does.">
+<style>
+  :root{
+    --ground:#0a0e26; --panel:#0e1230; --panel2:#121736;
+    --line:#232a55; --line2:#2a3060;
+    --ink:#eaeeff; --text:#c3cbef; --muted:#8a93bd; --dim:#6b74a0;
+    --pink:#ff3399; --pink-soft:#ff77bb;
+    --green:#3ecf8e; --amber:#ffb020; --purple:#b98cff; --cyan:#2fb6d6;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Roboto,sans-serif;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:
+      radial-gradient(120% 80% at 50% -8%, #161c46 0%, rgba(10,14,38,0) 58%),
+      radial-gradient(90% 60% at 94% 2%, rgba(255,51,153,.10) 0%, rgba(10,14,38,0) 55%),
+      var(--ground);
+    color:var(--text); font-family:var(--sans); font-size:16px; line-height:1.6;
+    -webkit-font-smoothing:antialiased; min-height:100vh; padding:0 20px 80px;
+  }
+  .wrap{max-width:1080px; margin:0 auto}
+  .read{max-width:70ch}
+  a{color:var(--pink-soft)}
+
+  .topbar{display:flex; align-items:center; justify-content:space-between; gap:14px;
+    flex-wrap:wrap; padding:22px 0 0}
+  .brand{font-family:var(--sans); font-weight:800; font-size:18px; color:var(--ink); letter-spacing:.01em}
+  .brand .pink{color:var(--pink)}
+  .brand .muted{font-weight:500; color:var(--dim); font-size:14px}
+  .live{font-family:var(--mono); font-size:12px; color:var(--muted); letter-spacing:.03em}
+  .live .dot{color:var(--green)}
+
+  .eyebrow{font-family:var(--mono); font-size:12px; font-weight:600; letter-spacing:.22em;
+    text-transform:uppercase; color:var(--pink-soft); margin-top:40px}
+  h1{font-family:var(--sans); font-weight:800; font-size:clamp(2rem,5vw,3.1rem); line-height:1.04;
+    letter-spacing:-.028em; color:var(--ink); text-wrap:balance; margin:.34em 0 0}
+  .sub{font-size:clamp(1.02rem,2vw,1.18rem); line-height:1.5; color:var(--text); margin-top:18px}
+  b,strong{color:var(--ink); font-weight:700}
+  code{font-family:var(--mono); font-size:.88em; color:var(--pink-soft);
+    background:rgba(255,51,153,.08); border:1px solid rgba(255,51,153,.16); border-radius:5px; padding:1px 6px}
+
+  /* toggle */
+  .toggle{display:inline-flex; gap:4px; background:var(--panel); border:1px solid var(--line);
+    border-radius:12px; padding:5px; margin:30px 0 4px}
+  .toggle button{font-family:var(--mono); font-size:13.5px; font-weight:600; letter-spacing:.02em;
+    color:var(--muted); background:transparent; border:0; border-radius:8px; padding:9px 16px; cursor:pointer;
+    transition:background .15s,color .15s}
+  .toggle button:hover{color:var(--text)}
+  .toggle button[aria-selected="true"]{background:linear-gradient(180deg,#2a123a,#1c0e2e);
+    color:var(--ink); box-shadow:inset 0 0 0 1px rgba(255,51,153,.45)}
+  .toggle button:focus-visible{outline:2px solid var(--pink); outline-offset:2px}
+
+  .view{display:none; animation:fade .3s ease both}
+  .view.on{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+  .sec{margin:26px 0 14px}
+  .sec .k{font-family:var(--mono); font-size:11px; letter-spacing:.2em; text-transform:uppercase;
+    color:var(--dim); display:inline-flex; align-items:center; gap:9px; margin-bottom:10px}
+  .sec .k::before{content:""; width:24px; height:1px; background:var(--purple)}
+  .sec h2{font-family:var(--sans); font-weight:800; font-size:clamp(1.35rem,3vw,1.9rem); line-height:1.12;
+    letter-spacing:-.02em; color:var(--ink); text-wrap:balance; margin:0}
+  .sec p{margin:.7em 0 0; color:var(--muted); font-size:15.5px; max-width:74ch; line-height:1.5}
+  .sec p b{color:var(--text)}
+
+  .mnote{font-size:13.5px; color:var(--muted); background:var(--panel); border:1px solid var(--line);
+    border-radius:10px; padding:11px 14px; margin:14px 0; line-height:1.5}
+  .mnote code{font-size:.86em}
+  .mnote b{color:var(--text)}
+
+  .chips{display:flex; flex-wrap:wrap; gap:7px; margin:10px 0 4px}
+  .chip{font-family:var(--mono); font-size:12px; color:var(--text); background:var(--panel2);
+    border:1px solid var(--line); border-radius:7px; padding:5px 9px}
+  .chip.hot{color:#ffd8bf; border-color:rgba(255,122,61,.5); background:rgba(255,122,61,.08)}
+
+  .lbl{font-weight:700; color:var(--ink); font-size:15px; margin:22px 0 8px}
+  .grid{display:grid; gap:9px}
+  @media(min-width:680px){.grid.two{grid-template-columns:1fr 1fr}}
+  .card{background:linear-gradient(180deg,rgba(18,23,54,.9),rgba(12,16,44,.9));
+    border:1px solid var(--line); border-radius:11px; padding:14px 16px}
+  .card b{color:var(--ink)}
+  .card .d{color:var(--muted); font-size:13px; margin-top:3px; line-height:1.45}
+  .why{margin-top:16px}
+  .why b{color:var(--ink)}
+  .why .d{color:var(--text); font-size:14px; margin-top:5px; line-height:1.55}
+
+  footer{margin-top:52px; padding-top:22px; border-top:1px solid var(--line);
+    font-family:var(--mono); font-size:12.5px; color:var(--dim);
+    display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap}
+
+  @media(prefers-reduced-motion:reduce){
+    .ae.on,.edge.on,.node.on rect,.badge{animation:none !important}
+    .view{animation:none}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">🎸 TM&nbsp;GO<span class="pink">.</span> <span class="muted">architecture</span></div>
+    <div class="live"><span class="dot">●</span> real compiled graphs</div>
+  </div>
+
+  <div class="eyebrow">the tour-manager agent</div>
+  <h1>How TM&nbsp;GO works today — and the refactor.</h1>
+  <p class="sub read">
+    Today the bot is a <b>ReAct agent</b>: one big loop where the model decides each step. The refactor makes
+    it an explicit <b>StateGraph</b> — a router that sends each message down a fixed pipeline. Both diagrams
+    below are drawn from <b>really-compiled graphs</b>. Click any node to see what it does.
+  </p>
+
+  <div class="toggle" role="tablist" aria-label="View">
+    <button role="tab" id="tab-now" aria-controls="view-now" aria-selected="false" onclick="showView('now')">▶ How it works now</button>
+    <button role="tab" id="tab-ref" aria-controls="view-ref" aria-selected="true" onclick="showView('ref')">✦ The refactor</button>
+  </div>
+
+  <!-- ============================ NOW · ReAct ============================ -->
+  <section class="view" id="view-now" role="tabpanel" aria-labelledby="tab-now">
+    <div class="sec">
+      <div class="k">Now · ReAct agent</div>
+      <h2>One loop, the LLM drives</h2>
+      <p>The live bot (<code>create_react_agent</code>). Every turn the model reads the whole chat, decides
+        whether to call a tool or reply, and loops — capped at 3 tool calls. There's no fixed path; the
+        behavior lives in a ~300-line system prompt.</p>
+    </div>
+
+    <!-- ReAct graph (self-contained interactive SVG) -->
+    <style>
+    .gw { background:radial-gradient(130% 100% at 50% -10%, #14183e 0%, #0a0e2a 72%);
+           border:1px solid #2a3060; border-radius:16px; padding:8px 8px 2px;
+           font-family:var(--sans); }
+    .edge { stroke:#2a3060; stroke-width:1.6; fill:none; }
+    .edge.on { stroke:#ff3399; stroke-width:2.8; stroke-dasharray:7 7; fill:none;
+                filter:drop-shadow(0 0 4px rgba(255,51,153,.7)); animation:flow 1.3s linear infinite, ap .4s ease both; }
+    @keyframes flow { to { stroke-dashoffset:-28; } }
+    @keyframes ap { from {opacity:0} to {opacity:1} }
+    .elabel { fill:#7e6aa0; font-size:9.5px; font-family:var(--mono); }
+    .elabel.on { fill:#ff77bb; }
+    .node { cursor:pointer; }
+    .node rect { fill:#121736; stroke:#2a3060; stroke-width:1.5; transition:stroke .15s; }
+    .node:hover rect { stroke:#ff77bb; }
+    .node .lbl { text-anchor:middle; font-size:12px; font-weight:600; fill:#7e6aa0; pointer-events:none; }
+    .node.off { opacity:.55; }
+    .node.on rect { fill:url(#ng); stroke:#ff3399; stroke-width:2.2;
+                     filter:drop-shadow(0 0 9px rgba(255,51,153,.5)); animation:pop .4s cubic-bezier(.2,1.4,.4,1) both; }
+    .node.on .lbl { fill:#ffe0f0; }
+    .node.sel rect { stroke:#66aaff !important; stroke-width:2.6 !important; filter:drop-shadow(0 0 9px rgba(102,170,255,.6)); }
+    .node.on, .badge { transform-box:fill-box; transform-origin:center; }
+    .badge { pointer-events:none; animation:pop .4s cubic-bezier(.2,1.4,.4,1) both; }
+    .badge circle { fill:#ff3399; filter:drop-shadow(0 0 5px rgba(255,51,153,.6)); }
+    .badge text { text-anchor:middle; font-size:11px; font-weight:800; fill:#0a0e2a; }
+    .term rect { fill:#0e1230; stroke:#2a3060; } .term .lbl { fill:#8fa0d0; }
+    @keyframes pop { 0%{transform:scale(.5);opacity:0} 100%{transform:scale(1);opacity:1} }
+    #detreact { margin:2px 6px 8px; padding:11px 13px; background:#0e1230; border:1px solid #24306a;
+               border-radius:11px; min-height:60px; }
+    #detreact .hint { color:#7e6aa0; font-size:13px; }
+    #detreact .dt { font-weight:700; color:#ffe0f0; font-size:14px; }
+    #detreact .dp { color:#b9a9d9; font-size:13px; margin-top:3px; }
+    </style>
+    <div class="gw">
+    <svg viewBox="0 0 620 340" width="100%" style="max-height:430px" role="img" aria-label="ReAct loop: message into agent, agent to tools and back, agent to reply.">
+      <defs><linearGradient id="ng" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#2a1a4a"/><stop offset="1" stop-color="#121736"/></linearGradient></defs>
+      <line x1="90" y1="172" x2="300" y2="172" class="edge on"/><text x="195" y="168" class="elabel on" text-anchor="middle"></text><line x1="300" y1="172" x2="510" y2="82" class="edge on"/><text x="405" y="123" class="elabel on" text-anchor="middle">wants a tool</text><line x1="510" y1="82" x2="300" y2="172" class="edge on"/><text x="405" y="123" class="elabel on" text-anchor="middle">observe · loop ≤3×</text><line x1="300" y1="172" x2="500" y2="262" class="edge on"/><text x="400" y="213" class="elabel on" text-anchor="middle">no tool → reply</text>
+      <g id="n_react___start__" class="g_react node term on" onclick="pick_react('__start__')"><rect x="30" y="150" width="140" height="44" rx="11"/><text x="100" y="177" class="lbl">📨 message</text></g><g class="badge"><circle cx="43" cy="163" r="10"/><text x="43" y="167">1</text></g><g id="n_react_agent" class="g_react node on" onclick="pick_react('agent')"><rect x="230" y="150" width="140" height="44" rx="11"/><text x="300" y="177" class="lbl">🧠 agent (LLM)</text></g><g class="badge"><circle cx="243" cy="163" r="10"/><text x="243" y="167">2</text></g><g id="n_react_tools" class="g_react node on" onclick="pick_react('tools')"><rect x="440" y="60" width="140" height="44" rx="11"/><text x="510" y="87" class="lbl">🛠️ tools</text></g><g class="badge"><circle cx="453" cy="73" r="10"/><text x="453" y="77">3</text></g><g id="n_react___end__" class="g_react node term on" onclick="pick_react('__end__')"><rect x="440" y="240" width="140" height="44" rx="11"/><text x="510" y="267" class="lbl">💬 reply</text></g><g class="badge"><circle cx="453" cy="253" r="10"/><text x="453" y="257">5</text></g>
+    </svg>
+    <div id="detreact"><span class="hint">👆 Tap any step to see what it does — and what it did on this run.</span></div>
+    </div>
+    <script>
+    (function(){
+      const D={"__start__": "<div class='dt'>📨 message</div><div class='dp'>The member's message enters here.</div>", "agent": "<div class='dt'>🧠 agent (LLM)</div><div class='dp'>The model reads the whole conversation and decides: call a tool, or reply. Its behavior is steered by a ~300-line system prompt, not a fixed flowchart.</div>", "tools": "<div class='dt'>🛠️ tools</div><div class='dp'>Whichever of ~25 tools the model picked runs — read sheet, draft email, send, check inbox — and the result is handed back to the model.</div>", "__end__": "<div class='dt'>💬 reply</div><div class='dp'>The model replies to the member.</div>"}, sfx="react";
+      window["pick_"+sfx]=function(id){
+        document.querySelectorAll('.g_'+sfx+' .node').forEach(n=>n.classList.remove('sel'));
+        const el=document.getElementById('n_'+sfx+'_'+id); if(el) el.classList.add('sel');
+        const box=document.getElementById('det'+sfx); if(box&&D[id]) box.innerHTML=D[id];
+      };
+    })();
+    </script>
+
+    <div class="mnote">⚠ <code>send_last_draft</code> is just another tool in the loop — the model can fire a
+      send on any turn; only a <i>prompt rule</i> says "ask first." That's the safety gap the refactor closes
+      structurally.</div>
+
+    <div class="lbl">The tool belt — ~25 tools the model can pick from</div>
+    <div class="chips">
+      <span class="chip">read_google_sheet</span><span class="chip">write_google_sheet</span>
+      <span class="chip">update_google_sheet</span><span class="chip">create_tour_sheet</span>
+      <span class="chip">store_venue_note</span><span class="chip">get_venue_notes</span>
+      <span class="chip">check_tour_email</span><span class="chip">generate_advancing_email</span>
+      <span class="chip hot">send_last_draft</span><span class="chip">generate_follow_up_email</span>
+      <span class="chip">generate_thank_you_email</span><span class="chip">parse_contract</span>
+      <span class="chip">parse_venue_response</span><span class="chip">validate_response_completeness</span>
+      <span class="chip">send_sms_update</span><span class="chip">generate_day_of_reminder_sms</span>
+      <span class="chip">search_flights</span><span class="chip">search_hotels</span>
+      <span class="chip">update_hotel</span><span class="chip">update_transport</span>
+      <span class="chip">track_travel_expense</span>
+    </div>
+
+    <div class="lbl">The guardrails that keep the loop honest — all prompt rules</div>
+    <div class="grid two">
+      <div class="card"><b>Never claim an untaken action</b><div class="d">It can't say "sent" unless it actually called send_last_draft this turn.</div></div>
+      <div class="card"><b>Follow through on "yes / send it"</b><div class="d">A confirmation triggers the send immediately — no "which email?".</div></div>
+      <div class="card"><b>Resolve the active venue</b><div class="d">Pronouns ("the wifi", "send it") resolve to the venue from recent turns.</div></div>
+      <div class="card"><b>Never fabricate data</b><div class="d">Every fact must come from a tool result — no invented contacts or times.</div></div>
+      <div class="card"><b>Don't loop</b><div class="d">≤3 tool calls per turn; never the same tool twice with the same args.</div></div>
+    </div>
+  </section>
+
+  <!-- ============================ REFACTOR ============================ -->
+  <section class="view on" id="view-ref" role="tabpanel" aria-labelledby="tab-ref">
+    <div class="sec">
+      <div class="k">Refactor · one graph, three business functions</div>
+      <h2>Docs in · Email · Questions — around the sheet</h2>
+      <p>Everything TM&nbsp;GO does is three jobs, all revolving around the Google&nbsp;DB (system of record):
+        <b>📄 Docs in</b> (upload → parse → ⏸review → write), <b>✉ Email</b> (assess what's missing → draft →
+        ⏸approve → send; replies come back in and update the DB), <b>❓ Questions</b> (read → answer) — plus a
+        tool loop for everything else. <b>Two human gates</b>: review-before-write and approve-before-send.
+        The amber trail below is a real "advance a show" run.</p>
+    </div>
+
+    <div class="mnote">🔘 <b>Buttons</b> = deterministic — a button knows its intent and enters at its node,
+      <i>skipping the router</i>. 💬 <b>Chat</b> = free-form — the router classifies it. <b>Same graph either way.</b></div>
+
+    <!-- The nodes graph (self-contained interactive SVG) -->
+    <style>
+    .awrap { background:radial-gradient(130% 100% at 50% -10%,#141a3e 0%,#0a0e26 72%);
+             border:1px solid #232a55; border-radius:16px; padding:12px 12px 4px; font-family:var(--sans); }
+    .ae { stroke:#38406e; stroke-width:1.7; fill:none; }
+    .ae.on { stroke:#ffb020; stroke-width:3.2; filter:drop-shadow(0 0 5px rgba(255,176,32,.65));
+              stroke-dasharray:8 7; animation:aflow 1.2s linear infinite; }
+    @keyframes aflow { to { stroke-dashoffset:-30; } }
+    .ael { fill:#6b74a0; font-size:11px; font-family:var(--mono); text-anchor:middle; }
+    .ael.on { fill:#ffcf7a; }
+    .an rect { stroke-width:1.7; transition:filter .15s; }
+    .an.on rect { stroke:#ffb020 !important; stroke-width:2.6; filter:drop-shadow(0 0 9px rgba(255,176,32,.55)); }
+    .an:hover rect { filter:drop-shadow(0 0 7px rgba(255,255,255,.25)); }
+    .an.sel rect { stroke:#66aaff !important; stroke-width:2.8; filter:drop-shadow(0 0 9px rgba(102,170,255,.6)); }
+    .ant { text-anchor:middle; font-size:13.5px; font-weight:700; pointer-events:none; }
+    .aleg { display:flex; gap:16px; flex-wrap:wrap; align-items:center; padding:8px 6px 4px;
+             font-size:12px; color:#8a93bd; font-family:var(--mono); }
+    .aleg b { display:inline-block; width:11px; height:11px; border-radius:3px; margin-right:5px;
+               vertical-align:-1px; border:1.5px solid; }
+    #adetarch { margin:6px; padding:11px 13px; background:#0d1130; border:1px solid #232a55;
+                 border-radius:11px; min-height:52px; }
+    #adetarch .hint { color:#6b74a0; font-size:13px; }
+    #adetarch .adt { font-weight:800; color:#ffe0a6; font-size:14px; }
+    #adetarch .adp { color:#c3cbef; font-size:13px; margin-top:3px; line-height:1.45; }
+    </style>
+    <div class="awrap">
+      <svg viewBox="0 0 1120 476" width="100%" style="max-width:100%;height:auto" role="img" aria-label="TM GO capability-core graph: router into parse, review, write, assess, draft, approve, send, with a tools bucket and Google DB.">
+        <path d="M67 279 C129 279 153 279 215 279" class="ae on"/><path d="M215 279 C289 279 317 81 391 81" class="ae"/><text x="303" y="175" class="ael">upload</text><path d="M215 279 C289 279 317 193 391 193" class="ae"/><text x="303" y="231" class="ael">check email</text><path d="M215 279 C289 279 317 323 391 323" class="ae on"/><text x="303" y="296" class="ael on">advance</text><path d="M215 279 C289 279 317 433 391 433" class="ae"/><text x="303" y="351" class="ael">question</text><path d="M215 279 C354 279 408 433 547 433" class="ae"/><text x="381" y="351" class="ael">tools</text><path d="M215 279 C215 279 215 419 215 419" class="ae"/><text x="215" y="344" class="ael">chat</text><path d="M391 193 C457 193 481 193 547 193" class="ae"/><text x="469" y="188" class="ael">reply</text><path d="M391 193 C391 193 391 81 391 81" class="ae" stroke-dasharray="3 5"/><text x="391" y="132" class="ael">PDF</text><path d="M547 193 C613 193 637 193 703 193" class="ae"/><path d="M703 193 C700 193 698 81 695 81" class="ae"/><text x="699" y="132" class="ael">info</text><path d="M703 193 C637 193 613 323 547 323" class="ae"/><text x="625" y="253" class="ael">question</text><path d="M703 193 C769 193 795 193 861 193" class="ae"/><text x="782" y="188" class="ael">problem · unclear</text><path d="M391 81 C519 81 567 81 695 81" class="ae"/><path d="M695 81 C765 81 791 81 861 81" class="ae"/><text x="778" y="76" class="ael">commit ✓</text><path d="M861 81 C931 81 957 81 1027 81" class="ae"/><text x="944" y="76" class="ael">add to DB</text><path d="M861 81 C664 81 588 323 391 323" class="ae"/><text x="626" y="197" class="ael">reply</text><path d="M1027 81 C760 81 658 323 391 323" class="ae" stroke-dasharray="3 5"/><text x="709" y="197" class="ael">reads</text><path d="M391 323 C457 323 481 323 547 323" class="ae on"/><path d="M547 323 C613 323 637 323 703 323" class="ae on"/><path d="M703 323 C769 323 793 323 859 323" class="ae on"/><text x="781" y="318" class="ael on">approve ✓</text><path d="M859 323 C911 323 931 335 983 335" class="ae on"/><path d="M859 323 C930 323 956 81 1027 81" class="ae" stroke-dasharray="3 5"/><text x="943" y="197" class="ael">log</text><path d="M529 410 C501 356 593 356 565 410" class="ae"/><text x="547" y="368" class="ael">runs tools</text>
+        <g id="an_arch_start" class="g_arch an term on" onclick="apick_arch('start')" style="cursor:pointer"><rect x="24" y="256" width="86" height="46" rx="22" style="fill:#0b0f26;stroke:#2a3060"/><text x="67" y="285" style="fill:#8fa0d0" class="ant">▶&#160;start</text></g><g id="an_arch_router" class="g_arch an core on" onclick="apick_arch('router')" style="cursor:pointer"><rect x="140" y="256" width="150" height="46" rx="13" style="fill:#0e1230;stroke:#39457e"/><text x="215" y="285" style="fill:#9fb0e0" class="ant">🧭&#160;router</text></g><g id="an_arch_parse_file" class="g_arch an read" onclick="apick_arch('parse_file')" style="cursor:pointer"><rect x="316" y="58" width="150" height="46" rx="13" style="fill:#0d2a1e;stroke:#2f8f5f"/><text x="391" y="87" style="fill:#bff0d4" class="ant">📋&#160;parse file</text></g><g id="an_arch_review" class="g_arch an human" onclick="apick_arch('review')" style="cursor:pointer"><rect x="620" y="58" width="150" height="46" rx="13" style="fill:#1d1030;stroke:#9a5cd0"/><text x="695" y="87" style="fill:#e6ccff" class="ant">🙋&#160;review</text></g><g id="an_arch_apply_write" class="g_arch an write" onclick="apick_arch('apply_write')" style="cursor:pointer"><rect x="786" y="58" width="150" height="46" rx="13" style="fill:#2a2008;stroke:#c79210"/><text x="861" y="87" style="fill:#ffe3a6" class="ant">🗂️&#160;write</text></g><g id="an_arch_sheet" class="g_arch an db on" onclick="apick_arch('sheet')" style="cursor:pointer"><rect x="952" y="58" width="150" height="46" rx="13" style="fill:#062430;stroke:#2fb6d6"/><text x="1027" y="87" style="fill:#bdeeff" class="ant">🗄️&#160;Google DB</text></g><g id="an_arch_check_inbox" class="g_arch an read" onclick="apick_arch('check_inbox')" style="cursor:pointer"><rect x="316" y="170" width="150" height="46" rx="13" style="fill:#0d2a1e;stroke:#2f8f5f"/><text x="391" y="199" style="fill:#bff0d4" class="ant">📧&#160;check inbox</text></g><g id="an_arch_parse_reply" class="g_arch an read" onclick="apick_arch('parse_reply')" style="cursor:pointer"><rect x="472" y="170" width="150" height="46" rx="13" style="fill:#0d2a1e;stroke:#2f8f5f"/><text x="547" y="199" style="fill:#bff0d4" class="ant">📥&#160;parse reply</text></g><g id="an_arch_triage" class="g_arch an read" onclick="apick_arch('triage')" style="cursor:pointer"><rect x="628" y="170" width="150" height="46" rx="13" style="fill:#0d2a1e;stroke:#2f8f5f"/><text x="703" y="199" style="fill:#bff0d4" class="ant">🔀&#160;triage</text></g><g id="an_arch_escalate" class="g_arch an human" onclick="apick_arch('escalate')" style="cursor:pointer"><rect x="786" y="170" width="150" height="46" rx="13" style="fill:#1d1030;stroke:#9a5cd0"/><text x="861" y="199" style="fill:#e6ccff" class="ant">🙋&#160;escalate</text></g><g id="an_arch_assess" class="g_arch an read on" onclick="apick_arch('assess')" style="cursor:pointer"><rect x="316" y="300" width="150" height="46" rx="13" style="fill:#0d2a1e;stroke:#2f8f5f"/><text x="391" y="329" style="fill:#bff0d4" class="ant">✅&#160;assess</text></g><g id="an_arch_draft_email" class="g_arch an write on" onclick="apick_arch('draft_email')" style="cursor:pointer"><rect x="472" y="300" width="150" height="46" rx="13" style="fill:#2a2008;stroke:#c79210"/><text x="547" y="329" style="fill:#ffe3a6" class="ant">✍️&#160;draft</text></g><g id="an_arch_approval" class="g_arch an human on" onclick="apick_arch('approval')" style="cursor:pointer"><rect x="628" y="300" width="150" height="46" rx="13" style="fill:#1d1030;stroke:#9a5cd0"/><text x="703" y="329" style="fill:#e6ccff" class="ant">🙋&#160;approve</text></g><g id="an_arch_send" class="g_arch an write on" onclick="apick_arch('send')" style="cursor:pointer"><rect x="784" y="300" width="150" height="46" rx="13" style="fill:#2a2008;stroke:#c79210"/><text x="859" y="329" style="fill:#ffe3a6" class="ant">✉&#160;send</text></g><g id="an_arch_end" class="g_arch an term on" onclick="apick_arch('end')" style="cursor:pointer"><rect x="940" y="312" width="86" height="46" rx="22" style="fill:#0b0f26;stroke:#2a3060"/><text x="983" y="341" style="fill:#8fa0d0" class="ant">■&#160;end</text></g><g id="an_arch_show_info" class="g_arch an read" onclick="apick_arch('show_info')" style="cursor:pointer"><rect x="316" y="410" width="150" height="46" rx="13" style="fill:#0d2a1e;stroke:#2f8f5f"/><text x="391" y="439" style="fill:#bff0d4" class="ant">🔎&#160;answer</text></g><g id="an_arch_tools" class="g_arch an read" onclick="apick_arch('tools')" style="cursor:pointer"><rect x="472" y="410" width="150" height="46" rx="13" style="fill:#0d2a1e;stroke:#2f8f5f"/><text x="547" y="439" style="fill:#bff0d4" class="ant">🛠️&#160;tools</text></g><g id="an_arch_chat" class="g_arch an read" onclick="apick_arch('chat')" style="cursor:pointer"><rect x="140" y="396" width="150" height="46" rx="13" style="fill:#0d2a1e;stroke:#2f8f5f"/><text x="215" y="425" style="fill:#bff0d4" class="ant">💬&#160;chat</text></g>
+      </svg>
+      <div class="aleg">
+        <span><b style="background:#0d2a1e;border-color:#2f8f5f"></b>read · answers now</span>
+        <span><b style="background:#2a2008;border-color:#c79210"></b>write · stage → approve → commit</span>
+        <span><b style="background:#1d1030;border-color:#9a5cd0"></b>human gate ⏸</span>
+        <span><b style="background:#062430;border-color:#2fb6d6"></b>Google DB</span>
+        <span style="color:#ffcf7a">▬ amber trail = the path this run took</span>
+      </div>
+      <div id="adetarch"><span class="hint">👆 Click any step to see what it does.</span></div>
+    </div>
+    <script>
+    (function(){
+      const D={"start": "<div class='adt'>▶ start</div><div class='adp'>A chat message or an uploaded file enters here.</div>", "router": "<div class='adt'>🧭 router</div><div class='adp'>The ONE decider — a single classification picks the lane (upload · email · advance · question · tools · chat). No loop, and no “send” intent.</div>", "parse_file": "<div class='adt'>📋 parse file</div><div class='adp'>Decide the file type, then extract its fields (the Parse primitive). Same node whether the file was uploaded OR arrived as an email PDF.</div>", "review": "<div class='adt'>🙋 review</div><div class='adp'>⏸ The ONE review gate — shared by a parsed file AND a triaged 'info' reply. A human reviews the extracted fields before anything is written to the DB.</div>", "apply_write": "<div class='adt'>🗂️ write</div><div class='adp'>Writes the reviewed fields to the DB. Pure code — reachable only after review. A reviewed reply then re-enters the spine (re-assess → maybe a follow-up).</div>", "sheet": "<div class='adt'>🗄️ Google DB</div><div class='adp'>Google DB — the tour's database (a Google Sheets workbook: shows, travel, receipts, notes). Reads are targeted LOOKUPS (one row), done in code — the whole DB is never poured into a prompt, so cost stays flat no matter how many shows.</div>", "check_inbox": "<div class='adt'>📧 check inbox</div><div class='adp'>Polls the tour inbox. A text reply → parse reply; an attached PDF → parse file.</div>", "parse_reply": "<div class='adt'>📥 parse reply</div><div class='adp'>The LLM pulls the details out of a venue's email reply.</div>", "triage": "<div class='adt'>🔀 triage</div><div class='adp'>Classify the reply: info · a question back to us · a problem (cancel / reschedule) · unclear. A bounded call that ROUTES, it doesn't act — and when unsure, it escalates.</div>", "escalate": "<div class='adt'>🙋 escalate</div><div class='adp'>🙋 Hands the reply to YOU. A problem or unclear reply is flagged — the bot never improvises a consequential action. Nothing is changed or sent.</div>", "assess": "<div class='adt'>✅ assess</div><div class='adp'>Reads this show's row from the DB (a targeted 1-row lookup, code, 0 tokens) and computes what's still missing. Absorbs the old 'read venue'.</div>", "draft_email": "<div class='adt'>✍️ draft</div><div class='adp'>The LLM drafts the ask (or a reply to a question) from just this one show's data. Drafting is never sending.</div>", "approval": "<div class='adt'>🙋 approve</div><div class='adp'>⏸ The ONE approval gate — you review the draft and approve before anything sends.</div>", "send": "<div class='adt'>✉ send</div><div class='adp'>Sends the approved email, logs a note, bumps status. Pure code — the only send in the graph.</div>", "end": "<div class='adt'>■ end</div><div class='adp'>The turn finishes.</div>", "show_info": "<div class='adt'>🔎 answer</div><div class='adp'>Answers a question straight from the DB (a 1-row lookup) — no writes.</div>", "tools": "<div class='adt'>🛠️ tools</div><div class='adp'>One bucket of misc tools — flights, hotels, currency, expenses, SMS, notes. Runs the few a request needs (a known sequence, no ReAct). Send is NOT in the belt.</div>", "chat": "<div class='adt'>💬 chat</div><div class='adp'>General conversation — the one flexible fallback (system-prompt chat).</div>"}, sfx="arch";
+      window["apick_"+sfx]=function(id){
+        document.querySelectorAll('.g_'+sfx).forEach(n=>n.classList.remove('sel'));
+        const el=document.getElementById('an_'+sfx+'_'+id); if(el) el.classList.add('sel');
+        const box=document.getElementById('adet'+sfx); if(box&&D[id]) box.innerHTML=D[id];
+      };
+    })();
+    </script>
+
+    <div class="card why"><b>Why this shape?</b><div class="d">One shared core, two doors: chat runs the graph,
+      the app's buttons call the same nodes. The LLM only drafts &amp; parses; the approval gate is a real
+      <code>interrupt()</code>, not a prompt rule; and <code>send</code> is pulled out of the tool loop so the
+      cycle can read / draft / log but never send.</div></div>
+
+    <div class="sec" style="margin-top:34px">
+      <div class="k">The safety win</div>
+      <h2>The approval gate is structural, not a prompt rule</h2>
+      <p>Advancing spans draft → send. Today the ReAct bot can fire the send on an LLM "send" classification.
+        In the StateGraph, <b>send has one inbound edge — from an <code>interrupt()</code> a human must resume</b>.
+        Draft = LLM · Approve = human · Send = code. No router or LLM path can reach send.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>🎸 TM GO — capability-core architecture</span>
+    <span>Diagrams from really-compiled graphs · click any node</span>
+  </footer>
+
+</div>
+
+<script>
+  function showView(which){
+    var isRef = which === 'ref';
+    document.getElementById('view-ref').classList.toggle('on', isRef);
+    document.getElementById('view-now').classList.toggle('on', !isRef);
+    document.getElementById('tab-ref').setAttribute('aria-selected', isRef);
+    document.getElementById('tab-now').setAttribute('aria-selected', !isRef);
+  }
+</script>
+</body>
+</html>
