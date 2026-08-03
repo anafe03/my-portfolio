@@ -292,21 +292,25 @@
     <div class="rail-brand">Austin Nafe<b>What Is AI?</b><i>AI, as in Austin's Intelligence</i></div>
     <ul class="rail-list" id="railList">
       <li><button class="rail-item" data-goto="hero"><span class="rn">00</span> State of AI</button></li>
-      <li><button class="rail-item" data-goto="map"><span class="rn">01</span> The Map of Terms</button></li>
-      <li><button class="rail-item" data-goto="llm"><span class="rn">02</span> What an LLM Is</button></li>
-      <li><button class="rail-item" data-goto="tokens"><span class="rn">03</span> Tokens</button></li>
-      <li><button class="rail-item" data-goto="embeddings"><span class="rn">04</span> Embeddings</button></li>
-      <li><button class="rail-item" data-goto="attention"><span class="rn">05</span> Attention</button></li>
-      <li><button class="rail-item" data-goto="rag"><span class="rn">06</span> Knowledge &amp; RAG</button></li>
-      <li><button class="rail-item" data-goto="agents"><span class="rn">07</span> LangChain &amp; Agents</button></li>
-      <li><button class="rail-item" data-goto="archetypes"><span class="rn">08</span> What I Build</button></li>
-      <li><button class="rail-item" data-goto="cloud"><span class="rn">09</span> Where It Runs</button></li>
-      <li><button class="rail-item" data-goto="reliability"><span class="rn">10</span> Evals + LangSmith</button></li>
+      <li><button class="rail-item" data-goto="history"><span class="rn">01</span> Two Winters &amp; a Jackpot</button></li>
+      <li><button class="rail-item" data-goto="map"><span class="rn">02</span> The Map of Terms</button></li>
+      <li><button class="rail-item" data-goto="llm"><span class="rn">03</span> What an LLM Is</button></li>
+      <li><button class="rail-item" data-goto="tokens"><span class="rn">04</span> Tokens</button></li>
+      <li><button class="rail-item" data-goto="embeddings"><span class="rn">05</span> Embeddings</button></li>
+      <li><button class="rail-item" data-goto="attention"><span class="rn">06</span> Attention</button></li>
+      <li><button class="rail-item" data-goto="rag"><span class="rn">07</span> Knowledge &amp; RAG</button></li>
+      <li><button class="rail-item" data-goto="agents"><span class="rn">08</span> LangChain &amp; Agents</button></li>
+      <li><button class="rail-item" data-goto="dial"><span class="rn">09</span> The Dial: Workflow ↔ Agent</button></li>
+      <li><button class="rail-item" data-goto="context"><span class="rn">10</span> Context Engineering</button></li>
+      <li><button class="rail-item" data-goto="archetypes"><span class="rn">11</span> What I Build</button></li>
+      <li><button class="rail-item" data-goto="cloud"><span class="rn">12</span> Where It Runs</button></li>
+      <li><button class="rail-item" data-goto="reliability"><span class="rn">13</span> Evals &amp; Reliability</button></li>
       <li style="margin-top:10px;padding:2px 9px;font-family:var(--mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--coral)">Part II · The frontier</li>
-      <li><button class="rail-item" data-goto="energy"><span class="rn">11</span> The Energy Wall</button></li>
-      <li><button class="rail-item" data-goto="beyond"><span class="rn">12</span> Beyond Silicon</button></li>
+      <li><button class="rail-item" data-goto="energy"><span class="rn">14</span> The Energy Wall</button></li>
+      <li><button class="rail-item" data-goto="beyond"><span class="rn">15</span> Beyond Silicon</button></li>
+      <li><button class="rail-item" data-goto="frontier"><span class="rn">16</span> The Reading List</button></li>
       <li style="margin-top:10px;padding:2px 9px;font-family:var(--mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--violet)">Part III · The big questions</li>
-      <li><button class="rail-item" data-goto="questions"><span class="rn">13</span> Open Questions</button></li>
+      <li><button class="rail-item" data-goto="questions"><span class="rn">17</span> Open Questions</button></li>
     </ul>
     <div class="rail-foot"><a href="/">← Back to portfolio</a><br><br>A scroll-through explainer.<br>↑ ↓ moves between sections.<br><a href="/RESUME_2026.pdf">→ Résumé (PDF)</a></div>
   </nav>
@@ -332,9 +336,40 @@
     </section>
 
     <!-- 01 THE MAP -->
+    <!-- 01 HISTORY -->
+    <section class="panel" id="history" data-rung="history">
+      <div class="panel-inner reveal">
+        <div class="eyebrow"><span class="rung-tag">01 · Where it came from</span> Two winters &amp; a jackpot</div>
+        <h2>This field has died twice. Knowing why is how you keep your head now.</h2>
+        <p class="lede">AI didn't arrive in 2022 — it arrived in 1956, over-promised, and <strong>froze twice</strong> when the promises outran the compute. The doom-and-gloom instinct people have today isn't paranoia; it's institutional memory. Here's the whole arc:</p>
+        <div class="beats" style="margin-top:22px">
+          <div class="card">
+            <div class="card-label"><span class="dot ocean"></span>1958–74 · Hype → Winter I</div>
+            <p>Rosenblatt's <b>perceptron</b> makes the New York Times promise machines that will "walk, talk, see, write." Minsky &amp; Papert (1969) prove single-layer nets can't even learn XOR; the Lighthill report (1973) calls the field a failure. Funding evaporates. <b>Lesson: a real idea, decades before its compute.</b></p>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="dot ocean"></span>1980–93 · Expert systems → Winter II</div>
+            <p>Hand-coded rule engines (XCON saved DEC ~$40M/yr) boom — then collapse: <b>brittle rules, no learning</b>, and the specialized LISP-machine market implodes in 1987. "AI" becomes a word you avoid on grant applications for a decade. <b>Lesson: systems that can't learn can't scale.</b></p>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="dot green"></span>1986–2011 · The quiet compounding</div>
+            <p>Backprop is popularized (1986); LeCun reads ZIP codes with conv nets (1989); the internet quietly builds the training set, and gaming quietly builds the processor (GPUs). Nothing "arrives" — <b>three curves grow: data, compute, and algorithms</b>.</p>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="dot green"></span>2012–now · The jackpot</div>
+            <p><b>AlexNet</b> (2012) crushes ImageNet on two gaming GPUs → <b>"Attention Is All You Need"</b> (2017) makes training parallel → <b>scaling laws</b> (2020) turn "bigger is better" into an equation → ChatGPT (2022) makes it a product. By 2026, ~57% of surveyed orgs run agents in production. The winters ended when the curves crossed the promises.</p>
+          </div>
+        </div>
+        <div class="biz">
+          <div class="proj">Why I keep the winters in mind</div>
+          <p>Both winters were caused by <b>claims outrunning evidence</b>. That's why everything I build ships with evals and measured numbers — <span class="val">"measured, not asserted" is the anti-winter discipline</span>, applied at the scale of one engineer.</p>
+        </div>
+      </div>
+    </section>
+
     <section class="panel" id="map" data-rung="map">
       <div class="panel-inner reveal">
-        <div class="eyebrow"><span class="rung-tag">01 · State of AI</span> The map of terms</div>
+        <div class="eyebrow"><span class="rung-tag">02 · State of AI</span> The map of terms</div>
         <h2>Most "AI" words are nested inside each other.</h2>
         <p class="lede">The jargon sounds like a pile of unrelated buzzwords. It isn't. Almost all of it fits in one picture: a set of <strong>Russian dolls</strong>, plus a short list of things you actually <em>do</em> with the innermost one.</p>
 
@@ -370,7 +405,7 @@
     <!-- 02 WHAT AN LLM IS -->
     <section class="panel" id="llm" data-rung="llm">
       <div class="panel-inner reveal">
-        <div class="eyebrow"><span class="rung-tag">02 · How it works</span> What an LLM actually is</div>
+        <div class="eyebrow"><span class="rung-tag">03 · How it works</span> What an LLM actually is</div>
         <h2>It's autocomplete that read the internet.</h2>
         <p class="lede">An LLM does exactly one thing: given some text, it predicts the <strong>next chunk of text</strong>, over and over. That's it. Everything that feels intelligent — answering, coding, reasoning — is that one trick, run at enormous scale on almost everything ever written.</p>
 
@@ -389,7 +424,7 @@
     <!-- 03 TOKENS -->
     <section class="panel" id="tokens" data-rung="tokens">
       <div class="panel-inner reveal">
-        <div class="eyebrow"><span class="rung-tag">03 · How it works</span> Tokens — the model's alphabet</div>
+        <div class="eyebrow"><span class="rung-tag">04 · How it works</span> Tokens — the model's alphabet</div>
         <h2>Models don't read words. They read tokens.</h2>
         <p class="lede">Before anything happens, your text is chopped into <strong>tokens</strong> — common chunks, often a word or a piece of one. Roughly four characters each. Everything the model does is counted, priced, and limited in tokens, so it's worth seeing them.</p>
 
@@ -410,7 +445,7 @@
     <!-- 04 EMBEDDINGS -->
     <section class="panel" id="embeddings" data-rung="embeddings">
       <div class="panel-inner reveal">
-        <div class="eyebrow"><span class="rung-tag">04 · How it works</span> Embeddings — meaning becomes geometry</div>
+        <div class="eyebrow"><span class="rung-tag">05 · How it works</span> Embeddings — meaning becomes geometry</div>
         <h2>Every token becomes a point in space. Similar meanings sit close.</h2>
         <p class="lede">A token is turned into a long list of numbers — a <strong>vector</strong> — that places it in a "meaning space." The model learns this space so that <em>related things land near each other</em>. This one idea is the engine behind search, RAG, and recommendations.</p>
 
@@ -440,7 +475,7 @@
     <!-- 05 ATTENTION -->
     <section class="panel" id="attention" data-rung="attention">
       <div class="panel-inner reveal">
-        <div class="eyebrow"><span class="rung-tag">05 · How it works</span> Attention — how it reads in context</div>
+        <div class="eyebrow"><span class="rung-tag">06 · How it works</span> Attention — how it reads in context</div>
         <h2>"It" means nothing until the model decides what "it" points to.</h2>
         <p class="lede">Words change meaning based on their neighbors. <strong>Attention</strong> is the mechanism — the "T" in GPT — that lets every word look at every other word and decide which ones matter. It's how the model resolves <em>"it," "this," "there."</em> The 2017 paper was literally titled <span class="accent-ocean">"Attention Is All You Need."</span></p>
 
@@ -456,7 +491,7 @@
     <!-- 06 RAG -->
     <section class="panel" id="rag" data-rung="rag">
       <div class="panel-inner reveal">
-        <div class="eyebrow"><span class="rung-tag">06 · What you do with it</span> Knowledge &amp; RAG</div>
+        <div class="eyebrow"><span class="rung-tag">07 · What you do with it</span> Knowledge &amp; RAG</div>
         <h2>Now embeddings pay off: give the model <em>your</em> facts.</h2>
         <p class="lede">The model only knows what it was trained on — not your contracts or what changed today. So I embed your documents into that same meaning-space, and at question time <strong>retrieve the nearest chunks</strong> and hand them over. The model answers grounded in them, <span class="accent-green">with citations.</span> That's Retrieval-Augmented Generation.</p>
 
@@ -492,7 +527,7 @@
     <!-- 07 LANGCHAIN & AGENTS -->
     <section class="panel" id="agents" data-rung="agents">
       <div class="panel-inner reveal">
-        <div class="eyebrow"><span class="rung-tag">07 · What you do with it</span> LangChain, tools &amp; agents</div>
+        <div class="eyebrow"><span class="rung-tag">08 · What you do with it</span> LangChain, tools &amp; agents</div>
         <h2>Give it actions, and let it run the loop.</h2>
         <p class="lede">A model that can only talk is a chatbot. Wire it to <strong>tools</strong> — send a text, query a database, file a form — and it can <em>act</em>. When a task needs several steps and memory, that's an <strong>agent</strong>: it reasons, acts, sees the result, and decides again. <span class="accent-ocean">LangGraph</span> is what I use to run that loop reliably — explicit state, checkpoints, and a record of every step. <strong>Step through one:</strong></p>
 
@@ -529,10 +564,64 @@
       </div>
     </section>
 
+    <!-- 09 DIAL -->
+    <section class="panel" id="dial" data-rung="dial">
+      <div class="panel-inner reveal">
+        <div class="eyebrow"><span class="rung-tag">09 · The judgment</span> The dial: workflow ↔ agent</div>
+        <h2>The loop is powerful. Knowing when <em>not</em> to run it is the senior skill.</h2>
+        <p class="lede">"Agent" isn't a yes/no — it's a <strong>dial</strong>, and where you set it should be a function of one variable: <strong>the cost of a wrong action.</strong> My rule: <span class="accent-ocean">autonomy rises as the cost of error falls.</span></p>
+        <div class="beats" style="margin-top:22px">
+          <div class="card">
+            <div class="card-label"><span class="dot green"></span>Pure workflow</div>
+            <p>Code decides everything; the LLM only writes text. Right when every step is known. <b>Not really an agent — and often the correct answer.</b></p>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="dot green"></span>Router agent <span style="color:var(--text-mute)">← my default</span></div>
+            <p>The model makes <b>one decision per turn</b> — which lane — from context and memory; deterministic workflows do the doing. Handles unscripted phrasing without ever holding the pen on real data. This is Meridian and TM GO.</p>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="dot ocean"></span>Bounded free node</div>
+            <p>One open-ended step <b>inside</b> a deterministic graph — budgeted, time-boxed, typed output. For genuinely exploratory subtasks ("research this denial") without giving up the rails.</p>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="dot coral"></span>Full ReAct loop</div>
+            <p>The model plans, calls tools, re-plans, repeats. Maximum capability, minimum verifiability — every run is a different path, so you can't enumerate or regression-gate them. Never next to a payment tool.</p>
+          </div>
+        </div>
+        <div class="biz">
+          <div class="proj">The cost bonus nobody mentions</div>
+          <p>A bounded turn is at most <b>two model calls</b> — router + writer — so <span class="val">spend scales with questions answered, not tokens wandered</span>. The free loop's bill grows with its indecision.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 CONTEXT -->
+    <section class="panel" id="context" data-rung="context">
+      <div class="panel-inner reveal">
+        <div class="eyebrow"><span class="rung-tag">10 · The discipline</span> Context engineering</div>
+        <h2>The window isn't memory. Deciding what goes in it is a real discipline now.</h2>
+        <p class="lede">Every model <strong>degrades as context grows — well before the window is full</strong>. So the question isn't "does it fit," it's "what has earned its place in this turn's window?" The field has settled on four moves:</p>
+        <div class="beats" style="margin-top:22px">
+          <div class="card">
+            <div class="card-label"><span class="dot green"></span>Write &amp; Select</div>
+            <p><b>Write</b>: persist state outside the window (files, scratchpads, a checkpointer) instead of hauling the transcript. <b>Select</b>: pull in only what this turn needs — that's what RAG actually is: <em>selection under a budget</em>.</p>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="dot ocean"></span>Compress &amp; Isolate</div>
+            <p><b>Compress</b>: recency window + a running summary of everything older. <b>Isolate</b>: subagents get their own clean windows so one task's debris doesn't poison another's reasoning.</p>
+          </div>
+        </div>
+        <div class="biz">
+          <div class="proj">The result that changed my defaults</div>
+          <p>For tool-using agents, a 2026 study ("Less Context, Better Agents") found <b>a small recency window plus a compact running summary beats hauling full history — and even beats fancy external memory</b>. My builds now ship hard per-turn context budgets by default: <span class="val">a long chat should never quietly inflate every later call.</span></p>
+        </div>
+      </div>
+    </section>
+
     <!-- 08 ARCHETYPES -->
     <section class="panel" id="archetypes" data-rung="archetypes">
       <div class="panel-inner reveal">
-        <div class="eyebrow"><span class="rung-tag">08 · What I build</span> Archetypes, not a project list</div>
+        <div class="eyebrow"><span class="rung-tag">11 · What I build</span> Archetypes, not a project list</div>
         <h2>I don't build one-offs. I build these patterns.</h2>
         <p class="lede">Every project I ship is an instance of a reusable <strong>archetype</strong> — a shape of system I can stand up again for you. Here are the ones I've proven, each with the real build behind it.</p>
 
@@ -580,7 +669,7 @@
     <!-- 09 CLOUD / WHERE IT RUNS -->
     <section class="panel" id="cloud" data-rung="cloud">
       <div class="panel-inner reveal">
-        <div class="eyebrow"><span class="rung-tag">09 · Shipping it</span> Where it runs — the cloud</div>
+        <div class="eyebrow"><span class="rung-tag">12 · Shipping it</span> Where it runs — the cloud</div>
         <h2>A great agent still needs somewhere to live.</h2>
         <p class="lede">"The cloud" is just someone else's computers, rented by the minute. The real question is never <em>which is best</em> — it's <strong>which fits this job.</strong> There are three tiers, and the choice is usually made for you by one thing: <span class="accent-ocean">where your data is allowed to be.</span></p>
 
@@ -615,7 +704,7 @@
     <!-- 10 RELIABILITY -->
     <section class="panel" id="reliability" data-rung="reliability">
       <div class="panel-inner reveal">
-        <div class="eyebrow"><span class="rung-tag">10 · The hard part</span> Evals + LangSmith</div>
+        <div class="eyebrow"><span class="rung-tag">13 · The hard part</span> Evals + LangSmith</div>
         <h2>Anyone can demo an agent once. I ship the 1,000th run.</h2>
         <p class="lede">The value isn't the demo — it's the run on the input nobody predicted, without burning money or going off the rails. Two disciplines: <strong class="accent-green">evaluation</strong> (measure whether it meets the bar) and <strong class="accent-ocean">monitoring</strong> (watch whether it still does in production, with a full trace of every step).</p>
 
@@ -645,6 +734,16 @@
           <div class="card">
             <div class="card-label"><span class="dot ocean"></span>Monitoring — is it still?</div>
             <p>A wrong answer still returns 200 OK, so I watch three layers: <b>operational</b> (latency, cost/run), <b>quality</b> (judge scores, thumbs, task success), and the <b>trace</b> above — the only way to answer "why did it do that."</p>
+          </div>
+        </div>
+        <div class="beats" style="margin-top:18px">
+          <div class="card">
+            <div class="card-label"><span class="dot coral"></span>Capability ≠ reliability</div>
+            <p><b>pass@1</b> says it <em>can</em> work; production needs <b>pass^k</b> — correct on <em>all</em> k trials, because LLM routing is stochastic and one green run hides flakiness. Add paraphrase perturbations and injected tool failures and you have reliability's three axes.</p>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="dot green"></span>My own numbers (Meridian, k=3, live)</div>
+            <p>Originals <b>100% pass^k</b> · paraphrases <b>88%</b> · provider-outage fallback floor <b>15/15</b> · cross-family judge (GPT grading Claude) <b>4/5 faithful</b>. Best part: the harness <b>found two real bugs</b> — a paraphrase my router misroutes and an unsupported claim my writer slipped in. That's the eval earning its keep.</p>
           </div>
         </div>
         <div class="biz">
@@ -728,6 +827,41 @@
     </section>
 
     <!-- 13 OPEN QUESTIONS -->
+    <!-- 16 FRONTIER READING LIST -->
+    <section class="panel" id="frontier" data-rung="frontier">
+      <div class="panel-inner reveal">
+        <div class="eyebrow" style="color:var(--coral)"><span class="rung-tag" style="color:var(--coral);opacity:.7">Part II · The frontier</span> The reading list — upskilling in public</div>
+        <h2>The papers I'm actually reading, and the one-line take on each.</h2>
+        <p class="lede">The winters section taught me to distrust vibes — including my own. This is my running reading log: what's genuinely state-of-the-art in making agents <em>reliable</em>, and where the field is arguing. <span class="accent-ocean">Updated as I go — last pass Aug 2026.</span></p>
+        <div class="beats" style="margin-top:22px">
+          <div class="card">
+            <div class="card-label"><span class="dot green"></span>Reliability science</div>
+            <p><a href="https://arxiv.org/abs/2601.06112" target="_blank" rel="noopener">ReliabilityBench</a> — reliability = consistency (pass^k) + robustness to paraphrase + fault tolerance; the framework my eval_v2 implements. <a href="https://arxiv.org/abs/2603.29231" target="_blank" rel="noopener">Beyond pass@1</a> — why single-run benchmarks systematically overstate production readiness.</p>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="dot ocean"></span>Context &amp; memory</div>
+            <p><a href="https://arxiv.org/abs/2606.10209" target="_blank" rel="noopener">Less Context, Better Agents</a> — recency window + running summary wins; changed my defaults. <a href="https://arxiv.org/abs/2603.09023" target="_blank" rel="noopener">Demand Paging for Context Windows</a> — context as RAM, store as disk: the memory-hierarchy frame.</p>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="dot ocean"></span>Safe tool use</div>
+            <p><a href="https://arxiv.org/abs/2601.08012" target="_blank" rel="noopener">Verifiably Safe Tool Use</a> — capability/trust labels on tools, guarantees over vibes. <a href="https://arxiv.org/abs/2607.19449" target="_blank" rel="noopener">Guardrails as Scapegoats</a> — model-side refusals are unfaithful; deterministic gates aren't. Academic backing for "the model proposes, code commits."</p>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="dot amber"></span>Judging the judges</div>
+            <p><a href="https://arxiv.org/abs/2604.23178" target="_blank" rel="noopener">Bias mitigation in LLM-as-judge pipelines</a> — never judge with the generator's own family, pairwise both orderings, explicit rubrics, calibrate on your own labels. My faithfulness judge follows all four.</p>
+          </div>
+          <div class="card">
+            <div class="card-label"><span class="dot coral"></span>The retrieval argument: is RAG enough? Do we need graphs?</div>
+            <p><a href="https://arxiv.org/abs/2604.09666" target="_blank" rel="noopener">Do We Still Need GraphRAG?</a> — agentic (multi-round) search substantially closes the gap to GraphRAG on plain vector RAG; graphs still win deep multi-hop once their index cost is amortized. <a href="https://arxiv.org/abs/2606.25656" target="_blank" rel="noopener">Is GraphRAG Needed?</a> continues the argument with context optimization. Names to know: <b>HippoRAG2</b> (PageRank over an entity graph), <b>LightRAG</b> (dual-level graph + vectors), <b>LinearRAG</b> (relation-free, linear cost). My take: <span class="val">run the baseline and publish the table — "graphs weren't worth it here, and here's the number" beats a fancy demo.</span></p>
+          </div>
+        </div>
+        <div class="biz">
+          <div class="proj">Why this section exists</div>
+          <p>Reading lists rot in bookmarks. Publishing mine forces the one-line take — and the take is the actual skill: <span class="val">knowing what each result changes about how you build tomorrow.</span></p>
+        </div>
+      </div>
+    </section>
+
     <section class="panel" id="questions" data-rung="questions">
       <div class="panel-inner reveal">
         <div class="eyebrow" style="color:var(--violet)"><span class="rung-tag" style="color:var(--violet);opacity:.7">Part III · The big questions</span> Where the engineering runs out</div>
@@ -793,7 +927,7 @@
   // rail + progress
   var panels = [].slice.call(document.querySelectorAll('.panel'));
   var railItems = [].slice.call(document.querySelectorAll('.rail-item'));
-  var order = ['hero','map','llm','tokens','embeddings','attention','rag','agents','archetypes','cloud','reliability','energy','beyond','questions'];
+  var order = ['hero','history','map','llm','tokens','embeddings','attention','rag','agents','dial','context','archetypes','cloud','reliability','energy','beyond','frontier','questions'];
   var progBar = document.getElementById('progBar');
   function railFor(r){ return railItems.find(function(b){ return b.getAttribute('data-goto')===r; }); }
   var ao = new IntersectionObserver(function (entries) {
