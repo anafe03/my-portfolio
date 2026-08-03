@@ -212,6 +212,7 @@
       <li><button class="rail-item" data-goto="intel"><span class="rn">08</span> Where the intelligence lives</button></li>
       <li><button class="rail-item" data-goto="breaks"><span class="rn">09</span> Failure modes &amp; options</button></li>
       <li><button class="rail-item" data-goto="cost"><span class="rn">10</span> Token economics</button></li>
+      <li><button class="rail-item" data-goto="stateng"><span class="rn">11</span> The state engine</button></li>
       <li class="rail-div">Forward</li>
       <li><button class="rail-item" data-goto="scale"><span class="rn">02</span> Scaling path</button></li>
       <li><button class="rail-item" data-goto="talk"><span class="rn">03</span> Summary</button></li>
@@ -474,6 +475,34 @@
       </div>
     </section>
 
+    <!-- STATE ENGINE -->
+    <section class="panel" id="stateng" data-rung="stateng">
+      <div class="panel-inner reveal">
+        <div class="eyebrow"><span class="sec">Depth · 04</span> The state engine</div>
+        <h2>Records, events, projections — why the views can't disagree</h2>
+        <p class="lede">Decisions 2 and 3 generalized into the engine that now runs the inbox. The root cause of every state bug we hit — a count saying 1 while the list said 0, a deleted venue leaving a ghost, old emails re-tagging a re-uploaded venue — was the same: <b>the same truth derived in more than one place.</b> The fix is a model, not a patch.</p>
+        <div class="spec">
+          <div class="row"><span class="k">① Records</span><span class="v">The facts — a venue's row. The source of truth (Sheets today, Postgres later).</span></div>
+          <div class="row"><span class="k">② Events</span><span class="v">An append-only, timestamped log of things that <i>happened</i> — sent, received, accepted, edited, <b>deleted (a tombstone, not erasure)</b> — each with an idempotency key.</span></div>
+          <div class="row"><span class="k">③ Projections</span><span class="v">Every "state" the UI shows — work queue, advancing status, the reply badge — is a <b>pure function</b> of records + events. Computed in exactly one place; chat and buttons read the same projection, so they <i>cannot</i> disagree.</span></div>
+        </div>
+        <div class="contrast">
+          <div class="side naive">
+            <div class="st">The bug this killed (shipped fix)</div>
+            <p>Delete a venue, re-upload it — and old emails re-tagged the new one. Two matchers in two endpoints, no time bound.</p>
+            <p><b>Fix, by construction:</b> one shared matcher (<code>_match_email_to_venue</code>), a <code>watch_since</code> stamp at venue creation (<code>_stamp_venue_watch</code>), and a time-bound (<code>_watch_allows</code>): a reply counts only if it postdates the venue. A re-upload is a new aggregate with a fresh cutoff — prior events can't resurface.</p>
+          </div>
+          <div class="side built">
+            <div class="st">The invariants (each maps to a bug it prevents)</div>
+            <p>1 · one reducer per projection &nbsp;2 · idempotency keys (<code>message_id</code>, content-hash) &nbsp;3 · time-bounded projections &nbsp;4 · tombstone deletes &nbsp;5 · single-writer per aggregate + optimistic concurrency &nbsp;6 · read-your-writes for the actor, eventual for pollers.</p>
+            <p><b>Every mutation — chat, button, inbound email — goes through one gated <code>apply(event)</code></b>: idempotent, atomic (best-effort on Sheets; a transaction on Postgres), and it emits which projections it invalidated — cache invalidation is an output of the write, not a cron job hoping to catch up.</p>
+          </div>
+        </div>
+        <div class="principle"><span class="wl">Cost tie-in</span>Derive-on-read can't drift but recomputes every turn; <b>materialized projections</b> buy the compute back without giving up correctness — cached under a version key, refreshed only on write-driven invalidation. Correctness first, then cost, in that order.</div>
+        <p class="body" style="margin-top:16px"><b>Why it's a platform:</b> the engine is vertical-agnostic. A health vertical (Meridian) keeps the three layers, the funnel, and the invariants unchanged — it raises the gate policy, swaps Sheets for Postgres, and the event log doubles as the <b>compliance audit trail</b> for free. Same engine, harder rules — that's the generalization test.</p>
+      </div>
+    </section>
+
     <section class="panel alt" id="scale" data-rung="scale">
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Forward · 02</span> Scaling path</div>
@@ -537,7 +566,7 @@
 
   var panels = [].slice.call(document.querySelectorAll('.panel'));
   var railItems = [].slice.call(document.querySelectorAll('.rail-item'));
-  var order = ['hero','diagram','stack','d1','d2','d3','d4','d5','d6','d7','intel','breaks','cost','scale','talk'];
+  var order = ['hero','diagram','stack','d1','d2','d3','d4','d5','d6','d7','intel','breaks','cost','stateng','scale','talk'];
   var progBar = document.getElementById('progBar');
   function railFor(r){ return railItems.find(function(b){ return b.getAttribute('data-goto')===r; }); }
   var ao = new IntersectionObserver(function (entries) {
