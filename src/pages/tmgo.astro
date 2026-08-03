@@ -208,6 +208,10 @@
       <li><button class="rail-item" data-goto="d5"><span class="rn">05</span> Evaluation</button></li>
       <li><button class="rail-item" data-goto="d6"><span class="rn">06</span> Data model</button></li>
       <li><button class="rail-item" data-goto="d7"><span class="rn">07</span> Delivery</button></li>
+      <li style="margin-top:10px;padding:2px 9px;font-family:var(--mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent)">Depth</li>
+      <li><button class="rail-item" data-goto="intel"><span class="rn">08</span> Where the intelligence lives</button></li>
+      <li><button class="rail-item" data-goto="breaks"><span class="rn">09</span> Failure modes &amp; options</button></li>
+      <li><button class="rail-item" data-goto="cost"><span class="rn">10</span> Token economics</button></li>
       <li class="rail-div">Forward</li>
       <li><button class="rail-item" data-goto="scale"><span class="rn">02</span> Scaling path</button></li>
       <li><button class="rail-item" data-goto="talk"><span class="rn">03</span> Summary</button></li>
@@ -412,6 +416,64 @@
     </section>
 
     <!-- SCALE -->
+    <!-- INTEL -->
+    <section class="panel alt" id="intel" data-rung="intel">
+      <div class="panel-inner reveal">
+        <div class="eyebrow"><span class="sec">Depth · 01</span> Where the intelligence lives</div>
+        <h2>Two LLM seams. Everything else is code — on purpose.</h2>
+        <p class="lede">The model appears at exactly two points, both language problems: <b>parsing</b> a venue's free-form reply into typed fields, and <b>drafting</b> the outbound message. Routing, scheduling, sheet writes, validation, retries — deterministic Python. That placement is the load-bearing decision the other six hang off.</p>
+        <div class="contrast">
+          <div class="side naive">
+            <div class="st">What this costs me</div>
+            <p><b>Flexibility.</b> A new capability means writing a pipeline, not prompting the agent to improvise one. The system cannot handle a workflow nobody designed. That's a real limitation and I'd say it plainly.</p>
+            <p>If the product needed open-ended exploration — "figure out this venue's whole booking process" — this shape would be wrong, and I'd add a <b>bounded free node</b>: one constrained agentic step with a budget, timeout, and typed output, inside the deterministic graph.</p>
+          </div>
+          <div class="side built">
+            <div class="st">What it buys</div>
+            <p><b>Verifiability.</b> Every path is enumerable, so every path is testable — that's what makes the 80% CI gate and the closed feedback loop possible at all. You can't regression-gate an agent whose control flow is different every run.</p>
+            <p><b>Blast-radius control.</b> The model's worst output is a bad draft or a bad parse — both pass through a human gate before touching real data. It structurally cannot send, write, or delete.</p>
+          </div>
+        </div>
+        <div class="principle"><span class="wl">Tied together</span>All seven decisions are one bet made seven times: <b>trade flexibility for verifiability wherever the system touches real data</b>. Derived state, the queue view, the eval gate — each is that same trade in a different subsystem. They don't contradict; they compound.</div>
+      </div>
+    </section>
+
+    <!-- BREAKS -->
+    <section class="panel" id="breaks" data-rung="breaks">
+      <div class="panel-inner reveal">
+        <div class="eyebrow"><span class="sec">Depth · 02</span> Failure modes &amp; options</div>
+        <h2>Where it breaks, where it doesn't — and the options when it does</h2>
+        <p class="lede">A systems answer, not a feature list: each subsystem's break condition, observed or anticipated, with the mitigation shipped today and the options in reserve.</p>
+        <div class="spec">
+          <div class="row"><span class="k">Extraction</span><span class="v"><b>Breaks when:</b> a venue writes something genuinely ambiguous ("load in around when doors-ish"). <b>Today:</b> human review catches it; the correction becomes labeled eval data. <b>Options:</b> per-field confidence with abstention, dual-model consensus on low-confidence fields, targeted golden-set additions from the failure log.</span></div>
+          <div class="row"><span class="k">Sheets I/O</span><span class="v"><b>Breaks when:</b> API quota bursts or two writers collide — no transactions. <b>Today:</b> low volume keeps it theoretical; writes are serialized per band. <b>Options:</b> write-queue with backoff (interim), Postgres as system-of-record with Sheets demoted to an export (the real fix).</span></div>
+          <div class="row"><span class="k">Email ingest</span><span class="v"><b>Breaks when:</b> IMAP polling lags or a cold start misses the window. <b>Today:</b> the derived queue means a late-seen message just resolves on the next cycle — nothing is lost, only delayed. <b>Options:</b> Gmail API webhooks (event-driven), adaptive poll intervals as interim.</span></div>
+          <div class="row"><span class="k">LLM providers</span><span class="v"><b>Breaks when:</b> OpenAI degrades. <b>Today:</b> automatic Anthropic failover, recorded per call by <code>traced_llm</code>. <b>Both down:</b> the graph degrades to queue-and-notify — drafts wait, nothing silently drops. Deterministic paths (reminders, sheet sync) keep running.</span></div>
+          <div class="row"><span class="k">State</span><span class="v"><b>Where it doesn't break:</b> turn-status and the work queue are <i>derived</i>, so they cannot desync from messages + sheet. This bug class is closed by construction, not patched.</span></div>
+          <div class="row"><span class="k">Writes</span><span class="v"><b>Where it doesn't break:</b> nothing the model produces reaches a band's data without an approval click. The failure mode "AI corrupted my tour sheet" has no path through the graph.</span></div>
+          <div class="row"><span class="k">Quality drift</span><span class="v"><b>Breaks when:</b> a prompt or model change quietly degrades extraction. <b>Today:</b> it can't ship — the CI eval gate blocks below 80%. <b>Options:</b> multi-trial consistency (pass^k) and paraphrase-perturbation cases to catch instability a single pass hides.</span></div>
+        </div>
+        <div class="honest"><b>The honest one:</b> the current single-run eval measures capability, not reliability. An agent can pass once and still be flaky. The upgrade path is multi-trial pass^k with perturbations — capability says it <i>can</i> work; consistency says it <i>keeps</i> working.</div>
+      </div>
+    </section>
+
+    <!-- COST -->
+    <section class="panel alt" id="cost" data-rung="cost">
+      <div class="panel-inner reveal">
+        <div class="eyebrow"><span class="sec">Depth · 03</span> Token economics</div>
+        <h2>Cost as a designed number, not a surprise</h2>
+        <p class="lede">One advance cycle touches the model exactly twice — parse the reply, draft the response — so cost scales with <b>shows advanced</b>, not with chat length or agent wandering. That's a consequence of the bounded graph: no re-planning loops means no unbounded token spend. The levers, in the order I'd pull them:</p>
+        <div class="spec">
+          <div class="row"><span class="k">Metering first</span><span class="v">You can't optimize what you don't measure — <code>traced_llm</code> already records tokens and cost per call, per provider. Every lever below is verified against that meter, not vibes.</span></div>
+          <div class="row"><span class="k">Model tiering</span><span class="v">Parsing into a JSON schema is a small-model task; drafting the member-facing prose deserves the quality tier. Splitting them cuts the parse side ~5× with no quality loss — the eval gate proves the "no quality loss" part.</span></div>
+          <div class="row"><span class="k">Prompt caching</span><span class="v">The instruction blocks are identical every call; cache them and repeat calls pay the cache-read rate. Honest caveat: caching only engages above the provider's minimum cacheable size — it matters as instruction and schema blocks grow, and the meter shows exactly when it starts paying.</span></div>
+          <div class="row"><span class="k">Context budget</span><span class="v">A recency window plus hard character caps on history. Without a budget, every turn's cost grows with transcript length — the quiet cost leak in most chat products.</span></div>
+          <div class="row"><span class="k">Per-tenant budgets</span><span class="v">At scale, the LLM gateway (the <code>traced_llm</code> seam grown up) enforces per-band spend caps and caches identical calls — cost isolation per tenant, not one noisy band spending everyone's budget.</span></div>
+        </div>
+        <div class="principle"><span class="wl">Principle</span>Strategic cost design is architecture, not discounts: bound the loop, tier the models, cache the constants, budget the context — and meter everything so each lever's payoff is a measured number.</div>
+      </div>
+    </section>
+
     <section class="panel alt" id="scale" data-rung="scale">
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Forward · 02</span> Scaling path</div>
@@ -475,7 +537,7 @@
 
   var panels = [].slice.call(document.querySelectorAll('.panel'));
   var railItems = [].slice.call(document.querySelectorAll('.rail-item'));
-  var order = ['hero','diagram','stack','d1','d2','d3','d4','d5','d6','d7','scale','talk'];
+  var order = ['hero','diagram','stack','d1','d2','d3','d4','d5','d6','d7','intel','breaks','cost','scale','talk'];
   var progBar = document.getElementById('progBar');
   function railFor(r){ return railItems.find(function(b){ return b.getAttribute('data-goto')===r; }); }
   var ao = new IntersectionObserver(function (entries) {
