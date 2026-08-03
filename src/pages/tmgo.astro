@@ -278,7 +278,7 @@
           <div class="row"><span class="k">Agent core</span><span class="v"><b>LangGraph StateGraph</b> — a router dispatching to explicit, deterministic pipelines</span></div>
           <div class="row"><span class="k">LLM</span><span class="v">LangChain <code>init_chat_model</code> — OpenAI primary, <b>Anthropic failover</b></span></div>
           <div class="row"><span class="k">SMS</span><span class="v">FastAPI + <b>Twilio</b> webhook</span></div>
-          <div class="row"><span class="k">Data</span><span class="v"><b>Google Sheets</b> (per-band system-of-record) + <b>Supabase</b> (auth, storage, AI telemetry)</span></div>
+          <div class="row"><span class="k">Data</span><span class="v"><b>Google Sheets</b> (per-band system-of-record) + <b>Supabase Postgres</b> (auth, storage, AI telemetry — and now the <b>migration target</b>: venues + email state dual-written behind a parity gate, cutover on <code>TMGO_STORE=db</code>)</span></div>
           <div class="row"><span class="k">Scheduler</span><span class="v"><b>Railway</b> cron worker for reminders</span></div>
           <div class="row"><span class="k">Reliability</span><span class="v"><code>traced_llm</code> observability + closed-loop evaluation + <code>/api/ai-health</code> dashboard</span></div>
           <div class="row"><span class="k">Delivery</span><span class="v"><b>GitHub Actions</b> CI (build · lint · eval gate) + Docker; Vercel/Render auto-deploy</span></div>
@@ -401,7 +401,7 @@
           <div class="side naive">
             <div class="st">Where it breaks</div>
             <p>It is also what breaks first at scale: <b>API quotas, no transactions, no concurrency guarantees</b>.</p>
-            <p>I'm not presenting it as permanent — naming the ceiling is the point.</p>
+            <p>I named that ceiling before hitting it — and the exit is now underway: a staged, parity-gated migration to Postgres (see <b>Scaling path</b>).</p>
           </div>
         </div>
         <div class="principle"><span class="wl">Principle</span>Selecting the right tool for the current stage — and stating exactly where it will fail before it does — is the engineering judgment, not a gap in it.</div>
@@ -453,8 +453,8 @@
         <p class="lede">A systems answer, not a feature list: each subsystem's break condition, observed or anticipated, with the mitigation shipped today and the options in reserve.</p>
         <div class="spec">
           <div class="row"><span class="k">Extraction</span><span class="v"><b>Breaks when:</b> a venue writes something genuinely ambiguous ("load in around when doors-ish"). <b>Today:</b> human review catches it; the correction becomes labeled eval data. <b>Options:</b> per-field confidence with abstention, dual-model consensus on low-confidence fields, targeted golden-set additions from the failure log.</span></div>
-          <div class="row"><span class="k">Sheets I/O</span><span class="v"><b>Breaks when:</b> API quota bursts or two writers collide — no transactions. <b>Today:</b> low volume keeps it theoretical; writes are serialized per band. <b>Options:</b> write-queue with backoff (interim), Postgres as system-of-record with Sheets demoted to an export (the real fix).</span></div>
-          <div class="row"><span class="k">Email ingest</span><span class="v"><b>Breaks when:</b> IMAP polling lags or a cold start misses the window. <b>Today:</b> the derived queue means a late-seen message just resolves on the next cycle — nothing is lost, only delayed. <b>Options:</b> Gmail API webhooks (event-driven), adaptive poll intervals as interim.</span></div>
+          <div class="row"><span class="k">Sheets I/O</span><span class="v"><b>Breaks when:</b> API quota bursts or two writers collide — no transactions. <b>Today:</b> the real fix is <i>in flight</i> — venue facts and email state <b>dual-write to Postgres</b>, a parity endpoint proves the stores agree, and reads cut over behind <code>TMGO_STORE=db</code>; a Sheets export endpoint starts the demotion from database to report. <b>Left:</b> remaining domains, then the contract step.</span></div>
+          <div class="row"><span class="k">Email ingest</span><span class="v"><b>Breaks when:</b> IMAP polling lags or a cold start misses the window. <b>Today:</b> the derived queue means a late-seen message just resolves on the next cycle — nothing is lost, only delayed. And the event-driven path is half-built: a <b>Gmail push receiver</b> acks fast and hands the work to the job queue, off the request path. <b>Left:</b> GCP pub/sub + watch enablement.</span></div>
           <div class="row"><span class="k">LLM providers</span><span class="v"><b>Breaks when:</b> OpenAI degrades. <b>Today:</b> automatic Anthropic failover, recorded per call by <code>traced_llm</code>. <b>Both down:</b> the graph degrades to queue-and-notify — drafts wait, nothing silently drops. Deterministic paths (reminders, sheet sync) keep running.</span></div>
           <div class="row"><span class="k">State</span><span class="v"><b>Where it doesn't break:</b> turn-status and the work queue are <i>derived</i>, so they cannot desync from messages + sheet. This bug class is closed by construction, not patched.</span></div>
           <div class="row"><span class="k">Writes</span><span class="v"><b>Where it doesn't break:</b> nothing the model produces reaches a band's data without an approval click. The failure mode "AI corrupted my tour sheet" has no path through the graph.</span></div>
@@ -473,9 +473,9 @@
         <div class="spec">
           <div class="row"><span class="k">Metering first</span><span class="v">You can't optimize what you don't measure — <code>traced_llm</code> already records tokens and cost per call, per provider. Every lever below is verified against that meter, not vibes.</span></div>
           <div class="row"><span class="k">Model tiering <em>(shipped)</em></span><span class="v">Different jobs run different tiers, chosen by measurement: quick classification and summaries run <code>gpt-4o-mini</code>; field <b>extraction runs gpt-4o</b>, because grounding errors there reach real tour data and the eval gate showed the smaller model wasn't worth the savings. Tiering isn't "small everywhere" — it's the meter deciding where quality pays.</span></div>
-          <div class="row"><span class="k">Prompt caching <em>(next lever)</em></span><span class="v">The instruction blocks are identical every call; caching them shifts repeats to the cache-read rate. Honest caveat: it only engages above the provider's minimum cacheable block — the meter will show exactly when it starts paying, which is why it's sequenced after metering, not before.</span></div>
+          <div class="row"><span class="k">Response caching <em>(shipped)</em></span><span class="v">The gateway caches <b>deterministic calls only</b> — temperature-0 routing, parsing, extraction. Same prompt inside the TTL → same answer, zero tokens. Drafting runs warm and is <i>never</i> cached: a fresh draft should read fresh. A cache that can only serve calls whose output is a pure function of input never adds a failure mode.</span></div>
           <div class="row"><span class="k">Context budget <em>(next lever)</em></span><span class="v">A recency window plus hard caps on history. Without a budget, every turn's cost grows with transcript length — the quiet cost leak in most chat products.</span></div>
-          <div class="row"><span class="k">Per-tenant budgets</span><span class="v">At scale, the LLM gateway (the <code>traced_llm</code> seam grown up) enforces per-band spend caps and caches identical calls — cost isolation per tenant, not one noisy band spending everyone's budget.</span></div>
+          <div class="row"><span class="k">Per-tenant budgets <em>(shipped)</em></span><span class="v">The LLM gateway (the <code>traced_llm</code> seam grown up) enforces a per-band daily token ceiling <b>before</b> the call and records usage after — one runaway tour can't eat the month. Design detail: a blown budget deliberately does <i>not</i> trigger provider failover — both providers cost tokens; the answer is "not today," not "try the other model."</span></div>
         </div>
         <div class="principle"><span class="wl">Principle</span>Strategic cost design is architecture, not discounts: bound the loop, tier the models, cache the constants, budget the context — and meter everything so each lever's payoff is a measured number.</div>
       </div>
@@ -512,8 +512,8 @@
     <section class="panel alt" id="scale" data-rung="scale">
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Forward · 02</span> Scaling path</div>
-        <h2>Behavior at scale, and the planned evolution</h2>
-        <p class="lede">Presented as a <strong>roadmap, not a current claim</strong>. The system is not running at this scale today — but identifying precisely what fails first, and why, is the substance of the question.</p>
+        <h2>The scaling path — no longer just a plan</h2>
+        <p class="lede">This section used to say <i>"presented as a roadmap, not a current claim."</i> Most of it has since <strong>shipped</strong> — behind flags, fail-open, with the migration gated by measurement. Statuses below are per target, honestly marked.</p>
         <div class="road">
           <div class="col breaks">
             <div class="cl">Breaks first at 100×</div>
@@ -525,19 +525,20 @@
             </ul>
           </div>
           <div class="col target">
-            <div class="cl">Target architecture</div>
+            <div class="cl">Target architecture — status</div>
             <ul>
-              <li><b>Postgres</b> as system-of-record; Sheets becomes an export</li>
-              <li><b>Queue + worker pool</b> for concurrent runs <span class="note">(the backend is already containerized for this)</span></li>
-              <li><b>LLM gateway</b> — caching, the existing failover, and per-tenant budgets, built on the <code>traced_llm</code> seam</li>
-              <li><b>Event-driven email</b> (Gmail API / webhooks) replacing polling</li>
-              <li><b>Multi-tenant isolation</b>, with evaluation as a release gate</li>
+              <li><b>Postgres system-of-record</b> <span class="note">— shipped for venues + email state: shadow dual-write, backfill, a parity gate, reads cut over on <code>TMGO_STORE=db</code>; Sheets demoting to an export. Remaining domains still to migrate.</span></li>
+              <li><b>Queue + worker pool</b> <span class="note">— shipped: a Postgres-backed jobs table; workers claim via an atomic conditional update, so a racing pool has <b>exactly one winner — there's a test for the race</b>. Exponential backoff, dead-letter rows (never silently dropped). Runs in-process today (<code>TMGO_WORKERS</code>); promotes to a dedicated worker dyno with zero code change.</span></li>
+              <li><b>LLM gateway</b> <span class="note">— shipped on the one <code>traced_llm</code> seam: deterministic-call caching, per-tenant daily budgets, a usage endpoint. Failover was already there.</span></li>
+              <li><b>Event-driven email</b> <span class="note">— partial: the Gmail push receiver is live and feeds the worker queue (ack fast, process async); pub/sub + watch enablement remain.</span></li>
+              <li><b>Multi-tenant isolation</b> <span class="note">— row-level security enabled on all five Postgres tables; the eval gate runs in CI plus a weekly scheduled pass.</span></li>
             </ul>
           </div>
         </div>
+        <div class="principle"><span class="wl">The migration pattern</span>Strangler fig, gated by measurement: <b>shadow dual-write → backfill → parity endpoint proves the stores agree → flip the read flag → demote the old store to an export.</b> Every step is reversible and the whole thing is flag-gated and fail-open — deploying it changes nothing until a switch flips. Cutover is earned by a parity number, not asserted.</div>
         <div class="carry">
-          <div class="cf"><b>Carry forward:</b> deterministic-first design, provider failover, human-in-the-loop review, and the observability seam. The foundations are sound.</div>
-          <div class="rd"><b>Rebuild:</b> the storage model and the inbox's three-source flow — the prototype shortcuts that do not survive multi-tenant load, each for a reason I can state precisely.</div>
+          <div class="cf"><b>Carry forward:</b> deterministic-first design, provider failover, human-in-the-loop review, and the observability seam — the gateway and the queue were both built <i>on</i> existing seams, which is the proof the seams were real.</div>
+          <div class="rd"><b>Still to do:</b> finish the store migration's remaining domains, enable pub/sub for push, and promote the worker pool out of process under real multi-tenant load. Named so the shipped column stays honest.</div>
         </div>
       </div>
     </section>
