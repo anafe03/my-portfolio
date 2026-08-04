@@ -95,8 +95,49 @@
   em { font-style: italic; color: var(--ink); }
   code { font-family: var(--mono); font-size: 0.84em; background: var(--alt); border: 1px solid var(--line); padding: 1px 5px; border-radius: 4px; color: var(--accent); }
 
-  .reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s cubic-bezier(.22,.61,.36,1), transform .6s cubic-bezier(.22,.61,.36,1); }
   .reveal.in { opacity: 1; transform: none; }
+
+  /* staggered children — grids and tables deal themselves in rather than snapping as a block */
+  .reveal .spec .row, .reveal .feat, .reveal .metric, .reveal .fail,
+  .reveal .layer, .reveal .bpanel, .reveal .side, .reveal .exec .cell, .reveal .road .col {
+    opacity: 0; transform: translateY(12px);
+    transition: opacity .5s cubic-bezier(.22,.61,.36,1), transform .5s cubic-bezier(.22,.61,.36,1),
+                border-color .18s ease, box-shadow .25s ease;
+  }
+  .reveal.in .spec .row, .reveal.in .feat, .reveal.in .metric, .reveal.in .fail,
+  .reveal.in .layer, .reveal.in .bpanel, .reveal.in .side, .reveal.in .exec .cell, .reveal.in .road .col {
+    opacity: 1; transform: none;
+  }
+  .reveal.in .spec .row:nth-child(1), .reveal.in .feat:nth-child(1), .reveal.in .metric:nth-child(1),
+  .reveal.in .fail:nth-child(1), .reveal.in .layer:nth-child(1), .reveal.in .bpanel:nth-child(1),
+  .reveal.in .exec .cell:nth-child(1) { transition-delay: .04s; }
+  .reveal.in .spec .row:nth-child(2), .reveal.in .feat:nth-child(2), .reveal.in .metric:nth-child(2),
+  .reveal.in .fail:nth-child(2), .reveal.in .layer:nth-child(2), .reveal.in .bpanel:nth-child(2),
+  .reveal.in .exec .cell:nth-child(2) { transition-delay: .10s; }
+  .reveal.in .spec .row:nth-child(3), .reveal.in .feat:nth-child(3), .reveal.in .metric:nth-child(3),
+  .reveal.in .fail:nth-child(3), .reveal.in .layer:nth-child(3), .reveal.in .bpanel:nth-child(3),
+  .reveal.in .exec .cell:nth-child(3) { transition-delay: .16s; }
+  .reveal.in .spec .row:nth-child(4), .reveal.in .feat:nth-child(4), .reveal.in .metric:nth-child(4),
+  .reveal.in .fail:nth-child(4), .reveal.in .exec .cell:nth-child(4) { transition-delay: .22s; }
+  .reveal.in .spec .row:nth-child(5), .reveal.in .fail:nth-child(5) { transition-delay: .28s; }
+  .reveal.in .spec .row:nth-child(6), .reveal.in .fail:nth-child(6) { transition-delay: .34s; }
+  .reveal.in .spec .row:nth-child(7), .reveal.in .fail:nth-child(7) { transition-delay: .40s; }
+  .reveal.in .spec .row:nth-child(8), .reveal.in .fail:nth-child(8) { transition-delay: .46s; }
+  .reveal.in .side:nth-child(2) { transition-delay: .12s; }
+
+  /* hover: cards lift and warm their border — feedback, not decoration */
+  .feat:hover, .metric:hover, .fail:hover, .layer:hover, .bpanel:hover, .side:hover {
+    transform: translateY(-3px); border-color: #d8c7a8;
+    box-shadow: 0 2px 4px rgba(26,37,64,.05), 0 12px 28px rgba(26,37,64,.10);
+  }
+  .spec .row { transition: background .18s ease; }
+  .spec .row:hover { background: var(--accent-tint); }
+
+  /* the eyebrow rule draws itself in */
+  .eyebrow::after { content: ""; height: 1px; background: var(--line); flex: 1; transform: scaleX(0);
+    transform-origin: left; transition: transform .7s cubic-bezier(.22,.61,.36,1) .15s; }
+  .reveal.in .eyebrow::after { transform: scaleX(1); }
 
   /* hero */
   #hero { padding-top: 90px; padding-bottom: 84px; }
@@ -195,7 +236,13 @@
   .brow .bn { color: var(--ink); font-weight: 600; }
   .brow .bv { color: var(--ink); font-weight: 700; font-variant-numeric: tabular-nums; font-family: var(--mono); font-size: 12px; }
   .btrack { height: 10px; background: var(--alt); border-radius: 0 3px 3px 0; overflow: hidden; }
-  .bfill { height: 100%; background: #e5622a; border-radius: 0 3px 3px 0; }
+  /* bars grow from zero to their real value when the panel scrolls in — the width IS the data,
+     so it draws itself rather than fading in already-complete */
+  .bfill { height: 100%; background: #e5622a; border-radius: 0 3px 3px 0;
+    width: 0; transition: width 1.1s cubic-bezier(.22,.61,.36,1); }
+  .reveal.in .bfill { width: var(--w); }
+  .reveal.in .bpanel:nth-child(2) .bfill { transition-delay: .12s; }
+  .reveal.in .bpanel:nth-child(3) .bfill { transition-delay: .24s; }
   .bfill.flat { background: var(--green); }
   .bench-note { margin-top: 6px; font-size: 12px; color: var(--faint); }
 
@@ -233,7 +280,32 @@
     .spec .row { grid-template-columns: 1fr; gap: 4px; }
     .panel { padding: 56px 22px; } body { font-size: 16px; }
   }
-  @media (prefers-reduced-motion: reduce) { * { animation-duration: .001ms !important; transition-duration: .001ms !important; } html { scroll-behavior: auto; } .reveal { opacity: 1; transform: none; } }
+  /* hero entrance — the one orchestrated moment on the page */
+  @keyframes riseIn { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+  #hero .hero-kicker { animation: riseIn .6s cubic-bezier(.22,.61,.36,1) both; }
+  #hero h1 { animation: riseIn .7s cubic-bezier(.22,.61,.36,1) .08s both; }
+  #hero .hero-sub { animation: riseIn .7s cubic-bezier(.22,.61,.36,1) .18s both; }
+  #hero .hero-cta { animation: riseIn .7s cubic-bezier(.22,.61,.36,1) .28s both; }
+  #hero .exec { animation: riseIn .7s cubic-bezier(.22,.61,.36,1) .38s both; }
+  .hero-kicker .live::before { animation: pulse 2.4s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: .45; transform: scale(.82); } }
+
+  .btn { position: relative; }
+  .btn.primary:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(255,122,61,.32); }
+  .rail-item { transition: color .15s, background .15s, border-color .15s, padding-left .15s; }
+  .rail-item:hover { padding-left: 14px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: .001ms !important; animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important; transition-delay: 0s !important; }
+    html { scroll-behavior: auto; }
+    .reveal, .reveal .spec .row, .reveal .feat, .reveal .metric, .reveal .fail,
+    .reveal .layer, .reveal .bpanel, .reveal .side, .reveal .exec .cell, .reveal .road .col
+      { opacity: 1; transform: none; }
+    .bfill { width: var(--w); }
+    .eyebrow::after { transform: scaleX(1); }
+    .feat:hover, .metric:hover, .fail:hover, .layer:hover, .bpanel:hover, .side:hover { transform: none; }
+  }
 </style>
 </head>
 <body>
@@ -594,25 +666,25 @@
           <div class="bpanel">
             <h4>Accuracy</h4>
             <div class="sub">32 golden chains, incl. negative controls</div>
-            <div class="brow"><div class="bl"><span class="bn">Haiku 4.5</span><span class="bv">98.4%</span></div><div class="btrack"><div class="bfill flat" style="width:98.4%"></div></div></div>
-            <div class="brow"><div class="bl"><span class="bn">Sonnet 4.6</span><span class="bv">98.4%</span></div><div class="btrack"><div class="bfill flat" style="width:98.4%"></div></div></div>
-            <div class="brow"><div class="bl"><span class="bn">Opus 4.6</span><span class="bv">98.4%</span></div><div class="btrack"><div class="bfill flat" style="width:98.4%"></div></div></div>
+            <div class="brow"><div class="bl"><span class="bn">Haiku 4.5</span><span class="bv">98.4%</span></div><div class="btrack"><div class="bfill flat" style="--w:98.4%"></div></div></div>
+            <div class="brow"><div class="bl"><span class="bn">Sonnet 4.6</span><span class="bv">98.4%</span></div><div class="btrack"><div class="bfill flat" style="--w:98.4%"></div></div></div>
+            <div class="brow"><div class="bl"><span class="bn">Opus 4.6</span><span class="bv">98.4%</span></div><div class="btrack"><div class="bfill flat" style="--w:98.4%"></div></div></div>
             <div class="bench-note">Identical. 31/32 perfect on all three.</div>
           </div>
           <div class="bpanel">
             <h4>Cost</h4>
             <div class="sub">USD per 1,000 extractions</div>
-            <div class="brow"><div class="bl"><span class="bn">Haiku 4.5</span><span class="bv">$1.04</span></div><div class="btrack"><div class="bfill" style="width:20.3%"></div></div></div>
-            <div class="brow"><div class="bl"><span class="bn">Sonnet 4.6</span><span class="bv">$2.96</span></div><div class="btrack"><div class="bfill" style="width:57.7%"></div></div></div>
-            <div class="brow"><div class="bl"><span class="bn">Opus 4.6</span><span class="bv">$5.13</span></div><div class="btrack"><div class="bfill" style="width:100%"></div></div></div>
+            <div class="brow"><div class="bl"><span class="bn">Haiku 4.5</span><span class="bv">$1.04</span></div><div class="btrack"><div class="bfill" style="--w:20.3%"></div></div></div>
+            <div class="brow"><div class="bl"><span class="bn">Sonnet 4.6</span><span class="bv">$2.96</span></div><div class="btrack"><div class="bfill" style="--w:57.7%"></div></div></div>
+            <div class="brow"><div class="bl"><span class="bn">Opus 4.6</span><span class="bv">$5.13</span></div><div class="btrack"><div class="bfill" style="--w:100%"></div></div></div>
             <div class="bench-note">4.9× spread, top to bottom.</div>
           </div>
           <div class="bpanel">
             <h4>Latency</h4>
             <div class="sub">p50 seconds per call</div>
-            <div class="brow"><div class="bl"><span class="bn">Haiku 4.5</span><span class="bv">1.02s</span></div><div class="btrack"><div class="bfill" style="width:31.5%"></div></div></div>
-            <div class="brow"><div class="bl"><span class="bn">Sonnet 4.6</span><span class="bv">1.87s</span></div><div class="btrack"><div class="bfill" style="width:57.7%"></div></div></div>
-            <div class="brow"><div class="bl"><span class="bn">Opus 4.6</span><span class="bv">3.24s</span></div><div class="btrack"><div class="bfill" style="width:100%"></div></div></div>
+            <div class="brow"><div class="bl"><span class="bn">Haiku 4.5</span><span class="bv">1.02s</span></div><div class="btrack"><div class="bfill" style="--w:31.5%"></div></div></div>
+            <div class="brow"><div class="bl"><span class="bn">Sonnet 4.6</span><span class="bv">1.87s</span></div><div class="btrack"><div class="bfill" style="--w:57.7%"></div></div></div>
+            <div class="brow"><div class="bl"><span class="bn">Opus 4.6</span><span class="bv">3.24s</span></div><div class="btrack"><div class="bfill" style="--w:100%"></div></div></div>
             <div class="bench-note">p95: 2.16s · 3.60s · 4.68s.</div>
           </div>
         </div>
@@ -819,6 +891,40 @@
   reveals.forEach(function (r) { ro.observe(r); });
   function revealNear(){ reveals.forEach(function(r){ var b=r.getBoundingClientRect(); if(b.top<innerHeight*1.1 && b.bottom>-50){ r.classList.add('in'); ro.unobserve(r);} }); }
   revealNear(); addEventListener('load', revealNear);
+
+  // Numbers count up when their tile first scrolls in. Only touches values that ARE numbers —
+  // a tile reading "LangGraph" or "Weekly" is left alone rather than mangled into NaN.
+  var NUM = /^([^\d\-]*)(\d+(?:,\d{3})*(?:\.\d+)?)(.*)$/;
+  function countUp(el){
+    var m = NUM.exec(el.textContent.trim());
+    if (!m) return;
+    var pre = m[1], post = m[3], raw = m[2].replace(/,/g, '');
+    var end = parseFloat(raw), decimals = (raw.split('.')[1] || '').length;
+    var grouped = m[2].indexOf(',') > -1;
+    if (!isFinite(end) || end === 0) return;
+    var t0 = null, dur = 900;
+    function fmt(v){
+      var s = v.toFixed(decimals);
+      if (grouped) s = Number(s).toLocaleString('en-US', {minimumFractionDigits: decimals});
+      return pre + s + post;
+    }
+    function frame(ts){
+      if (t0 === null) t0 = ts;
+      var p = Math.min(1, (ts - t0) / dur);
+      p = 1 - Math.pow(1 - p, 3);                  // ease-out, lands soft
+      el.textContent = fmt(end * p);
+      if (p < 1) requestAnimationFrame(frame); else el.textContent = fmt(end);
+    }
+    el.textContent = fmt(0);
+    requestAnimationFrame(frame);
+  }
+  if (!reduce) {
+    var numbers = [].slice.call(document.querySelectorAll('.metric .mv, .exec .cell .n'));
+    var no = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if (e.isIntersecting) { countUp(e.target); no.unobserve(e.target); } });
+    }, { threshold: 0.6 });
+    numbers.forEach(function(n){ no.observe(n); });
+  }
 
   var panels = [].slice.call(document.querySelectorAll('.panel'));
   var railItems = [].slice.call(document.querySelectorAll('.rail-item'));
