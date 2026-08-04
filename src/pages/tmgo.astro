@@ -219,6 +219,7 @@
       <li><button class="rail-item" data-goto="breaks"><span class="rn">09</span> Failure modes &amp; options</button></li>
       <li><button class="rail-item" data-goto="cost"><span class="rn">10</span> Token economics</button></li>
       <li><button class="rail-item" data-goto="stateng"><span class="rn">11</span> The state engine</button></li>
+      <li><button class="rail-item" data-goto="modelbreaks"><span class="rn">12</span> When the model breaks</button></li>
       <li class="rail-div">Forward</li>
       <li><button class="rail-item" data-goto="scale"><span class="rn">02</span> Scaling path</button></li>
       <li><button class="rail-item" data-goto="talk"><span class="rn">03</span> Summary</button></li>
@@ -243,7 +244,7 @@
         </div>
         <div class="exec">
           <div class="cell"><div class="n">LangGraph</div><div class="l">Bounded state-machine agent, not an open loop</div></div>
-          <div class="cell"><div class="n">100%</div><div class="l">Live field-extraction accuracy; CI gate at 80%</div></div>
+          <div class="cell"><div class="n">32</div><div class="l">Adversarial email-chain cases; 100% on both providers</div></div>
           <div class="cell"><div class="n">2</div><div class="l">LLM providers with automatic failover</div></div>
           <div class="cell"><div class="n">59</div><div class="l">API routes; Pydantic-validated, containerized</div></div>
         </div>
@@ -375,7 +376,7 @@
         <h2>Measuring correctness, and learning from corrections</h2>
         <div class="feat-grid">
           <div class="feat"><h3>Online — closed loop</h3><p>The human review step logs every accept, edit, and reject. Each correction is a labeled failure — a live dataset of the agent's weak points at <b>zero labeling cost</b>.</p></div>
-          <div class="feat"><h3>Offline — CI gate</h3><p>A golden-set harness scores field extraction and <b>fails the build below 80%</b> accuracy (currently 100% live). A prompt or model change cannot merge if it regresses.</p></div>
+          <div class="feat"><h3>Offline — CI gate</h3><p>A golden-set harness scores field extraction and <b>fails the build below 80%</b>. Now <b>32 email-chain cases</b>, 10 with <b>negative controls</b> — invented answers cost score, so abstaining beats guessing. Reruns <b>weekly on a schedule</b>, since model drift doesn't wait for a commit.</p></div>
           <div class="feat"><h3>One tracing seam</h3><p><code>traced_llm</code> is the single point every model call passes through — recording endpoint, model, latency, tokens, estimated cost, and whether failover fired.</p></div>
         </div>
         <div class="metrics">
@@ -452,7 +453,7 @@
         <h2>Where it breaks, where it doesn't — and the options when it does</h2>
         <p class="lede">A systems answer, not a feature list: each subsystem's break condition, observed or anticipated, with the mitigation shipped today and the options in reserve.</p>
         <div class="spec">
-          <div class="row"><span class="k">Extraction</span><span class="v"><b>Breaks when:</b> a venue writes something genuinely ambiguous ("load in around when doors-ish"). <b>Today:</b> human review catches it; the correction becomes labeled eval data. <b>Options:</b> per-field confidence with abstention, dual-model consensus on low-confidence fields, targeted golden-set additions from the failure log.</span></div>
+          <div class="row"><span class="k">Extraction</span><span class="v"><b>Breaks when:</b> a venue writes something genuinely ambiguous ("load in around when doors-ish"). <b>Today:</b> human review catches it; the correction becomes labeled eval data — and the specific ways the model misreads email now have their own adversarial suite (see <b>When the model breaks</b>). <b>Options:</b> per-field confidence with abstention, dual-model consensus on low-confidence fields, targeted golden-set additions from the failure log.</span></div>
           <div class="row"><span class="k">Sheets I/O</span><span class="v"><b>Breaks when:</b> API quota bursts or two writers collide — no transactions. <b>Today:</b> the real fix is <i>in flight</i> — venue facts and email state <b>dual-write to Postgres</b>, a parity endpoint proves the stores agree, and reads cut over behind <code>TMGO_STORE=db</code>; a Sheets export endpoint starts the demotion from database to report. <b>Left:</b> remaining domains, then the contract step.</span></div>
           <div class="row"><span class="k">Email ingest</span><span class="v"><b>Breaks when:</b> IMAP polling lags or a cold start misses the window. <b>Today:</b> the derived queue means a late-seen message just resolves on the next cycle — nothing is lost, only delayed. And the event-driven path is half-built: a <b>Gmail push receiver</b> acks fast and hands the work to the job queue, off the request path. <b>Left:</b> GCP pub/sub + watch enablement.</span></div>
           <div class="row"><span class="k">LLM providers</span><span class="v"><b>Breaks when:</b> OpenAI degrades. <b>Today:</b> automatic Anthropic failover, recorded per call by <code>traced_llm</code>. <b>Both down:</b> the graph degrades to queue-and-notify — drafts wait, nothing silently drops. Deterministic paths (reminders, sheet sync) keep running.</span></div>
@@ -509,7 +510,38 @@
       </div>
     </section>
 
-    <section class="panel alt" id="scale" data-rung="scale">
+    <!-- WHEN THE MODEL BREAKS -->
+    <section class="panel alt" id="modelbreaks" data-rung="modelbreaks">
+      <div class="panel-inner reveal">
+        <div class="eyebrow"><span class="sec">Depth · 05</span> When the model breaks</div>
+        <h2>The model is wrong sometimes. That's a design input, not a bug report.</h2>
+        <p class="lede">Reading a venue's email is the one place TM GO <i>must</i> use a model — free-form human text has no parser. So the question isn't whether the model errs; it's <b>which specific way</b>, and what catches each one. Every mitigation below is either code that runs before the model, a scoring rule that punishes the failure, or a gate the model can't cross. All of it is <b>tested</b>: 50 unit tests across six suites, plus a golden email-chain set of <b>32 extraction cases</b> — 10 of them carrying <b>negative controls</b>.</p>
+
+        <div class="spec">
+          <div class="row"><span class="k">It hallucinates a field</span><span class="v"><b>The failure:</b> nobody mentioned parking, but a plausible parking answer appears anyway — the worst kind, because a confident wrong fact reads exactly like a right one. <b>Caught by:</b> the eval scorer counts <i>invented</i> answers against the score, not just missed ones — 10 cases ship <code>forbid</code> fields that must come back empty. A run that fills every field scores <i>worse</i> than one that abstains correctly. <b>Held by:</b> rule 8 — <i>never invent; omit any field the venue didn't address</i> — and the human review gate before anything reaches the sheet.</span></div>
+
+          <div class="row"><span class="k">It answers for the wrong show</span><span class="v"><b>The failure:</b> a promoter replies about two dates in one email — "Oct 16 at Bowery doors are 8; your Nov 2 date at Music Hall, doors 7." A naive extractor grabs the last number it saw and writes 7 to the Bowery show. <b>Caught by:</b> a dedicated adversarial case (<i>multi-show bleed</i>) that fails if <i>any</i> other venue's numbers come back. This one is a real category — venue staff genuinely batch their replies.</span></div>
+
+          <div class="row"><span class="k">It's not a human at all</span><span class="v"><b>The failure:</b> an auto-reply or a bounce gets read as content, and "I'm out of office until the 14th" becomes a load-in time. <b>Caught by: code, not the model.</b> <code>_deterministic_reply_kind()</code> matches machine signatures — <code>mailer-daemon</code>, <code>550 5.1.1</code>, "delivery status notification", "automatic reply" — and <b>short-circuits before any LLM call</b>. Cheaper, exact, and it removes an entire hallucination surface rather than prompting against it. The model never sees the message.</span></div>
+
+          <div class="row"><span class="k">It misreads severity</span><span class="v"><b>The failure:</b> "we have to move your date" gets parsed for fields and quietly updates the sheet, while the actual message — <i>the show is in jeopardy</i> — never surfaces. <b>Caught by:</b> the model classifies every reply as one of five kinds (answer · redirect · question · <b>problem</b> · other), and <b>a <code>problem</code> classification is forbidden from producing field updates at all</b>. Cancellations, postponements, double-bookings and payment disputes route to a human by construction. Note the direction: the model is trusted to <i>raise</i> an alarm, never to <i>act</i> on one.</span></div>
+
+          <div class="row"><span class="k">It takes a "no" for silence</span><span class="v"><b>The failure:</b> "no catering, sorry" gets dropped as a non-answer, so the system keeps asking — and the band looks like it isn't listening. <b>Caught by:</b> rule 4 (an explicit NO <i>is</i> an answer) with golden cases including the nastiest phrasing: <i>"I wish we had catering"</i> — still a no. Rule 5 covers the same trap for conditional answers ("parking only if you arrive before 5" is an answer, qualifier and all).</span></div>
+
+          <div class="row"><span class="k">The provider degrades</span><span class="v"><b>The failure:</b> quality quietly drops with a model change, or the primary provider goes down and the failover behaves differently. <b>Caught by:</b> the golden set runs against <b>both providers</b> — the last full run scored <b>100% on gpt-4o-mini and on claude-haiku</b>, so failover is a measured equivalence rather than a hope. The suite reruns <b>on a schedule</b> (Mondays), not just on push, because model drift doesn't wait for a commit.</span></div>
+
+          <div class="row"><span class="k">The pipe breaks, not the model</span><span class="v"><b>The failure:</b> the least glamorous and most common — IMAP goes quiet, the server sends BYE, or a handler throws and silently kills the watch loop, so replies simply stop arriving and nothing looks broken. <b>Caught by:</b> 8 watcher tests that pin the distinctions that actually bite — a quiet timeout is <i>not</i> mail, keepalives are ignored until a real <code>EXISTS</code>, a refused IDLE raises <i>unsupported</i> rather than looking idle forever, backoff doubles and caps, and <b>an error in an event handler never kills the watch</b>.</span></div>
+
+          <div class="row"><span class="k">Identity confusion</span><span class="v"><b>The failure:</b> the right extraction attached to the wrong venue — the state-engine bug class from the previous section, but arriving through the model's door. <b>Caught by:</b> 8 tagging tests holding the precedence rules explicit: an <b>explicit binding wins over everything</b>, the <code>watch_since</code> stamp blocks pre-existing mail from a re-uploaded venue, a not-yet-started venue collects nothing, unrelated mail stays untagged, and <b>fuzzy matching only runs when explicitly asked for</b> — the loosest matcher is opt-in, never a silent default.</span></div>
+        </div>
+
+        <div class="principle"><span class="wl">The pattern</span>Read the column down and one shape repeats: <b>the model proposes; code disposes.</b> Machine mail is classified before the model runs, invented answers cost score, a "problem" verdict is structurally barred from writing, and the loosest matcher requires explicit consent. None of that makes the model more accurate — it makes the model's mistakes <b>cheap</b>, which is the only property that survives contact with production.</div>
+
+        <div class="honest"><b>Where this is still thin:</b> the extraction golden set is 32 cases and every rule in the prompt was <i>earned</i> — each maps to a specific case or a live miss that got promoted — but it's still a single-pass score. Capability, not consistency. The upgrade is the same one I named earlier and have since built elsewhere: multi-trial <code>pass^k</code> with paraphrase perturbations, so an answer that's right four times out of five is reported as flaky instead of passing. And the generation side (the drafted email) has only <b>2</b> judge-scored cases against the extraction side's 32 — the thinnest part of the harness, and the next thing I'd grow.</div>
+      </div>
+    </section>
+
+    <section class="panel" id="scale" data-rung="scale">
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Forward · 02</span> Scaling path</div>
         <h2>The scaling path — no longer just a plan</h2>
@@ -544,7 +576,7 @@
     </section>
 
     <!-- SUMMARY -->
-    <section class="panel" id="talk" data-rung="talk">
+    <section class="panel alt" id="talk" data-rung="talk">
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Forward · 03</span> Summary</div>
         <h2>Summary</h2>
@@ -573,7 +605,7 @@
 
   var panels = [].slice.call(document.querySelectorAll('.panel'));
   var railItems = [].slice.call(document.querySelectorAll('.rail-item'));
-  var order = ['hero','diagram','stack','d1','d2','d3','d4','d5','d6','d7','intel','breaks','cost','stateng','scale','talk'];
+  var order = ['hero','diagram','stack','d1','d2','d3','d4','d5','d6','d7','intel','breaks','cost','stateng','modelbreaks','scale','talk'];
   var progBar = document.getElementById('progBar');
   function railFor(r){ return railItems.find(function(b){ return b.getAttribute('data-goto')===r; }); }
   var ao = new IntersectionObserver(function (entries) {
