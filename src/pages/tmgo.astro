@@ -184,6 +184,21 @@
   .fail .fc b { color: var(--ink); font-weight: 600; }
   .fail .fc .lbl { color: var(--green); font-weight: 700; }
 
+  /* model bench chart — single series per panel, direct-labeled */
+  .bench { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 24px; }
+  .bpanel { border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; background: var(--card); box-shadow: var(--shadow); }
+  .bpanel h4 { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+  .bpanel .sub { font-size: 11.5px; color: var(--faint); margin-bottom: 16px; }
+  .brow { margin-bottom: 14px; }
+  .brow:last-child { margin-bottom: 0; }
+  .brow .bl { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 12.5px; margin-bottom: 5px; }
+  .brow .bn { color: var(--ink); font-weight: 600; }
+  .brow .bv { color: var(--ink); font-weight: 700; font-variant-numeric: tabular-nums; font-family: var(--mono); font-size: 12px; }
+  .btrack { height: 10px; background: var(--alt); border-radius: 0 3px 3px 0; overflow: hidden; }
+  .bfill { height: 100%; background: #e5622a; border-radius: 0 3px 3px 0; }
+  .bfill.flat { background: var(--green); }
+  .bench-note { margin-top: 6px; font-size: 12px; color: var(--faint); }
+
   /* scale roadmap */
   .road { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 28px; }
   .road .col { border: 1px solid var(--line); border-radius: 12px; padding: 22px; background: var(--card); box-shadow: var(--shadow); }
@@ -213,7 +228,7 @@
 
   @media (max-width: 920px) {
     .rail { display: none; } .progress { left: 0; } main { width: 100%; }
-    .contrast, .road, .carry { grid-template-columns: 1fr; }
+    .contrast, .road, .carry, .fails, .layers, .bench { grid-template-columns: 1fr; }
     .exec { grid-template-columns: repeat(2, 1fr); } .exec .cell:nth-child(2) { border-right: none; }
     .spec .row { grid-template-columns: 1fr; gap: 4px; }
     .panel { padding: 56px 22px; } body { font-size: 16px; }
@@ -342,8 +357,8 @@
     <section class="panel alt" id="d2" data-rung="d2">
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Decision 02</span> State management</div>
-        <h2>Two state machines, kept orthogonal on purpose</h2>
-        <div class="problem"><span class="pl">The problem</span>A show has two independent truths running at once: <b>is this show happening?</b> (a booking negotiation) and <b>do we have the logistics yet?</b> (an advancing workflow). Collapse them into one <code>status</code> column and you get nonsense states — a cancelled show sitting at "50% advanced," or a confirmed show that looks untouched because someone overwrote the field.</div>
+        <h2>Three state machines, kept orthogonal on purpose</h2>
+        <div class="problem"><span class="pl">The problem</span>A show has independent truths running at once: <b>is this show happening?</b> (a booking negotiation), <b>do we have the logistics yet?</b> (an advancing workflow), and <b>whose turn is it right now?</b> (a live conversation). Collapse them into one <code>status</code> column and you get nonsense states — a cancelled show sitting at "50% advanced," or a confirmed show that looks untouched because someone overwrote the field.</div>
         <div class="contrast">
           <div class="side naive">
             <div class="st">Naive approach</div>
@@ -358,7 +373,19 @@
             <p>And a gate between them: <b>advancing only runs when booking is confirmed.</b></p>
           </div>
         </div>
-        <div class="principle"><span class="wl">Principle</span>"Derive everything" is the wrong lesson, and it's the one I'd have given a year ago. The real rule is <b>store what only a human knows; derive what the data already implies</b> — then keep the two on separate axes so neither can overwrite the other. A cancelled show <i>cannot</i> be half-advanced here, because advancing is gated on the booking fact rather than tangled into it.</div>
+        <p class="body" style="margin-top:22px"><b>And a third one, which is the subtle one:</b> what the inbox actually renders — <i>Waiting · Follow-up due · Reply received · Done</i> — isn't advancing progress. It's <b>conversation state</b>, and it's a function of <code>(messages, the clock)</code>. That last input is what makes it different in kind: <b>it changes with no write at all.</b> A venue goes from "waiting on them" to "follow-up due" three days after a send, and <i>nothing happened</i> — no reply, no click, no event. Time passed.</p>
+        <div class="contrast" style="margin-top:18px">
+          <div class="side naive">
+            <div class="st">Why it can't be a stored column</div>
+            <p>Any stored copy of a time-dependent value is <b>wrong by default and correct only by coincidence</b> — it would need a cron job racing the clock to stay true, which is a background process whose entire job is papering over a modeling mistake.</p>
+          </div>
+          <div class="side built">
+            <div class="st">So it's computed at read</div>
+            <p>Urgency is derived per render: a send older than <b>3 days with no reply</b> auto-escalates to <i>follow-up due</i> and the row surfaces in Needs Action. No writer, no drift, no catch-up job.</p>
+            <p><b>Which is why the clock bug mattered.</b> This projection eats timestamps — so two timestamp formats parsed differently per browser didn't just look wrong, it fed <i>wrong urgency</i>. Normalizing to one UTC format at the API boundary was a correctness fix for this machine, not cosmetics.</p>
+          </div>
+        </div>
+        <div class="principle"><span class="wl">Principle</span>"Derive everything" is the wrong lesson, and it's the one I'd have given a year ago. The real rule is <b>store what only a human knows; derive what the data already implies</b> — and note the three machines sort themselves by <i>where their truth comes from</i>: booking from a person, advancing from the row, urgency from the clock. Keeping them on separate axes is what stops any one from overwriting another. A cancelled show <i>cannot</i> be half-advanced here, because advancing is gated on the booking fact rather than tangled into it.</div>
         <p class="body"><b>The escape hatch, stated honestly:</b> a user can still set advancing status by hand — four options, not the six the system computes, because surfacing every internal state read as "too many choices that overlap." A pure derivation with no manual override is elegant and loses to reality the first time a venue confirms something over the phone.</p>
       </div>
     </section>
@@ -426,7 +453,31 @@
           <div class="metric"><div class="mv">32 / 10</div><div class="ml">Chain cases / negative controls</div></div>
           <div class="metric"><div class="mv">Weekly</div><div class="ml">Scheduled eval rerun</div></div>
         </div>
-        <p class="body">Three properties I'd defend in the harness, each fixing a way evals lie:</p>
+        <h3 style="margin-top:30px;font-size:1.15rem">The flywheel: a button in the UI becomes a test case</h3>
+        <p class="body">The eval set doesn't grow because I sat down and imagined failures — it grows because <b>the product collects them</b>. Every human touch on an extraction is already a label: an <b>accept</b> is a pass, an <b>edit</b> gives the ground-truth value, a <b>reject</b> is a hard negative, and the <b>⚑ flag</b> button on a live answer captures the reply text as a ready-made thread. Free labels, produced by people doing their normal work.</p>
+        <div class="spec">
+          <div class="row"><span class="k">① Collect <em>(automatic)</em></span><span class="v">Flags and edited/rejected extractions land in the observability store with the original text — <code>final_value</code> from an edit <i>is</i> the correct answer, already typed by someone who knew it.</span></div>
+          <div class="row"><span class="k">② Shape <em>(scripted)</em></span><span class="v"><code>promote_evals.py</code> pulls those into <code>candidates.json</code> as properly-formed cases — thread, expected fields, the works.</span></div>
+          <div class="row"><span class="k">③ Promote <em>(human, deliberately)</em></span><span class="v">A person moves keepers into <code>golden_extra.json</code>, which the harness merges into the golden set. <b>Collection is automatic; promotion is a reviewed commit.</b> Auto-promoting would let one mislabeled correction silently redefine "correct" for every future run — the eval set is the thing that judges everything else, so it's the last place to accept unreviewed writes.</span></div>
+        </div>
+        <div class="principle"><span class="wl">Why this shape</span>Most eval sets die of neglect — written once, never grown, slowly measuring a product that moved. This one is fed by usage, so <b>the cases that arrive are the ones reality is actually generating</b>, weighted by how often they happen. The failure I'm designing against isn't a bad case getting in; it's the set going stale.</div>
+
+        <h3 style="margin-top:30px;font-size:1.15rem">Monitoring drift I didn't cause</h3>
+        <p class="body">A subtle one worth naming: <b>a pinned model name is not a pinned model.</b> Providers ship updates — RLHF passes, safety tuning, silent point revisions — and your prompt is tuned against behavior that can move underneath you. Extraction is unusually exposed, because the useful behavior here is <i>terseness and abstention</i> ("omit any field the venue didn't address"), and assistant tuning generally pushes models toward being <i>more</i> helpful and more complete — which in this context is precisely the hallucination failure mode.</p>
+        <div class="contrast">
+          <div class="side built">
+            <div class="st">What catches it today</div>
+            <p>The <b>weekly scheduled rerun</b> — the only mechanism that fires when <i>nothing in my repo changed</i>. A push-triggered eval structurally cannot detect drift, because drift arrives without a commit.</p>
+            <p>Scoring on <b>both providers</b> also disambiguates: if one moves and the other doesn't, that's a provider event, not a prompt regression.</p>
+          </div>
+          <div class="side naive">
+            <div class="st">What's still missing</div>
+            <p><b>Per-case score history.</b> Today I get a pass/fail number; I'd want a time series per case, so a drop is a <i>date and a case</i> rather than a hunch — and so a model update shows up as a step change on a specific set of cases.</p>
+            <p>Also on the list: <b>alert on delta, not threshold</b>. A set that quietly slides 100% → 94% → 88% never trips an 80% gate, and that gradual shape is exactly what drift looks like.</p>
+          </div>
+        </div>
+
+        <p class="body" style="margin-top:26px">Three properties I'd defend in the harness, each fixing a way evals lie:</p>
         <div class="spec">
           <div class="row"><span class="k">Grades the real prompt</span><span class="v">The system prompt is a <b>pure function</b>, so the eval scores <b>the exact text production uses</b> — not a copy that drifts. The most common way an eval quietly stops meaning anything is testing a prompt nobody ships.</span></div>
           <div class="row"><span class="k">Punishes invention</span><span class="v">Scoring counts <b>hallucinated fields against you</b>, not just missed ones. Under a misses-only metric, a model that guesses everything outscores one that correctly abstains — so the metric would reward exactly the behavior that hurts a band on tour.</span></div>
@@ -499,7 +550,8 @@
             <p><b>Blast-radius control.</b> The model's worst output is a bad draft or a bad parse — both pass through a human gate before touching real data. It structurally cannot send, write, or delete.</p>
           </div>
         </div>
-        <div class="principle"><span class="wl">Tied together</span>All seven decisions are one bet made seven times: <b>trade flexibility for verifiability wherever the system touches real data</b>. Derived state, the queue view, the eval gate — each is that same trade in a different subsystem. They don't contradict; they compound.</div>
+        <div class="principle"><span class="wl">Tied together</span>All seven decisions are one bet made seven times: <b>trade flexibility for verifiability wherever the system touches real data</b>. The orthogonal state machines, the queue view, the eval gate, the parity-gated migration — each is that same trade in a different subsystem. They don't contradict; they compound.</div>
+        <p class="body"><b>The shape underneath all of them:</b> every one is a decision about <i>where a truth is allowed to come from</i>. The model may propose language, never facts. A projection is computed in exactly one place. A booking status comes from a human because nothing else knows it. Cutover comes from a parity number rather than confidence. Phrased that way, "constrain the agent" stops being a safety slogan and becomes the same rule the data model already follows: <b>one source per truth, and name it.</b></p>
       </div>
     </section>
 
@@ -514,9 +566,9 @@
           <div class="row"><span class="k">Sheets I/O</span><span class="v"><b>Breaks when:</b> API quota bursts or two writers collide — no transactions. <b>Today:</b> the real fix is <i>in flight</i> — venue facts and email state <b>dual-write to Postgres</b>, a parity endpoint proves the stores agree, and reads cut over behind <code>TMGO_STORE=db</code>; a Sheets export endpoint starts the demotion from database to report. <b>Left:</b> remaining domains, then the contract step.</span></div>
           <div class="row"><span class="k">Email ingest</span><span class="v"><b>Breaks when:</b> IMAP polling lags or a cold start misses the window. <b>Today:</b> the derived queue means a late-seen message just resolves on the next cycle — nothing is lost, only delayed. And the event-driven path is half-built: a <b>Gmail push receiver</b> acks fast and hands the work to the job queue, off the request path. <b>Left:</b> GCP pub/sub + watch enablement.</span></div>
           <div class="row"><span class="k">LLM providers</span><span class="v"><b>Breaks when:</b> OpenAI degrades. <b>Today:</b> automatic Anthropic failover, recorded per call by <code>traced_llm</code>. <b>Both down:</b> the graph degrades to queue-and-notify — drafts wait, nothing silently drops. Deterministic paths (reminders, sheet sync) keep running.</span></div>
-          <div class="row"><span class="k">State</span><span class="v"><b>Where it doesn't break:</b> turn-status and the work queue are <i>derived</i>, so they cannot desync from messages + sheet. This bug class is closed by construction, not patched.</span></div>
+          <div class="row"><span class="k">State</span><span class="v"><b>Where it doesn't break:</b> the three machines are kept on separate axes — booking is <i>stored</i> (only a human knows it), advancing and turn-urgency are <i>derived</i> (from the row and the clock respectively), so no two writers contend for one field and derived values cannot desync from their source. <b>Breaks when:</b> a derived value depends on inputs that <i>themselves</i> disagree — which is exactly what the two-timestamp-format bug was, and why one UTC format at the API boundary was the fix rather than patching the projection.</span></div>
           <div class="row"><span class="k">Writes</span><span class="v"><b>Where it doesn't break:</b> nothing the model produces reaches a band's data without an approval click. The failure mode "AI corrupted my tour sheet" has no path through the graph.</span></div>
-          <div class="row"><span class="k">Quality drift</span><span class="v"><b>Breaks when:</b> a prompt or model change quietly degrades extraction. <b>Today:</b> it can't ship — the CI eval gate blocks below 80%. <b>Options:</b> multi-trial consistency (pass^k) and paraphrase-perturbation cases to catch instability a single pass hides.</span></div>
+          <div class="row"><span class="k">Quality drift</span><span class="v"><b>Breaks when:</b> a prompt or model change quietly degrades extraction — or the <i>provider</i> changes the model underneath a pinned name. <b>Today:</b> my changes can't ship past the CI eval gate; theirs are caught by the <b>weekly scheduled rerun</b> scored on both providers, which is the only signal that exists for drift I didn't cause. <b>Options:</b> multi-trial consistency (pass^k) and paraphrase perturbations to catch instability a single pass hides; per-case history so a 3-point drop is attributable to a date rather than noticed as a vibe.</span></div>
         </div>
         <div class="honest"><b>The honest one:</b> the current single-run eval measures capability, not reliability. An agent can pass once and still be flaky. The upgrade path is multi-trial pass^k with perturbations — capability says it <i>can</i> work; consistency says it <i>keeps</i> working.</div>
       </div>
@@ -530,12 +582,59 @@
         <p class="lede">One advance cycle touches the model exactly twice — parse the reply, draft the response — so cost scales with <b>shows advanced</b>, not with chat length or agent wandering. That's a consequence of the bounded graph: no re-planning loops means no unbounded token spend. The levers, in the order I'd pull them:</p>
         <div class="spec">
           <div class="row"><span class="k">Metering first</span><span class="v">You can't optimize what you don't measure — <code>traced_llm</code> already records tokens and cost per call, per provider. Every lever below is verified against that meter, not vibes.</span></div>
-          <div class="row"><span class="k">Model tiering <em>(shipped)</em></span><span class="v">Different jobs run different tiers, chosen by measurement: quick classification and summaries run <code>gpt-4o-mini</code>; field <b>extraction runs gpt-4o</b>, because grounding errors there reach real tour data and the eval gate showed the smaller model wasn't worth the savings. Tiering isn't "small everywhere" — it's the meter deciding where quality pays.</span></div>
+          <div class="row"><span class="k">Model tiering <em>(shipped)</em></span><span class="v">Different jobs run different tiers, and the tier is <b>chosen by measurement, not instinct</b> — quick classification and summaries run a small model; extraction was put on a larger one because grounding errors there reach real tour data. Then I actually measured that assumption. <b>It didn't survive.</b> See below.</span></div>
           <div class="row"><span class="k">Response caching <em>(shipped)</em></span><span class="v">The gateway caches <b>deterministic calls only</b> — temperature-0 routing, parsing, extraction. Same prompt inside the TTL → same answer, zero tokens. Drafting runs warm and is <i>never</i> cached: a fresh draft should read fresh. A cache that can only serve calls whose output is a pure function of input never adds a failure mode.</span></div>
           <div class="row"><span class="k">Context budget <em>(next lever)</em></span><span class="v">A recency window plus hard caps on history. Without a budget, every turn's cost grows with transcript length — the quiet cost leak in most chat products.</span></div>
           <div class="row"><span class="k">Per-tenant budgets <em>(shipped)</em></span><span class="v">The LLM gateway (the <code>traced_llm</code> seam grown up) enforces a per-band daily token ceiling <b>before</b> the call and records usage after — one runaway tour can't eat the month. Design detail: a blown budget deliberately does <i>not</i> trigger provider failover — both providers cost tokens; the answer is "not today," not "try the other model."</span></div>
         </div>
         <div class="principle"><span class="wl">Principle</span>Strategic cost design is architecture, not discounts: bound the loop, tier the models, cache the constants, budget the context — and meter everything so each lever's payoff is a measured number.</div>
+
+        <h3 style="margin-top:38px;font-size:1.15rem">Which model should be making the call? I ran the experiment.</h3>
+        <p class="body">"Tier your models" is advice everyone repeats and almost nobody measures — the usual method is picking the expensive one for anything scary and calling it diligence. So I built a bench (<code>scripts/model_cost_bench.py</code>) that scores <b>the same 32 golden email chains</b> with <b>the production prompt</b>, lifted straight out of the running code, across three tiers — recording accuracy, cost, and latency in one pass.</p>
+
+        <div class="bench">
+          <div class="bpanel">
+            <h4>Accuracy</h4>
+            <div class="sub">32 golden chains, incl. negative controls</div>
+            <div class="brow"><div class="bl"><span class="bn">Haiku 4.5</span><span class="bv">98.4%</span></div><div class="btrack"><div class="bfill flat" style="width:98.4%"></div></div></div>
+            <div class="brow"><div class="bl"><span class="bn">Sonnet 4.6</span><span class="bv">98.4%</span></div><div class="btrack"><div class="bfill flat" style="width:98.4%"></div></div></div>
+            <div class="brow"><div class="bl"><span class="bn">Opus 4.6</span><span class="bv">98.4%</span></div><div class="btrack"><div class="bfill flat" style="width:98.4%"></div></div></div>
+            <div class="bench-note">Identical. 31/32 perfect on all three.</div>
+          </div>
+          <div class="bpanel">
+            <h4>Cost</h4>
+            <div class="sub">USD per 1,000 extractions</div>
+            <div class="brow"><div class="bl"><span class="bn">Haiku 4.5</span><span class="bv">$1.04</span></div><div class="btrack"><div class="bfill" style="width:20.3%"></div></div></div>
+            <div class="brow"><div class="bl"><span class="bn">Sonnet 4.6</span><span class="bv">$2.96</span></div><div class="btrack"><div class="bfill" style="width:57.7%"></div></div></div>
+            <div class="brow"><div class="bl"><span class="bn">Opus 4.6</span><span class="bv">$5.13</span></div><div class="btrack"><div class="bfill" style="width:100%"></div></div></div>
+            <div class="bench-note">4.9× spread, top to bottom.</div>
+          </div>
+          <div class="bpanel">
+            <h4>Latency</h4>
+            <div class="sub">p50 seconds per call</div>
+            <div class="brow"><div class="bl"><span class="bn">Haiku 4.5</span><span class="bv">1.02s</span></div><div class="btrack"><div class="bfill" style="width:31.5%"></div></div></div>
+            <div class="brow"><div class="bl"><span class="bn">Sonnet 4.6</span><span class="bv">1.87s</span></div><div class="btrack"><div class="bfill" style="width:57.7%"></div></div></div>
+            <div class="brow"><div class="bl"><span class="bn">Opus 4.6</span><span class="bv">3.24s</span></div><div class="btrack"><div class="bfill" style="width:100%"></div></div></div>
+            <div class="bench-note">p95: 2.16s · 3.60s · 4.68s.</div>
+          </div>
+        </div>
+
+        <div class="problem" style="margin-top:24px"><span class="pl">The result</span><b>5× the price and 3× the latency bought exactly zero accuracy.</b> On this task, the biggest model is strictly worse: same answers, slower, five times the bill. The expensive tier isn't insurance — it's a line item with nothing behind it.</div>
+
+        <p class="body"><b>The better finding is <i>which</i> case they all miss.</b> All three tiers fail the same one, and it's not a hard extraction — it's an <b>out-of-office auto-reply</b>: <i>"I'm out of office until Aug 20… for urgent booking matters contact jamie@40watt.com."</i> Every model helpfully extracts that address as the venue contact. The case forbids it, because a vacation forwarding address is not the advancing contact.</p>
+        <div class="contrast">
+          <div class="side naive">
+            <div class="st">What no amount of money fixes</div>
+            <p>That failure is <b>structural, not a capability gap</b>. Every tier makes it, identically, because being helpful with a stray email address is exactly what these models are trained to do. There is no budget line that solves it — Opus fails it at 5× the cost and 3× the wait.</p>
+          </div>
+          <div class="side built">
+            <div class="st">What does fix it: 12 lines of code</div>
+            <p>In production <b>that email never reaches a model at all.</b> <code>_deterministic_reply_kind()</code> matches the auto-reply signature and short-circuits first — so the one case the whole model market can't solve costs nothing and never happens.</p>
+            <p>The bench deliberately <b>bypasses</b> that layer to isolate the model. Which turns out to be the cleanest evidence I have that the layer earns its place.</p>
+          </div>
+        </div>
+        <div class="principle"><span class="wl">The buying rule</span>Spend on the model only where the model is the constraint. Here it isn't: accuracy is flat across a 5× price range, and the one real failure is answered by <b>deterministic code, not a bigger checkbook</b>. So extraction runs on the cheap tier and the savings go nowhere — which is the point. <b>The money that would have gone to Opus buys nothing; the afternoon that went into a pre-model triage function bought the only point on the table.</b></div>
+        <div class="honest"><b>Limits of this experiment, precisely:</b> ① Anthropic tiers only — the machine I ran it on had no OpenAI key, so this doesn't re-litigate the OpenAI primary; the harness is provider-shaped and that's a row of config, so it's a <b>TODO, not a conclusion</b>. ② Single-pass scoring again — three models tying at 98.4% may also mean <b>the set isn't hard enough to separate them</b>, which is itself a finding about my eval, not just about the models. ③ 32 cases is small; a 1-case swing is 3 points. The honest read is "no evidence the big model is better here," not "proof it never could be."</div>
       </div>
     </section>
 
