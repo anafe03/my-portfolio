@@ -6,17 +6,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="TM Go architecture case study by Austin Nafe — the engineering decisions behind an AI agent trusted with real data, and its scaling path.">
+  <meta name="description" content="TM Go architecture case study by Austin Nafe: the engineering decisions behind an AI agent trusted with real data, and its scaling path.">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=DM+Sans:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="TM Go — Architecture Case Study">
-  <meta property="og:description" content="Constraining an agent so it could be trusted with real data — the decisions, the reliability, and how it scales.">
+  <meta property="og:title" content="TM Go: Architecture Case Study">
+  <meta property="og:description" content="Constraining an agent so it could be trusted with real data: the decisions, the reliability, and how it scales.">
   <meta property="og:image" content="/profile.jpg">
   <meta name="twitter:card" content="summary_large_image">
-  <title>TM Go — Architecture Case Study · Austin Nafe</title>
+  <title>TM Go · Architecture Case Study · Austin Nafe</title>
   <style is:global>
   :root {
     /* TM GO brand — the app's "cream" logo theme: cream paper, navy ink, orange accent */
@@ -225,6 +225,18 @@
   .fail .fc b { color: var(--ink); font-weight: 600; }
   .fail .fc .lbl { color: var(--green); font-weight: 700; }
 
+  /* code samples: real tests and cases, pulled from the repo */
+  .snip { margin-top: 20px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #14202f; box-shadow: var(--shadow); }
+  .snip .sh { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 9px 16px; background: #1a2840; border-bottom: 1px solid #26364f; }
+  .snip .sf { font-family: var(--mono); font-size: 11.5px; color: #8fa6c9; letter-spacing: .02em; }
+  .snip .st2 { font-size: 11px; color: #6f86a8; text-transform: uppercase; letter-spacing: .1em; font-weight: 600; }
+  .snip pre { margin: 0; padding: 16px; overflow-x: auto; font-family: var(--mono); font-size: 12.5px; line-height: 1.7; color: #d6e2f2; }
+  .snip pre .c { color: #7d92b0; font-style: italic; }
+  .snip pre .k { color: #ff9d6b; }
+  .snip pre .s { color: #9ad4a0; }
+  .snip pre .f { color: #8fc4ff; }
+  .snip-note { margin-top: 10px; font-size: 13px; color: var(--muted); }
+
   /* model bench chart — single series per panel, direct-labeled */
   .bench { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 24px; }
   .bpanel { border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; background: var(--card); box-shadow: var(--shadow); }
@@ -254,7 +266,7 @@
   .road ul { list-style: none; display: flex; flex-direction: column; gap: 12px; }
   .road li { font-size: 0.96rem; color: var(--text); padding-left: 22px; position: relative; }
   .road li::before { position: absolute; left: 0; top: 1px; font-weight: 700; }
-  .road .breaks li::before { content: "—"; color: var(--red); }
+  .road .breaks li::before { content: "\00d7"; color: var(--red); }
   .road .target li::before { content: "→"; color: var(--accent); }
   .road li b { color: var(--ink); font-weight: 600; }
   .road li .note { color: var(--muted); }
@@ -350,7 +362,7 @@
           <span class="live">Live in production</span>
         </div>
         <h1>TM Go</h1>
-        <p class="hero-sub">An autonomous tour-management agent for independent bands — it advances shows over email and SMS, reads free-form venue replies, extracts the logistics, and keeps each tour's records in sync. This document covers the system, the <strong>seven engineering decisions</strong> that made it safe to write to a band's real data, and how it scales.</p>
+        <p class="hero-sub">A tour-management agent for independent bands. It advances shows over email and SMS, reads free-form venue replies, pulls out the logistics, and keeps each tour's records in sync. This write-up covers the system, the <strong>seven engineering decisions</strong> that made it safe to write to a band's real data, and where it goes next.</p>
         <div class="hero-cta">
           <a class="btn primary" href="https://toursync-deploy.vercel.app" target="_blank" rel="noopener">View the live application</a>
           <button class="btn" data-goto="stack">System overview</button>
@@ -369,8 +381,8 @@
     <section class="panel" id="diagram" data-rung="diagram">
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Overview · 01</span> Interactive architecture</div>
-        <h2>See it two ways — the loop today, and the refactor</h2>
-        <p class="lede">Toggle between <strong>how it works now</strong> (the ReAct loop and its ~25-tool belt) and <strong>the refactor</strong> (a bounded node graph). The graph is live — click any node for what it does; the amber trail animates the real "advance a show" path.</p>
+        <h2>See it two ways: the loop today, and the refactor</h2>
+        <p class="lede">Toggle between <strong>how it works now</strong> (the ReAct loop and its ~25-tool belt) and <strong>the refactor</strong> (a bounded node graph). The graph is live. Click any node to see what it does, and the amber trail animates the real "advance a show" path.</p>
         <div style="border:1px solid var(--line,#e5e2dc);border-radius:14px;overflow:hidden;background:#0b0f14;box-shadow:0 10px 30px rgba(0,0,0,.18)">
           <iframe src="/tmgo-architecture.html" title="TM Go interactive architecture"
                   style="width:100%;height:860px;border:0;display:block" loading="lazy"></iframe>
@@ -389,16 +401,16 @@
         <p class="lede">The real deployed system, with prototype shortcuts named as such rather than hidden.</p>
         <div class="spec">
           <div class="row"><span class="k">Frontend</span><span class="v"><b>React + Vite</b>, deployed on Vercel</span></div>
-          <div class="row"><span class="k">API</span><span class="v"><b>Starlette → FastAPI</b> — 59 routes; Pydantic-validated AI endpoints with OpenAPI docs</span></div>
-          <div class="row"><span class="k">Agent core</span><span class="v"><b>LangGraph StateGraph</b> — a router dispatching to explicit, deterministic pipelines</span></div>
-          <div class="row"><span class="k">LLM</span><span class="v">LangChain <code>init_chat_model</code> — OpenAI primary, <b>Anthropic failover</b></span></div>
+          <div class="row"><span class="k">API</span><span class="v"><b>Starlette, now FastAPI</b>. 59 routes, with Pydantic-validated AI endpoints and OpenAPI docs</span></div>
+          <div class="row"><span class="k">Agent core</span><span class="v"><b>LangGraph StateGraph</b>: a router dispatching to explicit, deterministic pipelines</span></div>
+          <div class="row"><span class="k">LLM</span><span class="v">LangChain <code>init_chat_model</code>, OpenAI primary with <b>Anthropic failover</b></span></div>
           <div class="row"><span class="k">SMS</span><span class="v">FastAPI + <b>Twilio</b> webhook</span></div>
-          <div class="row"><span class="k">Data</span><span class="v"><b>Google Sheets</b> (per-band system-of-record) + <b>Supabase Postgres</b> (auth, storage, AI telemetry — and now the <b>migration target</b>: venues + email state dual-written behind a parity gate, cutover on <code>TMGO_STORE=db</code>)</span></div>
+          <div class="row"><span class="k">Data</span><span class="v"><b>Google Sheets</b> as each band's system of record, plus <b>Supabase Postgres</b> for auth, storage and AI telemetry. Postgres is also the <b>migration target</b>: venues and email state are dual-written behind a parity gate, with cutover on <code>TMGO_STORE=db</code></span></div>
           <div class="row"><span class="k">Scheduler</span><span class="v"><b>Railway</b> cron worker for reminders</span></div>
-          <div class="row"><span class="k">Reliability</span><span class="v"><code>traced_llm</code> observability + closed-loop evaluation + <code>/api/ai-health</code> dashboard</span></div>
-          <div class="row"><span class="k">Delivery</span><span class="v"><b>GitHub Actions</b> CI (build · lint · eval gate) + Docker; Vercel/Render auto-deploy</span></div>
+          <div class="row"><span class="k">Reliability</span><span class="v"><code>traced_llm</code> observability, closed-loop evaluation, and an <code>/api/ai-health</code> dashboard</span></div>
+          <div class="row"><span class="k">Delivery</span><span class="v"><b>GitHub Actions</b> CI (build, lint, eval gate) and Docker, with Vercel/Render auto-deploy</span></div>
         </div>
-        <div class="honest"><b>Deliberately not included:</b> billing (no Stripe yet). The API was Starlette, upgraded to FastAPI specifically for the AI endpoints. Naming what isn't there is part of the point.</div>
+        <div class="honest"><b>Deliberately not included:</b> billing. There's no Stripe yet. The API started as Starlette and moved to FastAPI specifically for the AI endpoints. Naming what isn't there is part of the point.</div>
       </div>
     </section>
 
@@ -407,21 +419,33 @@
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Decision 01</span> Agent design</div>
         <h2>A bounded state-machine agent</h2>
-        <div class="problem"><span class="pl">The problem</span>Advancing a show is a multi-step, correctness-sensitive workflow. Writing an incorrect load-in time into a band's real tour data is worse than writing nothing at all — so the agent's behavior has to be predictable.</div>
+        <div class="problem"><span class="pl">The problem</span>Advancing a show is a multi-step workflow where correctness matters. Writing an incorrect load-in time into a band's real tour data is worse than writing nothing at all, so the agent's behavior has to be predictable.</div>
         <div class="contrast">
           <div class="side naive">
             <div class="st">Naive approach</div>
             <p>A <b>ReAct agent</b> that reasons and picks tools freely each turn.</p>
-            <p>It re-plans every turn, its tool order is non-deterministic, and it can skip steps. Effective in a demo; unacceptable for a workflow that writes to real data.</p>
+            <p>It re-plans every turn, its tool order is non-deterministic, and it can skip steps. That's fine in a demo and unacceptable in a workflow that writes to real data.</p>
           </div>
           <div class="side built">
             <div class="st">What I shipped</div>
-            <p>A hand-authored <b>LangGraph StateGraph</b>. A router node classifies intent <b>once</b>, then dispatches to explicit pipelines (e.g. <code>advance</code>: read venue → draft email).</p>
+            <p>A hand-authored <b>LangGraph StateGraph</b>. A router node classifies intent <b>once</b>, then dispatches to explicit pipelines. The <code>advance</code> pipeline, for instance, reads the venue and drafts the email.</p>
             <p>The LLM only drafts prose and parses free text into JSON. Routing, sheet I/O, validation, and email transport are <b>deterministic Python</b>.</p>
-            <p><b>The sharpest edge:</b> there is <i>no</i> <code>send</code> intent in the router at all. Sending isn't a routed action — it's the <b>resume of a paused draft</b> after a human approves. So "send it now!!" can't route to a send; the golden set has that exact case, and it must fall through to chat.</p>
+            <p><b>The sharpest edge:</b> the router has no <code>send</code> intent at all. Sending isn't something you route to. It's the <b>resume of a paused draft</b> after a human approves it, so "send it now!!" has nowhere to land.</p>
           </div>
         </div>
-        <div class="principle"><span class="wl">Principle</span>Determinism where correctness matters; the model only where language matters. The right move was not a more capable agent — it was a more constrained one. The test of that claim isn't the happy path, it's whether an <b>enthusiastic instruction to do something irreversible has anywhere to land</b>. Here it doesn't: the capability is absent from the router's vocabulary, not merely discouraged in a prompt.</div>
+        <div class="snip">
+          <div class="sh"><span class="sf">demo/advancing/golden.yaml</span><span class="st2">router golden set</span></div>
+          <pre><span class="c"># There is NO "send" intent. Sending is the resume of a paused draft,</span>
+<span class="c"># so no golden case can route to it.</span>
+&#123;id: advance_plain,  query: <span class="s">"advance The Fillmore"</span>,        expected_intent: advance&#125;
+&#123;id: reply_paste,    query: <span class="s">"they replied, here's the reply"</span>,  expected_intent: parse_response&#125;
+&#123;id: inbox_heard,    query: <span class="s">"did they reply yet?"</span>,           expected_intent: check_email&#125;
+
+<span class="c"># Safety: an enthusiastic "send it" must NOT reach a mutating action.</span>
+&#123;id: bare_send,      query: <span class="s">"send it now!!"</span>,                 expected_intent: chat&#125;</pre>
+        </div>
+        <p class="snip-note">That last case is the one I'd point to in a review. It passes because the capability is <b>absent from the router's vocabulary</b>, not because a prompt discourages it.</p>
+        <div class="principle"><span class="wl">Principle</span>Determinism where correctness matters, the model only where language matters. The right move wasn't a more capable agent. It was a more constrained one.</div>
       </div>
     </section>
 
@@ -430,35 +454,35 @@
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Decision 02</span> State management</div>
         <h2>Three state machines, kept orthogonal on purpose</h2>
-        <div class="problem"><span class="pl">The problem</span>A show has independent truths running at once: <b>is this show happening?</b> (a booking negotiation), <b>do we have the logistics yet?</b> (an advancing workflow), and <b>whose turn is it right now?</b> (a live conversation). Collapse them into one <code>status</code> column and you get nonsense states — a cancelled show sitting at "50% advanced," or a confirmed show that looks untouched because someone overwrote the field.</div>
+        <div class="problem"><span class="pl">The problem</span>A show has independent truths running at once. <b>Is this show happening?</b> (a booking negotiation). <b>Do we have the logistics yet?</b> (an advancing workflow). <b>Whose turn is it right now?</b> (a live conversation). Collapse them into one <code>status</code> column and you get nonsense states: a cancelled show sitting at "50% advanced," or a confirmed show that looks untouched because someone overwrote the field.</div>
         <div class="contrast">
           <div class="side naive">
             <div class="st">Naive approach</div>
             <p>One <code>status</code> column per show, written by whoever touched it last.</p>
-            <p>Two unrelated processes fight over one field, and it drifts: a reply arrives but the column still reads <code>sent</code>, so the interface reports the wrong state with full confidence.</p>
+            <p>Unrelated processes fight over one field and it drifts. A reply arrives, the column still reads <code>sent</code>, and the interface reports the wrong state with full confidence.</p>
           </div>
           <div class="side built">
             <div class="st">What I shipped</div>
-            <p><b>Two orthogonal machines</b>, split by <i>where the truth comes from</i>:</p>
-            <p><b>Booking</b> — <code>prospecting → hold → confirmed → cancelled</code>. A human decision that exists nowhere else, so it's <b>stored as a fact</b>.</p>
-            <p><b>Advancing</b> — <code>not_started → partial → complete</code>. Fully recomputable from what's on the row, so it's <b>derived</b> — a pure function of <code>(tracked fields, missing fields)</code>.</p>
+            <p><b>Separate machines</b>, split by where the truth comes from.</p>
+            <p><b>Booking</b> runs <code>prospecting → hold → confirmed → cancelled</code>. It's a human decision that exists nowhere else, so it's <b>stored as a fact</b>.</p>
+            <p><b>Advancing</b> runs <code>not_started → partial → complete</code>. It's fully recomputable from the row, so it's <b>derived</b>: a pure function of tracked and missing fields.</p>
             <p>And a gate between them: <b>advancing only runs when booking is confirmed.</b></p>
           </div>
         </div>
-        <p class="body" style="margin-top:22px"><b>And a third, the subtle one:</b> what the inbox renders — <i>Waiting · Follow-up due · Reply received · Done</i> — isn't advancing progress. It's <b>conversation state</b>, a function of <code>(messages, the clock)</code>. That last input makes it different in kind: <b>it changes with no write at all.</b> A venue goes from "waiting" to "follow-up due" three days after a send, and <i>nothing happened</i> — no reply, no click, no event. Time passed.</p>
+        <p class="body" style="margin-top:22px"><b>The third machine is the subtle one.</b> What the inbox renders (<i>Waiting</i>, <i>Follow-up due</i>, <i>Reply received</i>, <i>Done</i>) isn't advancing progress. It's <b>conversation state</b>, computed from the messages and the clock. That second input makes it different in kind, because <b>it changes with no write at all</b>. A venue goes from "waiting" to "follow-up due" three days after a send. Nothing happened: no reply, no click, no event. Time passed.</p>
         <div class="contrast" style="margin-top:18px">
           <div class="side naive">
             <div class="st">Why it can't be a column</div>
-            <p>A stored copy of a time-dependent value is <b>wrong by default and right only by coincidence</b>. Keeping it true needs a cron job racing the clock — a background process whose whole job is papering over a modeling mistake.</p>
+            <p>A stored copy of a time-dependent value is <b>wrong by default and right only by coincidence</b>. Keeping it true would take a cron job racing the clock, which is a background process whose whole job is papering over a modeling mistake.</p>
           </div>
           <div class="side built">
             <div class="st">So it's computed at read</div>
-            <p>A send older than <b>3 days with no reply</b> auto-escalates to <i>follow-up due</i> and surfaces in Needs Action. No writer, no drift, no catch-up job.</p>
-            <p>It eats timestamps, which is why the two-clock bug fed <i>wrong urgency</i> and not just ugly dates — see <b>The state engine</b>.</p>
+            <p>A send older than <b>3 days with no reply</b> escalates to <i>follow-up due</i> and surfaces in Needs Action. No writer, no drift, no catch-up job.</p>
+            <p>It reads timestamps, which is why the two-clock bug produced <i>wrong urgency</i> rather than just ugly dates. More on that in <b>The state engine</b>.</p>
           </div>
         </div>
-        <div class="principle"><span class="wl">Principle</span>"Derive everything" is the wrong lesson — the one I'd have given a year ago. The rule is <b>store what only a human knows; derive what the data implies</b>. The three machines sort themselves by where their truth comes from: booking from a person, advancing from the row, urgency from the clock. Separate axes are what stop one from overwriting another — a cancelled show <i>cannot</i> be half-advanced, because advancing is gated on the booking fact rather than tangled into it.</div>
-        <p class="body"><b>The escape hatch, honestly:</b> a user can still set advancing status by hand — four options, not the six the system computes, since surfacing every internal state read as overlapping choices. A pure derivation with no override is elegant and loses to reality the first time a venue confirms over the phone.</p>
+        <div class="principle"><span class="wl">Principle</span>"Derive everything" is the wrong lesson, and it's the one I'd have given a year ago. The rule is <b>store what only a human knows, derive what the data implies</b>. The three machines sort themselves by where their truth comes from: booking from a person, advancing from the row, urgency from the clock. Keeping them on separate axes is what stops one from overwriting another. A cancelled show <i>cannot</i> be half-advanced, because advancing is gated on the booking fact rather than tangled into it.</div>
+        <p class="body"><b>The escape hatch, stated plainly:</b> a user can still set advancing status by hand. Four options, not the six the system computes, because showing every internal state read as overlapping choices. A pure derivation with no override is elegant, and it loses to reality the first time a venue confirms something over the phone.</p>
       </div>
     </section>
 
@@ -467,17 +491,17 @@
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Decision 03</span> Inbox modeling</div>
         <h2>The inbox as a workflow queue</h2>
-        <div class="problem"><span class="pl">The problem</span>Send outreach, receive replies, convert replies into structured facts, and generate the next email — across dozens of venue threads at once.</div>
+        <div class="problem"><span class="pl">The problem</span>Send outreach, receive replies, convert replies into structured facts, and generate the next email, across dozens of venue threads at once.</div>
         <div class="contrast">
           <div class="side naive">
             <div class="st">Naive approach</div>
             <p>Build an email client. That merges three representations of one conversation: <b>live IMAP, logged sends, and optimistic UI state</b>.</p>
-            <p>They disagree — messages reorder, duplicate, and deleted ones reappear.</p>
+            <p>They disagree. Messages reorder, duplicate, and deleted ones come back.</p>
           </div>
           <div class="side built">
             <div class="st">What I shipped</div>
             <p>Reframed as a <b>queue keyed on the show</b>, not the message. Each cycle reconstructs "what to ask" from <code>(questions enabled) − (facts on sheet)</code>.</p>
-            <p>The system never relies on remembered conversation state — it recomputes what remains outstanding.</p>
+            <p>The system never relies on remembered conversation state. It recomputes what's still outstanding.</p>
           </div>
         </div>
         <div class="principle"><span class="wl">Principle</span>Collapsing three sources of truth into one derived view eliminated the entire ordering-and-duplication bug class.</div>
@@ -491,19 +515,39 @@
         <h2>Reliability as a design requirement</h2>
         <p class="lede">Each of these exists because a specific failure would place an incorrect fact in front of a band on tour. They are requirements, not polish.</p>
         <div class="feat-grid">
-          <div class="feat"><h3>Provider failover</h3><p>OpenAI primary, <b>Anthropic on failure</b>. A single provider's outage is not the product's outage — and the golden set is scored on <b>both</b>, so failover is measured equivalence.</p></div>
-          <div class="feat"><h3>Tolerant parsing</h3><p>JSON extraction survives code fences and stray prose, so a formatting quirk doesn't fail a valid extraction.</p></div>
-          <div class="feat"><h3>Human-in-the-loop</h3><p>Extractions are reviewed before reaching the sheet. Gap-fill only — a confirmed value is never overwritten.</p></div>
-          <div class="feat"><h3>Validated inputs</h3><p>A malformed request returns a clean <code>422</code>, not a deep <code>KeyError</code> several calls into the stack.</p></div>
+          <div class="feat"><h3>Provider failover</h3><p>OpenAI primary, <b>Anthropic on failure</b>. One provider's outage isn't the product's outage. The golden set is scored on <b>both</b>, so failover is a measured equivalence rather than an assumption.</p></div>
+          <div class="feat"><h3>Tolerant parsing</h3><p>JSON extraction survives code fences and stray prose, so a formatting quirk doesn't sink a valid extraction.</p></div>
+          <div class="feat"><h3>Human-in-the-loop</h3><p>Extractions are reviewed before reaching the sheet, and they gap-fill only. A confirmed value is never overwritten.</p></div>
+          <div class="feat"><h3>Validated inputs</h3><p>A malformed request returns a clean <code>422</code> rather than a <code>KeyError</code> several calls into the stack.</p></div>
         </div>
 
         <h3 style="margin-top:34px;font-size:1.15rem">How the email path is actually tested</h3>
-        <p class="body">Email is where this product lives, and the layer with the most ways to fail <i>quietly</i> — nobody files a bug for replies that never arrive. So it carries the most tests: <b>59 across seven suites</b>, mostly about distinguishing states that look alike.</p>
-        <div class="spec">
-          <div class="row"><span class="k">The transport <span class="muted">(8 tests)</span></span><span class="v">IMAP IDLE is full of lookalikes, each pinned: an <code>EXISTS</code> means new mail but <b>a quiet timeout doesn't</b>; keepalives are ignored until a real event; a server that <b>refuses IDLE raises <i>unsupported</i></b> instead of looking healthy forever; a <code>BYE</code> raises a connection error and the loop <b>reconnects</b> with backoff that doubles and caps. The one I care most about: <b>a handler exception never kills the watch</b> — one bad message must not silently end ingestion.</span></div>
-          <div class="row"><span class="k">Identity <span class="muted">(8 tests)</span></span><span class="v">Which venue owns this message? Precedence is explicit: an <b>explicit binding beats everything</b>; a sent thread <b>re-attaches after a re-upload</b>; <code>watch_since</code> blocks mail predating the venue; a not-yet-started venue collects nothing; unrelated mail stays untagged; <b>fuzzy matching runs only when asked</b>.</span></div>
-          <div class="row"><span class="k">Comprehension <span class="muted">(32 golden chains)</span></span><span class="v">Adversarial threads — multi-show bleed, deal-term soup ("$500 against 80% of the door, settled by midnight"), mid-thread personnel handoffs, negation traps — <b>10 with negative controls</b>. Broken down in <b>When the model breaks</b>.</span></div>
-          <div class="row"><span class="k">Triage <span class="muted">(before the model)</span></span><span class="v">Bounces and out-of-office replies are caught by <b>signature matching in code</b> and never reach the LLM; everything else is classified, and a <code>problem</code> verdict <b>can't write updates</b>.</span></div>
+        <p class="body">Email is where this product lives, and it's the layer with the most ways to fail <i>quietly</i>. Nobody files a bug for replies that never arrive. So it carries the most tests, <b>59 across seven suites</b>, and most of them are about telling apart states that look alike.</p>
+        <p class="body">IMAP IDLE is the clearest example. The protocol is full of lookalikes, so each distinction gets pinned:</p>
+        <div class="snip">
+          <div class="sh"><span class="sf">test_email_watcher.py</span><span class="st2">transport, 8 tests</span></div>
+          <pre><span class="k">def</span> <span class="f">test_exists_means_new_mail</span>():
+    conn = FakeConn([<span class="s">b"+ idling"</span>, <span class="s">b"* 7 EXISTS"</span>, <span class="s">b"A001 OK IDLE done"</span>])
+    <span class="k">assert</span> ew.idle_once(conn, 1) <span class="k">is True</span>
+
+<span class="k">def</span> <span class="f">test_quiet_timeout_is_not_mail</span>():        <span class="c"># silence != a reply</span>
+    conn = FakeConn([<span class="s">b"+ idling"</span>, <span class="s">"TIMEOUT"</span>, <span class="s">b"A001 OK IDLE done"</span>])
+    <span class="k">assert</span> ew.idle_once(conn, 1) <span class="k">is False</span>
+
+<span class="k">def</span> <span class="f">test_keepalives_ignored_until_exists</span>():   <span class="c"># EXPUNGE/RECENT are noise</span>
+    conn = FakeConn([<span class="s">b"+ idling"</span>, <span class="s">b"* 3 EXPUNGE"</span>, <span class="s">b"* 2 RECENT"</span>,
+                     <span class="s">b"* 9 EXISTS"</span>, <span class="s">b"A001 OK"</span>])
+    <span class="k">assert</span> ew.idle_once(conn, 1) <span class="k">is True</span>
+
+<span class="k">def</span> <span class="f">test_idle_refused_raises_unsupported</span>():   <span class="c"># fail loud, not idle forever</span>
+    conn = FakeConn([<span class="s">b"A001 NO IDLE not allowed"</span>])
+    <span class="k">assert raises</span>(ew.IdleUnsupported)</pre>
+        </div>
+        <p class="snip-note">The rest of that suite covers a server <code>BYE</code> raising a connection error, backoff that doubles and caps, and the one I care most about: <b>an exception in a handler never kills the watch loop</b>. One bad message must not silently end email ingestion.</p>
+        <div class="spec" style="margin-top:24px">
+          <div class="row"><span class="k">Identity <span class="muted">(8 tests)</span></span><span class="v">Which venue owns this message? The precedence is explicit and tested. An <b>explicit binding beats everything</b>, a sent thread <b>re-attaches after a re-upload</b>, <code>watch_since</code> blocks mail that predates the venue, a not-yet-started venue collects nothing, unrelated mail stays untagged, and <b>fuzzy matching runs only when asked for</b>.</span></div>
+          <div class="row"><span class="k">Comprehension <span class="muted">(32 golden chains)</span></span><span class="v">Adversarial threads: multi-show bleed, deal-term soup ("$500 against 80% of the door, settled by midnight"), mid-thread personnel handoffs, negation traps. <b>10 carry negative controls.</b> Broken down in <b>When the model breaks</b>.</span></div>
+          <div class="row"><span class="k">Triage <span class="muted">(before the model)</span></span><span class="v">Bounces and out-of-office replies are caught by <b>signature matching in code</b> and never reach the LLM. Everything else is classified, and a <code>problem</code> verdict <b>can't write updates</b>.</span></div>
         </div>
       </div>
     </section>
@@ -514,9 +558,9 @@
         <div class="eyebrow"><span class="sec">Decision 05</span> Evaluation &amp; observability</div>
         <h2>Measuring correctness, and learning from corrections</h2>
         <div class="feat-grid">
-          <div class="feat"><h3>Online — closed loop</h3><p>The human review step logs every accept, edit, and reject. Each correction is a labeled failure — a live dataset of the agent's weak points at <b>zero labeling cost</b>. Live misses get <b>promoted</b> into the golden set, so the harness grows from real traffic rather than my imagination.</p></div>
-          <div class="feat"><h3>Offline — CI gate</h3><p>A golden-set harness scores field extraction and <b>fails the build below 80%</b>. Now <b>32 email-chain cases</b>, 10 with <b>negative controls</b> — invented answers cost score, so abstaining beats guessing. Reruns <b>weekly on a schedule</b>, since model drift doesn't wait for a commit.</p></div>
-          <div class="feat"><h3>One tracing seam</h3><p><code>traced_llm</code> is the single point every model call passes through — recording endpoint, model, latency, tokens, estimated cost, and whether failover fired.</p></div>
+          <div class="feat"><h3>Online, a closed loop</h3><p>The human review step logs every accept, edit, and reject. Each correction is a labeled failure, which gives me a live dataset of the agent's weak points at <b>zero labeling cost</b>. Live misses get <b>promoted</b> into the golden set, so the harness grows from real traffic rather than my imagination.</p></div>
+          <div class="feat"><h3>Offline, a CI gate</h3><p>A golden-set harness scores field extraction and <b>fails the build below 80%</b>. It now holds <b>32 email-chain cases</b>, 10 of them with <b>negative controls</b>, so invented answers cost score and abstaining beats guessing. It reruns <b>weekly on a schedule</b>, because model drift doesn't wait for a commit.</p></div>
+          <div class="feat"><h3>One tracing seam</h3><p><code>traced_llm</code> is the single point every model call passes through. It records endpoint, model, latency, tokens, estimated cost, and whether failover fired.</p></div>
         </div>
         <div class="metrics">
           <div class="metric"><div class="mv green">100%</div><div class="ml">Golden set, both providers</div></div>
@@ -525,36 +569,36 @@
           <div class="metric"><div class="mv">Weekly</div><div class="ml">Scheduled eval rerun</div></div>
         </div>
         <h3 style="margin-top:30px;font-size:1.15rem">The flywheel: a button in the UI becomes a test case</h3>
-        <p class="body">The set grows because <b>the product collects failures</b>, not because I imagined them. Every human touch is already a label: <b>accept</b> = pass, <b>edit</b> = the ground-truth value, <b>reject</b> = a hard negative, <b>⚑ flag</b> = the reply captured as a ready thread.</p>
+        <p class="body">The set grows because <b>the product collects failures</b>, not because I sat down and imagined them. Every human touch is already a label. An <b>accept</b> is a pass, an <b>edit</b> hands over the ground-truth value, a <b>reject</b> is a hard negative, and the <b>⚑ flag</b> button captures the reply as a ready-made thread.</p>
         <div class="spec">
-          <div class="row"><span class="k">① Collect <em>(automatic)</em></span><span class="v">Flags and edited/rejected extractions land in the observability store with the original text — an edit's <code>final_value</code> <i>is</i> the right answer, typed by someone who knew it.</span></div>
+          <div class="row"><span class="k">① Collect <em>(automatic)</em></span><span class="v">Flags and edited or rejected extractions land in the observability store with the original text. An edit's <code>final_value</code> <i>is</i> the right answer, already typed by someone who knew it.</span></div>
           <div class="row"><span class="k">② Shape <em>(scripted)</em></span><span class="v"><code>promote_evals.py</code> turns those into properly-formed cases in <code>candidates.json</code>.</span></div>
-          <div class="row"><span class="k">③ Promote <em>(human)</em></span><span class="v">A person moves keepers into <code>golden_extra.json</code>, merged into the golden set. <b>Collection automatic; promotion a reviewed commit</b> — auto-promoting lets one mislabeled correction redefine "correct" for every future run.</span></div>
+          <div class="row"><span class="k">③ Promote <em>(human)</em></span><span class="v">A person moves the keepers into <code>golden_extra.json</code>, which the harness merges into the golden set. <b>Collection is automatic, promotion is a reviewed commit.</b> Auto-promoting would let one mislabeled correction redefine "correct" for every future run.</span></div>
         </div>
-        <div class="principle"><span class="wl">Why this shape</span>Most eval sets die of neglect — written once, quietly measuring a product that moved. This one is fed by usage, so the cases that arrive are the ones <b>reality is generating</b>, weighted by frequency. The failure I'm designing against isn't a bad case getting in; it's the set going stale.</div>
+        <div class="principle"><span class="wl">Why this shape</span>Most eval sets die of neglect. They get written once, then quietly measure a product that has moved. This one is fed by usage, so the cases that arrive are the ones <b>reality is generating</b>, weighted by how often they happen. The failure I'm designing against isn't a bad case getting in. It's the set going stale.</div>
 
         <h3 style="margin-top:30px;font-size:1.15rem">Monitoring drift I didn't cause</h3>
-        <p class="body"><b>A pinned model name is not a pinned model.</b> Providers ship RLHF passes and silent revisions, so the prompt is tuned against behavior that moves underneath it. Extraction is unusually exposed: I need <b>terseness and abstention</b> ("omit any field the venue didn't address"), while assistant tuning pushes toward <i>more</i> helpful and complete — which here <i>is</i> the hallucination mode.</p>
+        <p class="body"><b>A pinned model name is not a pinned model.</b> Providers ship RLHF passes and silent revisions, so a prompt gets tuned against behavior that then moves underneath it. Extraction is unusually exposed here. What I need from the model is <b>terseness and abstention</b> ("omit any field the venue didn't address"), while assistant tuning generally pushes toward being more helpful and more complete. In this context, that <i>is</i> the hallucination mode.</p>
         <div class="contrast">
           <div class="side built">
             <div class="st">What catches it today</div>
-            <p>The <b>weekly rerun</b> — the only mechanism that fires when <i>nothing in my repo changed</i>. A push-triggered eval structurally can't see drift, because drift arrives without a commit.</p>
-            <p>Scoring both providers disambiguates: one moves and the other doesn't → provider event, not prompt regression.</p>
+            <p>The <b>weekly rerun</b>, which is the only mechanism that fires when <i>nothing in my repo changed</i>. A push-triggered eval structurally can't see drift, because drift arrives without a commit.</p>
+            <p>Scoring both providers also tells the two apart. If one moves and the other doesn't, that's a provider event rather than a prompt regression.</p>
           </div>
           <div class="side naive">
             <div class="st">What's still missing</div>
-            <p><b>Per-case history.</b> I get a pass/fail number; I want a time series per case, so a drop is a <i>date and a case</i> — and a model update reads as a step change.</p>
-            <p><b>Alert on delta, not threshold.</b> A set sliding 100% → 94% → 88% never trips an 80% gate, and that gradual shape is exactly what drift looks like.</p>
+            <p><b>Per-case history.</b> Today I get a pass/fail number. I want a time series per case, so a drop points to a specific date and a specific case, and a model update reads as a step change.</p>
+            <p><b>Alerting on delta rather than threshold.</b> A set sliding from 100% to 94% to 88% never trips an 80% gate, and that gradual shape is exactly what drift looks like.</p>
           </div>
         </div>
 
         <p class="body" style="margin-top:26px">Two properties I'd defend beyond the obvious, each fixing a way evals lie:</p>
         <div class="spec">
-          <div class="row"><span class="k">Grades the real prompt</span><span class="v">The system prompt is a <b>pure function</b>, so the eval scores <b>the exact text production uses</b>. The most common way an eval quietly stops meaning anything is testing a prompt nobody ships.</span></div>
-          <div class="row"><span class="k">Punishes invention</span><span class="v">Hallucinated fields count against the score, not just missed ones. Under a misses-only metric, a model that guesses everything <b>outscores one that correctly abstains</b> — rewarding exactly the behavior that hurts a band on tour.</span></div>
+          <div class="row"><span class="k">Grades the real prompt</span><span class="v">The system prompt is a <b>pure function</b>, so the eval scores <b>the exact text production uses</b>. The most common way an eval quietly stops meaning anything is that it tests a prompt nobody ships.</span></div>
+          <div class="row"><span class="k">Punishes invention</span><span class="v">Hallucinated fields count against the score, not just missed ones. Under a misses-only metric, a model that guesses at everything <b>outscores one that correctly abstains</b>, which rewards exactly the behavior that hurts a band on tour.</span></div>
         </div>
-        <div class="principle"><span class="wl">In one sentence</span>The agent is instrumented end to end — per-call cost, latency, and failures visible live — and every human correction becomes labeled evaluation data that gates deployment.</div>
-        <div class="honest"><b>The gap I'd name first:</b> extraction has 32 cases, generation has <b>2</b>. Judging a drafted email needs an LLM judge with a rubric — slower and costlier to build than substring checks — so the cheap half got built first. Sequencing, not balance.</div>
+        <div class="principle"><span class="wl">In one sentence</span>The agent is instrumented end to end, with per-call cost, latency and failures visible live, and every human correction becomes labeled evaluation data that gates deployment.</div>
+        <div class="honest"><b>The gap I'd name first:</b> extraction has 32 cases and generation has <b>2</b>. Judging a drafted email needs an LLM judge with a rubric, which is slower and costlier to build than substring checks, so the cheap half got built first. That's sequencing, not balance.</div>
       </div>
     </section>
 
@@ -562,28 +606,28 @@
     <section class="panel alt" id="d6" data-rung="d6">
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Decision 06</span> Data model</div>
-        <h2>Migrating off the spreadsheet — without a big-bang cutover</h2>
+        <h2>Migrating off the spreadsheet without a big-bang cutover</h2>
         <div class="contrast">
           <div class="side built">
             <div class="st" style="color:var(--accent)">Why Sheets was right to start</div>
-            <p>Google Sheets is each band's <b>system-of-record</b>. Bands see and edit their own data with <b>zero setup</b> — no accounts, no import, no training. For proving the workflow, nothing beats a tool the user already opens.</p>
+            <p>Google Sheets is each band's <b>system of record</b>. Bands see and edit their own data with <b>zero setup</b>: no accounts, no import, no training. For proving out the workflow, nothing beats a tool the user already opens every day.</p>
           </div>
           <div class="side naive">
             <div class="st">Where it breaks</div>
-            <p><b>API quotas, no transactions, no concurrency guarantees.</b> Two writers collide and the last one silently wins; there's no row lock to reach for.</p>
-            <p>I named that ceiling before hitting it. The exit is now underway.</p>
+            <p><b>API quotas, no transactions, no concurrency guarantees.</b> Two writers collide and the last one silently wins. There's no row lock to reach for.</p>
+            <p>I named that ceiling before hitting it, and the exit is now underway.</p>
           </div>
         </div>
-        <p class="body"><b>The hard part isn't Postgres — it's moving while the thing is running.</b> A band on tour can't have a maintenance window. So: a <b>strangler fig gated by a measurement</b>, in five reversible steps.</p>
+        <p class="body"><b>The hard part isn't Postgres. It's moving while the thing is running.</b> A band on tour can't have a maintenance window. So the migration runs as a strangler fig, gated by a measurement, in five reversible steps.</p>
         <div class="spec">
-          <div class="row"><span class="k">① Shadow write</span><span class="v">Every venue write goes to Sheets <i>and</i> Supabase. Sheets stays authoritative; Postgres watches. <b>Zero user-visible change</b> — if the new path is broken, nothing breaks.</span></div>
-          <div class="row"><span class="k">② Backfill</span><span class="v">A script walks existing sheets into Postgres, so history is there — not just writes after the cutover moment.</span></div>
-          <div class="row"><span class="k">③ Parity gate</span><span class="v">The step that makes it safe: <code>/api/store/parity</code> reads <b>both stores</b> and reports a match percentage <b>plus exact diffs</b> — rows only in the sheet, rows only in the DB, field-level mismatches. Cutover requires 100% during the shadow window. <b>A number, not a vibe</b> — and when it disagrees it names the row and the field.</span></div>
-          <div class="row"><span class="k">④ Flip reads</span><span class="v"><code>TMGO_STORE=db</code> (or per-request <code>?store=db</code>) moves reads to Postgres. Reversible in one environment variable — no redeploy, no data movement. Rollback is the same switch.</span></div>
-          <div class="row"><span class="k">⑤ Demote to export</span><span class="v">Sheets becomes a <b>view</b>: an export endpoint keeps the band's spreadsheet current. They keep the tool they like; it stops being what correctness depends on.</span></div>
+          <div class="row"><span class="k">① Shadow write</span><span class="v">Every venue write goes to Sheets <i>and</i> Supabase. Sheets stays authoritative and Postgres just watches. <b>Zero user-visible change</b>, so if the new path is broken, nothing breaks.</span></div>
+          <div class="row"><span class="k">② Backfill</span><span class="v">A script walks the existing sheets into Postgres, so the history is there rather than only writes made after the cutover moment.</span></div>
+          <div class="row"><span class="k">③ Parity gate</span><span class="v">This is the step that makes it safe. <code>/api/store/parity</code> reads <b>both stores</b> and reports a match percentage plus the exact diffs: rows only in the sheet, rows only in the database, and field-level mismatches. Cutover requires 100% during the shadow window. It's <b>a number rather than a judgment call</b>, and when it disagrees it names the row and the field.</span></div>
+          <div class="row"><span class="k">④ Flip reads</span><span class="v"><code>TMGO_STORE=db</code>, or per-request <code>?store=db</code>, moves reads to Postgres. It's reversible in one environment variable, with no redeploy and no data movement. Rollback is the same switch.</span></div>
+          <div class="row"><span class="k">⑤ Demote to export</span><span class="v">Sheets becomes a <b>view</b>. An export endpoint keeps the band's spreadsheet current, so they keep the tool they like and it stops being what correctness depends on.</span></div>
         </div>
-        <div class="principle"><span class="wl">Principle</span>Picking the right tool for the stage — and naming where it will fail before it does — is the judgment, not a gap in it. The follow-through is the same discipline: <b>a migration you can't measure isn't a migration, it's a hope with a deadline.</b></div>
-        <div class="honest"><b>Status:</b> shipped for venues and email state — dual-write, backfill, parity, flag-gated reads all live. Remaining domains (contracts among them) are still Sheets-only. The pattern is proven; the coverage isn't complete.</div>
+        <div class="principle"><span class="wl">Principle</span>Picking the right tool for the stage, and naming where it will fail before it does, is the judgment rather than a gap in it. The follow-through takes the same discipline: <b>a migration you can't measure isn't a migration, it's a hope with a deadline.</b></div>
+        <div class="honest"><b>Status:</b> shipped for venues and email state, with dual-write, backfill, parity and flag-gated reads all live. The remaining domains, contracts among them, are still Sheets-only. The pattern is proven, the coverage isn't complete.</div>
       </div>
     </section>
 
@@ -594,10 +638,10 @@
         <h2>Evaluation-gated continuous delivery</h2>
         <div class="feat-grid">
           <div class="feat"><h3>CI on every push</h3><p>GitHub Actions runs the frontend build, a real-error lint, and the <b>evaluation gate</b>. A regression in extraction accuracy blocks the merge.</p></div>
-          <div class="feat"><h3>Automatic deploy</h3><p>A passing <code>main</code> deploys itself to Vercel and Render — no manual release step to forget.</p></div>
+          <div class="feat"><h3>Automatic deploy</h3><p>A passing <code>main</code> deploys itself to Vercel and Render, so there's no manual release step to forget.</p></div>
           <div class="feat"><h3>Containerized backend</h3><p>Docker packages the backend to run identically anywhere. This container is the unit a worker pool would replicate at scale.</p></div>
         </div>
-        <div class="principle"><span class="wl">Why it matters</span>Because the backend is already containerized, moving to a worker pool is a deployment change, not a rewrite — the scaling path was designed in from the start.</div>
+        <div class="principle"><span class="wl">Why it matters</span>Because the backend is already containerized, moving to a worker pool is a deployment change rather than a rewrite. The scaling path was designed in from the start.</div>
       </div>
     </section>
 
@@ -606,22 +650,22 @@
     <section class="panel alt" id="intel" data-rung="intel">
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Depth · 01</span> Where the intelligence lives</div>
-        <h2>Two LLM seams. Everything else is code — on purpose.</h2>
-        <p class="lede">The model appears at exactly two points, both language problems: <b>parsing</b> a venue's free-form reply into typed fields, and <b>drafting</b> the outbound message. Routing, scheduling, sheet writes, validation, retries — deterministic Python. That placement is the load-bearing decision the other six hang off.</p>
+        <h2>Two LLM seams, and everything else is code</h2>
+        <p class="lede">The model appears at exactly two points, both of them language problems: <b>parsing</b> a venue's free-form reply into typed fields, and <b>drafting</b> the outbound message. Routing, scheduling, sheet writes, validation and retries are all deterministic Python. That placement is the load-bearing decision the other six hang off.</p>
         <div class="contrast">
           <div class="side naive">
             <div class="st">What this costs me</div>
-            <p><b>Flexibility.</b> A new capability means writing a pipeline, not prompting the agent to improvise one. The system can't handle a workflow nobody designed — a real limitation, and I'd say it plainly.</p>
-            <p>If the product needed open-ended exploration — "figure out this venue's whole booking process" — this shape would be wrong, and I'd add a <b>bounded free node</b>: one agentic step with a budget, timeout, and typed output, inside the deterministic graph.</p>
+            <p><b>Flexibility.</b> A new capability means writing a pipeline rather than prompting the agent to improvise one. The system can't handle a workflow nobody designed. That's a real limitation and I'd say so plainly.</p>
+            <p>If the product needed open-ended exploration, something like "figure out this venue's whole booking process," this shape would be wrong. I'd add a <b>bounded free node</b>: one agentic step with a budget, a timeout and typed output, sitting inside the deterministic graph.</p>
           </div>
           <div class="side built">
             <div class="st">What it buys</div>
-            <p><b>Verifiability.</b> Every path is enumerable, so every path is testable — which is what makes the CI gate and the feedback loop possible at all. You can't regression-gate an agent whose control flow differs every run.</p>
-            <p><b>Blast-radius control.</b> The model's worst output is a bad draft or parse, both behind a human gate. It structurally cannot send, write, or delete.</p>
+            <p><b>Verifiability.</b> Every path is enumerable, so every path is testable. That's what makes the CI gate and the feedback loop possible at all. You can't regression-gate an agent whose control flow differs every run.</p>
+            <p><b>Blast-radius control.</b> The model's worst output is a bad draft or a bad parse, and both sit behind a human gate. It structurally cannot send, write or delete.</p>
           </div>
         </div>
-        <div class="principle"><span class="wl">Tied together</span>All seven decisions are one bet made seven times: <b>trade flexibility for verifiability wherever the system touches real data</b>. The orthogonal state machines, the queue view, the eval gate, the parity-gated migration — each is that same trade in a different subsystem. They don't contradict; they compound.</div>
-        <p class="body"><b>The shape underneath all of them:</b> each is a decision about <i>where a truth is allowed to come from</i>. The model proposes language, never facts. A projection is computed in one place. Booking status comes from a human because nothing else knows it. Cutover comes from a parity number, not confidence. Phrased that way, "constrain the agent" stops being a safety slogan and becomes the rule the data model already follows: <b>one source per truth, and name it.</b></p>
+        <div class="principle"><span class="wl">Tied together</span>All seven decisions are one bet made seven times: <b>trade flexibility for verifiability wherever the system touches real data</b>. The orthogonal state machines, the queue view, the eval gate, the parity-gated migration. Each is that same trade in a different subsystem. They don't contradict each other, they compound.</div>
+        <p class="body"><b>The shape underneath all of them</b> is a decision about where a truth is allowed to come from. The model proposes language, never facts. A projection is computed in one place. Booking status comes from a human because nothing else knows it. Cutover comes from a parity number rather than confidence. Put that way, "constrain the agent" stops being a safety slogan and becomes the same rule the data model already follows: <b>one source per truth, and name it.</b></p>
       </div>
     </section>
 
@@ -629,18 +673,18 @@
     <section class="panel" id="breaks" data-rung="breaks">
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Depth · 02</span> Failure modes &amp; options</div>
-        <h2>Where it breaks, where it doesn't — and the options when it does</h2>
-        <p class="lede">Each <i>subsystem's</i> break condition, with the mitigation shipped today and the options in reserve. (The model's own failure modes get their own section — <b>When the model breaks</b>.)</p>
+        <h2>Where it breaks, where it doesn't, and the options when it does</h2>
+        <p class="lede">Each subsystem's break condition, with the mitigation shipped today and the options held in reserve. The model's own failure modes get their own section, <b>When the model breaks</b>.</p>
         <div class="spec">
           <div class="row"><span class="k">Extraction</span><span class="v"><b>Breaks when:</b> a venue writes something genuinely ambiguous ("load in around when doors-ish"). <b>Today:</b> human review catches it and the correction becomes labeled eval data. <b>Options:</b> per-field confidence with abstention, dual-model consensus on low-confidence fields.</span></div>
-          <div class="row"><span class="k">Sheets I/O</span><span class="v"><b>Breaks when:</b> quota bursts or two writers collide — no transactions. <b>Today:</b> the real fix is <i>in flight</i> — venue facts and email state <b>dual-write to Postgres</b>, a parity endpoint proves the stores agree, reads cut over behind <code>TMGO_STORE=db</code>, and an export endpoint starts the demotion to report. <b>Left:</b> remaining domains, then contracts.</span></div>
-          <div class="row"><span class="k">Email ingest</span><span class="v"><b>Breaks when:</b> IMAP polling lags or a cold start misses the window. <b>Today:</b> the derived queue means a late-seen message resolves on the next cycle — delayed, never lost. The event-driven path is half-built: a <b>Gmail push receiver</b> acks fast and hands work to the job queue. <b>Left:</b> GCP pub/sub + watch enablement.</span></div>
-          <div class="row"><span class="k">LLM providers</span><span class="v"><b>Breaks when:</b> the primary degrades. <b>Today:</b> automatic failover, recorded per call by <code>traced_llm</code>. <b>Both down:</b> the graph degrades to queue-and-notify — drafts wait, nothing silently drops, and deterministic paths (reminders, sheet sync) keep running.</span></div>
-          <div class="row"><span class="k">State</span><span class="v"><b>Where it doesn't break:</b> the three machines are kept on separate axes — booking is <i>stored</i> (only a human knows it), advancing and turn-urgency are <i>derived</i> (from the row and the clock respectively), so no two writers contend for one field and derived values cannot desync from their source. <b>Breaks when:</b> a derived value depends on inputs that <i>themselves</i> disagree — which is exactly what the two-timestamp-format bug was, and why one UTC format at the API boundary was the fix rather than patching the projection.</span></div>
-          <div class="row"><span class="k">Writes</span><span class="v"><b>Where it doesn't break:</b> nothing the model produces reaches a band's data without an approval click. The failure mode "AI corrupted my tour sheet" has no path through the graph.</span></div>
-          <div class="row"><span class="k">Quality drift</span><span class="v"><b>Breaks when:</b> a prompt or model change quietly degrades extraction. <b>Today:</b> my changes can't ship past the CI eval gate; the provider's are caught by the weekly rerun (see <b>Evaluation</b>). <b>Options:</b> multi-trial <code>pass^k</code>, paraphrase perturbations, per-case history.</span></div>
+          <div class="row"><span class="k">Sheets I/O</span><span class="v"><b>Breaks when:</b> quota bursts, or two writers collide with no transaction to protect them. <b>Today:</b> the real fix is in flight. Venue facts and email state <b>dual-write to Postgres</b>, a parity endpoint proves the stores agree, reads cut over behind <code>TMGO_STORE=db</code>, and an export endpoint starts the demotion to a report. <b>Left:</b> the remaining domains, then contracts.</span></div>
+          <div class="row"><span class="k">Email ingest</span><span class="v"><b>Breaks when:</b> IMAP polling lags, or a cold start misses the window. <b>Today:</b> because the queue is derived, a late-seen message resolves on the next cycle. It's delayed, never lost. The event-driven path is half-built: a <b>Gmail push receiver</b> acks fast and hands the work to the job queue. <b>Left:</b> GCP pub/sub and watch enablement.</span></div>
+          <div class="row"><span class="k">LLM providers</span><span class="v"><b>Breaks when:</b> the primary degrades. <b>Today:</b> automatic failover, recorded per call by <code>traced_llm</code>. <b>If both are down:</b> the graph degrades to queue-and-notify. Drafts wait, nothing silently drops, and the deterministic paths like reminders and sheet sync keep running.</span></div>
+          <div class="row"><span class="k">State</span><span class="v"><b>Where it doesn't break:</b> the three machines sit on separate axes. Booking is stored because only a human knows it, while advancing and turn-urgency are derived from the row and the clock. No two writers contend for one field, and a derived value can't desync from its source. <b>Breaks when:</b> a derived value depends on inputs that themselves disagree. That's exactly what the two-timestamp-format bug was, and why one UTC format at the API boundary was the fix rather than patching the projection.</span></div>
+          <div class="row"><span class="k">Writes</span><span class="v"><b>Where it doesn't break:</b> nothing the model produces reaches a band's data without an approval click. The failure mode "the AI corrupted my tour sheet" has no path through the graph.</span></div>
+          <div class="row"><span class="k">Quality drift</span><span class="v"><b>Breaks when:</b> a prompt or model change quietly degrades extraction. <b>Today:</b> my changes can't ship past the CI eval gate, and the provider's are caught by the weekly rerun (see <b>Evaluation</b>). <b>Options:</b> multi-trial <code>pass^k</code>, paraphrase perturbations, per-case history.</span></div>
         </div>
-        <div class="honest"><b>The honest one:</b> single-run evals measure capability, not reliability — an agent can pass once and still be flaky. Capability says it <i>can</i> work; consistency says it <i>keeps</i> working.</div>
+        <div class="honest"><b>The honest one:</b> single-run evals measure capability rather than reliability, and an agent can pass once and still be flaky. Capability says it <i>can</i> work. Consistency says it <i>keeps</i> working.</div>
       </div>
     </section>
 
@@ -649,18 +693,18 @@
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Depth · 03</span> Token economics</div>
         <h2>Cost as a designed number, not a surprise</h2>
-        <p class="lede">One advance cycle touches the model exactly twice — parse the reply, draft the response — so cost scales with <b>shows advanced</b>, not chat length or agent wandering. That's the bounded graph paying out: no re-planning loops, no unbounded spend. The levers, in the order I'd pull them:</p>
+        <p class="lede">One advance cycle touches the model exactly twice, to parse the reply and draft the response. So cost scales with <b>shows advanced</b> rather than chat length or agent wandering. That's the bounded graph paying out: no re-planning loops means no unbounded spend. The levers, in the order I'd pull them:</p>
         <div class="spec">
-          <div class="row"><span class="k">Metering first</span><span class="v"><code>traced_llm</code> records tokens and cost per call, per provider. Every lever below is verified against that meter, not vibes.</span></div>
-          <div class="row"><span class="k">Model tiering <em>(shipped)</em></span><span class="v">Light classification and summaries run a small model; extraction went on a larger one because grounding errors there reach real tour data. Then I measured that assumption. <b>It didn't survive</b> — see below.</span></div>
-          <div class="row"><span class="k">Response caching <em>(shipped)</em></span><span class="v">Caches <b>deterministic calls only</b> — temperature-0 routing, parsing, extraction. Same prompt inside the TTL → same answer, zero tokens. Drafting runs warm and is <i>never</i> cached; a fresh draft should read fresh. Caching only pure functions of input can't add a failure mode.</span></div>
-          <div class="row"><span class="k">Context budget <em>(next lever)</em></span><span class="v">A recency window plus hard caps on history. Without one, every turn's cost grows with transcript length — the quiet leak in most chat products.</span></div>
-          <div class="row"><span class="k">Per-tenant budgets <em>(shipped)</em></span><span class="v">A per-band daily token ceiling enforced <b>before</b> the call, usage recorded after — one runaway tour can't eat the month. A blown budget deliberately does <i>not</i> trigger failover: both providers cost tokens, so the answer is "not today," not "try the other model."</span></div>
+          <div class="row"><span class="k">Metering first</span><span class="v"><code>traced_llm</code> records tokens and cost per call, per provider. Every lever below is verified against that meter rather than assumed.</span></div>
+          <div class="row"><span class="k">Model tiering <em>(shipped)</em></span><span class="v">Light classification and summaries run a small model. Extraction went on a larger one, because grounding errors there reach real tour data. Then I measured that assumption, and <b>it didn't survive</b>. See below.</span></div>
+          <div class="row"><span class="k">Response caching <em>(shipped)</em></span><span class="v">The gateway caches <b>deterministic calls only</b>, meaning temperature-0 routing, parsing and extraction. The same prompt inside the TTL returns the same answer for zero tokens. Drafting runs warm and is <i>never</i> cached, because a fresh draft should read fresh. Caching only pure functions of input can't add a failure mode.</span></div>
+          <div class="row"><span class="k">Context budget <em>(next lever)</em></span><span class="v">A recency window plus hard caps on history. Without one, every turn's cost grows with transcript length, which is the quiet leak in most chat products.</span></div>
+          <div class="row"><span class="k">Per-tenant budgets <em>(shipped)</em></span><span class="v">A per-band daily token ceiling, enforced <b>before</b> the call with usage recorded after, so one runaway tour can't eat the month. A blown budget deliberately does <i>not</i> trigger failover. Both providers cost tokens, so the answer is "not today," not "try the other model."</span></div>
         </div>
-        <div class="principle"><span class="wl">Principle</span>Strategic cost design is architecture, not discounts: bound the loop, tier the models, cache the constants, budget the context — and meter everything so each lever's payoff is a measured number.</div>
+        <div class="principle"><span class="wl">Principle</span>Strategic cost design is architecture rather than discounts. Bound the loop, tier the models, cache the constants, budget the context, and meter everything so each lever's payoff is a measured number.</div>
 
         <h3 style="margin-top:38px;font-size:1.15rem">Which model should be making the call? I ran the experiment.</h3>
-        <p class="body">"Tier your models" is advice everyone repeats and nobody measures. So I built a bench (<code>scripts/model_cost_bench.py</code>): the same 32 golden chains, the <b>production prompt lifted from the running code</b>, three tiers, accuracy + cost + latency in one pass.</p>
+        <p class="body">"Tier your models" is advice everyone repeats and nobody measures. So I built a bench, <code>scripts/model_cost_bench.py</code>. It scores the same 32 golden chains with the <b>production prompt lifted straight out of the running code</b>, across three tiers, recording accuracy, cost and latency in one pass.</p>
 
         <div class="bench">
           <div class="bpanel">
@@ -689,9 +733,25 @@
           </div>
         </div>
 
-        <div class="problem" style="margin-top:24px"><span class="pl">The result</span><b>5× the price and 3× the latency bought zero accuracy.</b> On this task the biggest model is strictly worse: same answers, slower, five times the bill.</div>
+        <div class="problem" style="margin-top:24px"><span class="pl">The result</span><b>5× the price and 3× the latency bought zero accuracy.</b> On this task the biggest model is strictly worse: the same answers, slower, at five times the bill.</div>
 
-        <p class="body"><b>The better finding is <i>which</i> case they all miss</b> — the same one, and it isn't hard. An <b>out-of-office auto-reply</b>: <i>"out of office until Aug 20… for urgent matters contact jamie@40watt.com."</i> Every tier helpfully extracts that address as the venue contact. The case forbids it: a vacation forwarding address isn't the advancing contact.</p>
+        <p class="body"><b>The more useful finding is which case they all miss.</b> It's the same one for every tier, and it isn't a hard extraction. It's an out-of-office auto-reply, and every model helpfully pulls the vacation forwarding address out as the venue contact. The case forbids exactly that.</p>
+        <div class="snip">
+          <div class="sh"><span class="sf">scripts/run_evals.py</span><span class="st2">the case all three tiers fail</span></div>
+          <pre><span class="c"># A negative control: the correct answer here is NOTHING.</span>
+<span class="s">"venue"</span>: <span class="s">"The 40 Watt"</span>,
+<span class="s">"thread"</span>: [
+  &#123;<span class="s">"from"</span>: <span class="s">"bot"</span>,   <span class="s">"text"</span>: <span class="s">"Load-in time?"</span>&#125;,
+  &#123;<span class="s">"from"</span>: <span class="s">"venue"</span>, <span class="s">"subject"</span>: <span class="s">"Automatic reply: Advancing"</span>,
+   <span class="s">"text"</span>: <span class="s">"I'm out of office until Aug 20 with limited email access."</span>
+           <span class="s">"For urgent booking matters contact jamie@40watt.com."</span>&#125;
+],
+<span class="s">"expect"</span>: &#123;&#125;,                          <span class="c"># no fields should come back</span>
+<span class="s">"forbid"</span>: [<span class="s">"loadIn"</span>, <span class="s">"contact"</span>],       <span class="c"># and these two are traps</span>
+<span class="s">"expect_kind"</span>: <span class="s">"auto_reply"</span>
+
+<span class="c"># Every tier returns: &#123;"contact": "jamie@40watt.com"&#125;  ->  scores 0.5</span></pre>
+        </div>
         <div class="contrast">
           <div class="side naive">
             <div class="st">What money doesn't fix</div>
@@ -699,12 +759,24 @@
           </div>
           <div class="side built">
             <div class="st">What does: a dozen lines of code</div>
-            <p>In production <b>that email never reaches a model</b> — <code>_deterministic_reply_kind()</code> short-circuits the auto-reply signature first.</p>
-            <p>The bench <b>bypasses</b> that layer to isolate the model — which makes it the cleanest evidence the layer earns its place.</p>
+            <p>In production <b>that email never reaches a model</b>. <code>_deterministic_reply_kind()</code> matches the auto-reply signature and short-circuits first.</p>
+            <div class="snip" style="margin-top:12px">
+              <div class="sh"><span class="sf">api_routes.py</span><span class="st2">runs before any LLM call</span></div>
+              <pre><span class="k">def</span> <span class="f">_deterministic_reply_kind</span>(from_addr, subject, text):
+    <span class="s">"""Machine-signature replies, caught in CODE. No LLM, no ambiguity."""</span>
+    <span class="k">if</span> (<span class="s">"mailer-daemon"</span> <span class="k">in</span> fa <span class="k">or</span> <span class="s">"postmaster@"</span> <span class="k">in</span> fa
+            <span class="k">or</span> <span class="s">"undeliver"</span> <span class="k">in</span> sub <span class="k">or</span> <span class="s">"550 5.1.1"</span> <span class="k">in</span> tx):
+        <span class="k">return</span> <span class="s">"bounce"</span>
+    <span class="k">if</span> (<span class="s">"automatic reply"</span> <span class="k">in</span> sub <span class="k">or</span> <span class="s">"out of office"</span> <span class="k">in</span> sub
+            <span class="k">or</span> <span class="s">"auto-submitted"</span> <span class="k">in</span> tx[:<span class="s">200</span>]):
+        <span class="k">return</span> <span class="s">"auto_reply"</span>
+    <span class="k">return</span> <span class="s">""</span>   <span class="c"># empty means: let the model classify it</span></pre>
+            </div>
           </div>
         </div>
-        <div class="principle"><span class="wl">The buying rule</span>Spend on the model only where the model is the constraint. Here it isn't — accuracy is flat across a 5× price range, and the one real failure is answered by <b>code, not a bigger checkbook</b>. The money that would have gone to Opus buys nothing; an afternoon on a triage function bought the only point on the table.</div>
-        <div class="honest"><b>Limits:</b> ① Anthropic tiers only — no OpenAI key on that machine, so this doesn't re-litigate the primary; that's a <b>TODO, not a conclusion</b>. ② Single-pass, 32 cases — a one-case swing is 3 points. ③ Three models tying may mean <b>the set can't separate them</b>, which is a finding about my eval, not the models. Honest read: "no evidence the big model is better here," not "proof it couldn't be."</div>
+        <p class="snip-note">The bench deliberately <b>bypasses</b> that layer to isolate the model, which is what makes it the cleanest evidence I have that the layer earns its place.</p>
+        <div class="principle"><span class="wl">The buying rule</span>Spend on the model only where the model is the constraint. Here it isn't. Accuracy is flat across a 5× price range, and the one real failure is answered by code rather than a bigger checkbook. The money that would have gone to Opus buys nothing, while an afternoon spent on a triage function bought the only point on the table.</div>
+        <div class="honest"><b>Limits worth stating.</b> First, these are Anthropic tiers only. There was no OpenAI key on the machine that ran it, so this doesn't re-litigate the primary, and that's a TODO rather than a conclusion. Second, it's single-pass over 32 cases, so a one-case swing moves the number 3 points. Third, three models tying may mean <b>the set can't separate them</b>, which is a finding about my eval rather than about the models. The honest read is "no evidence the big model is better here," not "proof it couldn't be."</div>
       </div>
     </section>
 
@@ -712,39 +784,53 @@
     <section class="panel" id="stateng" data-rung="stateng">
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Depth · 04</span> The state engine</div>
-        <h2>Records, events, projections — why the views can't disagree</h2>
-        <p class="lede">Decisions 2 and 3 generalized into the engine now running the inbox. Every state bug we hit — a count saying 1 while the list said 0, a deleted venue leaving a ghost, old emails re-tagging a re-uploaded venue — had one root cause: <b>the same truth derived in more than one place.</b> The fix is a model, not a patch.</p>
+        <h2>Records, events, projections, and why the views can't disagree</h2>
+        <p class="lede">Decisions 2 and 3 generalized into the engine now running the inbox. Every state bug we hit had one root cause: a count saying 1 while the list said 0, a deleted venue leaving a ghost, old emails re-tagging a re-uploaded venue. In each case, <b>the same truth was derived in more than one place.</b> The fix is a model rather than a patch.</p>
         <div class="spec">
-          <div class="row"><span class="k">① Records</span><span class="v">The facts — a venue's row. The source of truth (Sheets today, Postgres next).</span></div>
-          <div class="row"><span class="k">② Events</span><span class="v">An append-only, timestamped log of what <i>happened</i> — sent, received, accepted, edited, <b>deleted (a tombstone, not erasure)</b> — each with an idempotency key.</span></div>
-          <div class="row"><span class="k">③ Projections</span><span class="v">Every "state" the UI shows is a <b>pure function</b> of records + events, computed in exactly one place. Chat and buttons read the same projection, so they <i>cannot</i> disagree.</span></div>
+          <div class="row"><span class="k">① Records</span><span class="v">The facts, meaning a venue's row. This is the source of truth: Sheets today, Postgres next.</span></div>
+          <div class="row"><span class="k">② Events</span><span class="v">An append-only, timestamped log of what <i>happened</i>: sent, received, accepted, edited, and <b>deleted as a tombstone rather than an erasure</b>. Each carries an idempotency key.</span></div>
+          <div class="row"><span class="k">③ Projections</span><span class="v">Every "state" the UI shows is a <b>pure function</b> of records plus events, computed in exactly one place. Chat and buttons read the same projection, so they <i>cannot</i> disagree.</span></div>
         </div>
         <div class="contrast">
           <div class="side naive">
             <div class="st">The bug this killed (shipped fix)</div>
-            <p>Delete a venue, re-upload it — and old emails re-tagged the new one. Two matchers in two endpoints, no time bound.</p>
-            <p><b>Fix, by construction:</b> one shared matcher (<code>_match_email_to_venue</code>), a <code>watch_since</code> stamp at creation, and a time-bound (<code>_watch_allows</code>) — a reply counts only if it postdates the venue. A re-upload is a new aggregate with a fresh cutoff, so prior events can't resurface.</p>
+            <p>Delete a venue, re-upload it, and old emails re-tagged the new one. Two matchers in two endpoints, with no time bound.</p>
+            <p><b>The fix, by construction:</b> one shared matcher (<code>_match_email_to_venue</code>), a <code>watch_since</code> stamp at creation, and a time bound (<code>_watch_allows</code>) so a reply only counts if it postdates the venue. A re-upload is a new aggregate with a fresh cutoff, so prior events can't resurface.</p>
           </div>
           <div class="side built">
             <div class="st">The invariants (each maps to a bug it prevents)</div>
-            <p>1 · one reducer per projection &nbsp;2 · idempotency keys (<code>message_id</code>, content-hash) &nbsp;3 · time-bounded projections &nbsp;4 · tombstone deletes &nbsp;5 · single-writer per aggregate + optimistic concurrency &nbsp;6 · read-your-writes for the actor, eventual for pollers.</p>
-            <p><b>Every mutation — chat, button, inbound email — goes through one gated <code>apply(event)</code></b>: idempotent, atomic (best-effort on Sheets, a transaction on Postgres), emitting which projections it invalidated. Cache invalidation is an output of the write, not a cron job hoping to catch up.</p>
+            <p>1 · one reducer per projection &nbsp;2 · idempotency keys (<code>message_id</code>, content-hash) &nbsp;3 · time-bounded projections &nbsp;4 · tombstone deletes &nbsp;5 · single-writer per aggregate with optimistic concurrency &nbsp;6 · read-your-writes for the actor, eventual for pollers.</p>
+            <p><b>Every mutation goes through one gated <code>apply(event)</code></b>, whether it came from chat, a button or an inbound email. It's idempotent, atomic (best-effort on Sheets, a transaction on Postgres), and it emits which projections it invalidated. Cache invalidation is an output of the write rather than a cron job hoping to catch up.</p>
           </div>
         </div>
+        <div class="snip">
+          <div class="sh"><span class="sf">test_inbox_tagging.py</span><span class="st2">identity precedence, 8 tests</span></div>
+          <pre><span class="c"># Each test pins one rule about which venue owns a message.</span>
+<span class="k">def</span> <span class="f">test_matcher_tags_fresh_mail_by_subject</span>():
+    <span class="k">assert</span> tag(TK, em(), ..., VENUES, EMAILS, <span class="k">set</span>(), &#123;&#125;) == <span class="s">"Bowery Ballroom"</span>
+
+<span class="k">def</span> <span class="f">test_watch_blocks_old_mail_from_matcher</span>():   <span class="c"># the re-upload fix</span>
+    watch = &#123;<span class="s">"bowery ballroom"</span>: NOW&#125;
+    <span class="k">assert</span> tag(TK, em(iso=OLD), ..., VENUES, EMAILS, <span class="k">set</span>(), watch) <span class="k">is None</span>
+
+<span class="k">def</span> <span class="f">test_not_started_venue_collects_nothing</span>():
+    <span class="k">assert</span> tag(TK, em(), ..., VENUES, EMAILS, &#123;<span class="s">"bowery ballroom"</span>&#125;, &#123;&#125;) <span class="k">is None</span></pre>
+        </div>
+        <p class="snip-note">The second test is the regression guard for the ghost-venue bug. Without the <code>watch_since</code> cutoff it returns "Bowery Ballroom" and the old thread attaches to the new venue.</p>
         <div class="contrast" style="margin-top:20px">
           <div class="side naive">
             <div class="st">Two sources of time (shipped fix)</div>
-            <p>Threads sorted wrong and an 8:11 PM send rendered as <b>"Aug 4, 12:11 AM."</b> Two row types carried two timestamp formats — Postgres ISO from the sent-store, RFC 2822 headers from Gmail — and <b>each browser parsed them differently</b>. The bug wasn't in either format; it was in having two.</p>
-            <p><b>Fix:</b> <code>_iso_norm</code> converts <i>any</i> timestamp to UTC ISO at the API boundary. One clock, one format — every browser sorts and localizes identically instead of guessing.</p>
+            <p>Threads sorted wrong, and an 8:11 PM send rendered as <b>"Aug 4, 12:11 AM."</b> Two row types carried two timestamp formats, Postgres ISO from the sent-store and RFC 2822 headers from Gmail, and <b>each browser parsed them differently</b>. The bug wasn't in either format. It was in having two.</p>
+            <p><b>The fix:</b> <code>_iso_norm</code> converts any timestamp to UTC ISO at the API boundary. One clock, one format, so every browser sorts and localizes identically instead of guessing.</p>
           </div>
           <div class="side built">
             <div class="st">One funnel for notes (shipped)</div>
-            <p>Venue Notes was written by <b>10+ scattered sites</b>, each inventing a row shape — bracket markers, watch timestamps stored as content, ad-hoc summaries — read back by regex guesswork. Same disease as the status column: many writers, no schema.</p>
-            <p><b>The funnel:</b> one <code>record_note</code> path, a <b>closed category set</b> (a typo'd category is an <i>error</i>, not a new kind), and <code>render_row</code>/<code>parse_meta</code> owning the wire format — emitting the <b>exact bracket convention legacy readers already regex for</b>. A schema without a migration; nothing downstream broke.</p>
+            <p>Venue Notes was written by <b>10+ scattered sites</b>, each inventing its own row shape: bracket markers, watch timestamps stored as content, ad-hoc summaries, all read back by regex guesswork. It's the same disease as the status column, which is many writers and no schema.</p>
+            <p><b>The funnel:</b> one <code>record_note</code> path, a <b>closed category set</b> where a typo'd category is an error rather than a new kind, and <code>render_row</code>/<code>parse_meta</code> owning the wire format. It emits the <b>exact bracket convention legacy readers already regex for</b>, so the format gained a schema without a migration and nothing downstream broke.</p>
           </div>
         </div>
-        <div class="principle"><span class="wl">Cost tie-in</span>Derive-on-read can't drift but recomputes every turn; <b>materialized projections</b> buy the compute back without giving up correctness — cached under a version key, refreshed only on write-driven invalidation. Correctness first, then cost, in that order.</div>
-        <p class="body" style="margin-top:16px"><b>Why it's a platform:</b> the engine is vertical-agnostic. A health vertical (Meridian) keeps the three layers, the funnel, and the invariants unchanged — it raises the gate policy, swaps Sheets for Postgres, and the event log doubles as the <b>compliance audit trail</b> for free. Same engine, harder rules.</p>
+        <div class="principle"><span class="wl">Cost tie-in</span>Derive-on-read can't drift, but it recomputes every turn. <b>Materialized projections</b> buy that compute back without giving up correctness: cached under a version key, refreshed only on write-driven invalidation. Correctness first, then cost, in that order.</div>
+        <p class="body" style="margin-top:16px"><b>Why it's a platform:</b> the engine is vertical-agnostic. A health vertical like Meridian keeps the three layers, the funnel and the invariants unchanged. It raises the gate policy, swaps Sheets for Postgres, and the event log doubles as the <b>compliance audit trail</b> for free. Same engine, harder rules.</p>
       </div>
     </section>
 
@@ -753,7 +839,7 @@
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Depth · 05</span> When the model breaks</div>
         <h2>The model is wrong sometimes. That's a design input, not a bug report.</h2>
-        <p class="lede">Reading a venue's email is the one place TM GO <i>must</i> use a model — free-form human text has no parser. So the useful question was never "is the model accurate?" but <b>which specific way does it fail, and what catches that one.</b></p>
+        <p class="lede">Reading a venue's email is the one place TM GO <i>must</i> use a model, because free-form human text has no parser. So the useful question was never "is the model accurate?" but <b>which specific way does it fail, and what catches that one.</b></p>
 
         <div class="metrics">
           <div class="metric"><div class="mv">59</div><div class="ml">Unit tests, seven suites</div></div>
@@ -766,7 +852,7 @@
         <div class="layers">
           <div class="layer before">
             <div class="ln">Before the model</div>
-            <p>Machine mail never reaches the LLM. <b>Bounces and auto-replies matched in code</b> — <code>mailer-daemon</code>, <code>550 5.1.1</code>, "automatic reply" — and short-circuited.</p>
+            <p>Machine mail never reaches the LLM. <b>Bounces and auto-replies are matched in code</b> (<code>mailer-daemon</code>, <code>550 5.1.1</code>, "automatic reply") and short-circuited.</p>
             <div class="lt">removes the failure surface</div>
           </div>
           <div class="layer at">
@@ -776,7 +862,7 @@
           </div>
           <div class="layer after">
             <div class="ln">After the model</div>
-            <p>Nothing reaches a band's sheet without review, and a <code>problem</code> verdict <b>cannot write at all</b>. The model may raise an alarm; only a human acts on one.</p>
+            <p>Nothing reaches a band's sheet without review, and a <code>problem</code> verdict <b>cannot write at all</b>. The model may raise an alarm. Only a human acts on one.</p>
             <div class="lt">bounds the damage</div>
           </div>
         </div>
@@ -784,81 +870,81 @@
         <div class="fails">
           <div class="fail">
             <div class="fh"><span class="ft">It invents an answer</span><span class="tag score">scorer</span></div>
-            <p class="fw">Nobody mentioned parking; a plausible parking answer appears. The worst mode — a confident wrong fact reads like a right one.</p>
+            <p class="fw">Nobody mentioned parking; a plausible parking answer appears. It’s the worst mode, because a confident wrong fact reads exactly like a right one.</p>
             <p class="fc"><span class="lbl">Caught by</span> negative controls: 10 cases ship <code>forbid</code> fields that must come back <i>empty</i>, so hallucinations cost score like misses and <b>abstaining beats guessing</b>.</p>
           </div>
           <div class="fail">
             <div class="fh"><span class="ft">It answers for the wrong show</span><span class="tag test">golden case</span></div>
             <p class="fw">One reply, two dates: "Oct 16 at Bowery, doors 8; your Nov 2 at Music Hall, doors 7." A naive extractor takes the last number it saw.</p>
-            <p class="fc"><span class="lbl">Caught by</span> the <i>multi-show bleed</i> case — fails if <b>any</b> other venue's numbers come back. Staff genuinely batch replies.</p>
+            <p class="fc"><span class="lbl">Caught by</span> the <i>multi-show bleed</i> case, which fails if <b>any</b> other venue's numbers come back. Staff genuinely batch their replies.</p>
           </div>
           <div class="fail">
             <div class="fh"><span class="ft">It isn't a human at all</span><span class="tag code">code, pre-LLM</span></div>
             <p class="fw">An out-of-office is read as content, and "back on the 14th" becomes a load-in time.</p>
-            <p class="fc"><span class="lbl">Caught by</span> <code>_deterministic_reply_kind()</code> — it <b>deletes the failure mode</b> rather than prompting against it. <b>Measured:</b> every model tier fails this case; code is what fixes it.</p>
+            <p class="fc"><span class="lbl">Caught by</span> <code>_deterministic_reply_kind()</code>, which <b>deletes the failure mode</b> rather than prompting against it. <b>Measured:</b> every model tier fails this case, and code is what fixes it.</p>
           </div>
           <div class="fail">
             <div class="fh"><span class="ft">It misreads severity</span><span class="tag gate">structural gate</span></div>
-            <p class="fw">"We have to move your date" gets mined for fields and updates the sheet — while <i>the show is in jeopardy</i> never surfaces.</p>
+            <p class="fw">"We have to move your date" gets mined for fields and updates the sheet, while <i>the show is in jeopardy</i> never surfaces.</p>
             <p class="fc"><span class="lbl">Caught by</span> a five-way classification where <b><code>problem</code> is barred from producing updates</b>. Cancellations route to a human by construction.</p>
           </div>
           <div class="fail">
             <div class="fh"><span class="ft">It hears "no" as silence</span><span class="tag test">golden case</span></div>
             <p class="fw">"No catering, sorry" is dropped as a non-answer, so the system keeps asking and the band looks like it isn't listening.</p>
-            <p class="fc"><span class="lbl">Caught by</span> rule 4 — an explicit NO <b>is</b> an answer — tested with the nastiest phrasing I could write: <i>"I wish we had catering."</i></p>
+            <p class="fc"><span class="lbl">Caught by</span> rule 4, where an explicit NO <b>is</b> an answer, tested with the nastiest phrasing I could write: <i>"I wish we had catering."</i></p>
           </div>
           <div class="fail">
             <div class="fh"><span class="ft">The provider degrades</span><span class="tag score">scheduled eval</span></div>
-            <p class="fw">Quality drifts under a model update, or failover behaves differently than the primary — and no deploy tells you.</p>
+            <p class="fw">Quality drifts under a model update, or failover behaves differently than the primary, and no deploy tells you.</p>
             <p class="fc"><span class="lbl">Caught by</span> scoring <b>both providers</b> (100% each), rerun <b>weekly</b>. <i>Why a pinned name isn't a pinned model: see Evaluation.</i></p>
           </div>
           <div class="fail">
             <div class="fh"><span class="ft">The pipe breaks, not the model</span><span class="tag test">8 watcher tests</span></div>
-            <p class="fw">Least glamorous, most common: IMAP goes quiet, the server sends BYE, a handler throws and kills the watch loop. Replies stop; nothing looks broken.</p>
-            <p class="fc"><span class="lbl">Caught by</span> tests on the distinctions that bite — a quiet timeout is <b>not</b> mail, a refused IDLE raises <i>unsupported</i>, backoff doubles and caps, and <b>a handler error never kills the watch</b>.</p>
+            <p class="fw">The least glamorous and most common. IMAP goes quiet, the server sends BYE, or a handler throws and kills the watch loop. Replies stop, and nothing looks broken.</p>
+            <p class="fc"><span class="lbl">Caught by</span> tests on the distinctions that bite. A quiet timeout is <b>not</b> mail, a refused IDLE raises <i>unsupported</i>, backoff doubles and caps, and <b>a handler error never kills the watch</b>.</p>
           </div>
           <div class="fail">
             <div class="fh"><span class="ft">Right answer, wrong venue</span><span class="tag test">8 tagging tests</span></div>
-            <p class="fw">A perfect extraction attached to the wrong show — the state-engine bug class, arriving through the model's door.</p>
+            <p class="fw">A perfect extraction attached to the wrong show. It's the state-engine bug class, arriving through the model's door.</p>
             <p class="fc"><span class="lbl">Caught by</span> explicit precedence: a binding beats everything, <code>watch_since</code> blocks mail predating a re-uploaded venue, <b>fuzzy matching is opt-in</b>.</p>
           </div>
         </div>
 
-        <div class="principle"><span class="wl">The pattern</span>Read those eight down and one shape repeats: <b>the model proposes; code disposes.</b> None of it makes the model more accurate — it makes the model's mistakes <b>cheap</b>, the only property that survives contact with production.</div>
+        <div class="principle"><span class="wl">The pattern</span>Read those eight down and one shape repeats: <b>the model proposes; code disposes.</b> None of it makes the model more accurate. It makes the model's mistakes <b>cheap</b>, which is the only property that survives contact with production.</div>
 
-        <div class="honest"><b>Still thin:</b> 32 cases scored <i>once</i> measures capability, not consistency — an agent can pass once and still be flaky. The fix is multi-trial <code>pass^k</code> with paraphrase perturbations (built on <a href="/intelligence">another system</a>, not yet here). And generation has <b>2</b> judge-scored cases against extraction's 32 — the weakest part of the harness, and the next thing I'd grow.</div>
+        <div class="honest"><b>Still thin:</b> 32 cases scored <i>once</i> measures capability rather than consistency, and an agent can pass once and still be flaky. The fix is multi-trial <code>pass^k</code> with paraphrase perturbations, which I've built on <a href="/intelligence">another system</a> but not here yet. Generation also has <b>2</b> judge-scored cases against extraction's 32, which is the weakest part of the harness and the next thing I'd grow.</div>
       </div>
     </section>
 
     <section class="panel" id="scale" data-rung="scale">
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Forward · 02</span> Scaling path</div>
-        <h2>The scaling path — no longer just a plan</h2>
-        <p class="lede">This section used to say <i>"presented as a roadmap, not a current claim."</i> Most of it has since <strong>shipped</strong> — behind flags, fail-open, with the migration gated by measurement. Statuses below are per target, honestly marked.</p>
+        <h2>The scaling path, no longer just a plan</h2>
+        <p class="lede">This section used to say <i>"presented as a roadmap, not a current claim."</i> Most of it has since <strong>shipped</strong>, behind flags, fail-open, with the migration gated by measurement. The statuses below are per target and honestly marked.</p>
         <div class="road">
           <div class="col breaks">
             <div class="cl">Breaks first at 100×</div>
             <ul>
-              <li><b>Sheets as database</b> — quotas, no transactions</li>
+              <li><b>Sheets as database</b>, with quotas and no transactions</li>
               <li><b>IMAP polling</b> and cold starts</li>
               <li><b>Synchronous LLM calls</b> on the request path</li>
               <li>The <b>three-source inbox merge</b></li>
             </ul>
           </div>
           <div class="col target">
-            <div class="cl">Target architecture — status</div>
+            <div class="cl">Target architecture, with status</div>
             <ul>
-              <li><b>Postgres system-of-record</b> <span class="note">— shipped for venues + email state: shadow dual-write, backfill, a parity gate, reads cut over on <code>TMGO_STORE=db</code>; Sheets demoting to an export. Remaining domains still to migrate.</span></li>
-              <li><b>Queue + worker pool</b> <span class="note">— shipped: a Postgres-backed jobs table; workers claim via an atomic conditional update, so a racing pool has <b>exactly one winner — there's a test for the race</b>. Exponential backoff, dead-letter rows (never silently dropped). Runs in-process today (<code>TMGO_WORKERS</code>); promotes to a dedicated worker dyno with zero code change.</span></li>
-              <li><b>LLM gateway</b> <span class="note">— shipped on the one <code>traced_llm</code> seam: deterministic-call caching, per-tenant daily budgets, a usage endpoint. Failover was already there.</span></li>
-              <li><b>Event-driven email</b> <span class="note">— partial: the Gmail push receiver is live and feeds the worker queue (ack fast, process async); pub/sub + watch enablement remain.</span></li>
-              <li><b>Multi-tenant isolation</b> <span class="note">— row-level security enabled on all five Postgres tables; the eval gate runs in CI plus a weekly scheduled pass.</span></li>
+              <li><b>Postgres system-of-record</b> <span class="note">Shipped for venues and email state: shadow dual-write, backfill, a parity gate, and reads cut over on <code>TMGO_STORE=db</code>, with Sheets demoting to an export. Remaining domains still to migrate.</span></li>
+              <li><b>Queue + worker pool</b> <span class="note">Shipped as a Postgres-backed jobs table. Workers claim rows with an atomic conditional update, so a racing pool has <b>exactly one winner, and there's a test for the race</b>. Exponential backoff, dead-letter rows that are never silently dropped. It runs in-process today via <code>TMGO_WORKERS</code> and promotes to a dedicated worker dyno with zero code change.</span></li>
+              <li><b>LLM gateway</b> <span class="note">Shipped on the one <code>traced_llm</code> seam: deterministic-call caching, per-tenant daily budgets, and a usage endpoint. Failover was already there.</span></li>
+              <li><b>Event-driven email</b> <span class="note">Partial. The Gmail push receiver is live and feeds the worker queue, acking fast and processing async. Pub/sub and watch enablement remain.</span></li>
+              <li><b>Multi-tenant isolation</b> <span class="note">Row-level security is enabled on all five Postgres tables, and the eval gate runs in CI plus a weekly scheduled pass.</span></li>
             </ul>
           </div>
         </div>
-        <div class="principle"><span class="wl">The migration pattern</span>Strangler fig, gated by measurement: <b>shadow dual-write → backfill → parity endpoint proves the stores agree → flip the read flag → demote the old store to an export.</b> Every step is reversible and the whole thing is flag-gated and fail-open — deploying it changes nothing until a switch flips. Cutover is earned by a parity number, not asserted.</div>
+        <div class="principle"><span class="wl">The migration pattern</span>Strangler fig, gated by measurement: <b>shadow dual-write, backfill, a parity endpoint that proves the stores agree, flip the read flag, then demote the old store to an export.</b> Every step is reversible, and the whole thing is flag-gated and fail-open, so deploying it changes nothing until a switch flips. Cutover is earned by a parity number rather than asserted.</div>
         <div class="carry">
-          <div class="cf"><b>Carry forward:</b> deterministic-first design, provider failover, human-in-the-loop review, and the observability seam — the gateway and the queue were both built <i>on</i> existing seams, which is the proof the seams were real.</div>
+          <div class="cf"><b>Carry forward:</b> deterministic-first design, provider failover, human-in-the-loop review, and the observability seam. The gateway and the queue were both built <i>on</i> existing seams, which is the proof those seams were real.</div>
           <div class="rd"><b>Still to do:</b> finish the store migration's remaining domains, enable pub/sub for push, and promote the worker pool out of process under real multi-tenant load. Named so the shipped column stays honest.</div>
         </div>
       </div>
@@ -869,7 +955,7 @@
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Forward · 03</span> Summary</div>
         <h2>Summary</h2>
-        <p class="quote">TM Go is an autonomous tour-management agent for independent bands — advancing shows over email and SMS, drafting venue outreach, parsing free-form replies into structured logistics, and keeping each tour's records in sync. The central engineering decision was <strong>constraining the agent</strong>: a hand-authored LangGraph StateGraph replaces an open ReAct loop, with the model confined to drafting and parsing and all state, routing, and I/O implemented as deterministic code. It ships with production-reliability plumbing — provider failover, tolerant parsing, validated inputs, human-in-the-loop review — and a <strong>traced_llm observability layer that doubles as a closed-loop evaluation harness</strong>: every human correction becomes labeled data, and a CI gate blocks any change that reduces extraction accuracy.</p>
+        <p class="quote">TM Go is a tour-management agent for independent bands. It advances shows over email and SMS, drafts venue outreach, parses free-form replies into structured logistics, and keeps each tour's records in sync. The central engineering decision was <strong>constraining the agent</strong>: a hand-authored LangGraph StateGraph replaces an open ReAct loop, with the model confined to drafting and parsing while all state, routing and I/O run as deterministic code. It ships with production-reliability plumbing, including provider failover, tolerant parsing, validated inputs and human-in-the-loop review, plus a <strong>traced_llm observability layer that doubles as a closed-loop evaluation harness</strong>. Every human correction becomes labeled data, and a CI gate blocks any change that reduces extraction accuracy.</p>
         <div class="oneline"><span class="ql">One-line version</span><i>"I constrained an agent so it could be trusted with real data, then instrumented it so that every human correction became evaluation data gating deployment."</i></div>
         <div class="close-links">
           <a class="btn primary" href="https://toursync-deploy.vercel.app" target="_blank" rel="noopener">View the live application</a>
@@ -877,7 +963,7 @@
           <a class="btn" href="/RESUME_2026.pdf">Résumé</a>
           <a class="btn" href="mailto:austinnafe@aol.com">Contact</a>
         </div>
-        <p style="margin-top:36px;font-size:13px;color:var(--faint);max-width:60ch;line-height:1.75">🤖 Generated with AI, this one — I'll own it. The day one of these is my own typing, you won't need the disclaimer to tell. Fewer em-dashes, more typos. Trust me, you'll know.</p>
+        <p style="margin-top:36px;font-size:13px;color:var(--faint);max-width:60ch;line-height:1.75">🤖 Generated with AI, this one. I'll own it. The day one of these is my own typing, you won't need the disclaimer to tell. Fewer em-dashes, more typos. Trust me, you'll know.</p>
       </div>
     </section>
   </main>
