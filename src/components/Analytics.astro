@@ -1,27 +1,27 @@
 ---
 // Traffic + performance instrumentation, in one place.
 //
-// Vercel Web Analytics and Speed Insights are served from the deployment itself, so this
-// needs no npm dependency and no third-party domain. Both are cookieless and collect no
-// personal data, which means no consent banner is required.
+// Uses Vercel's official Astro components (@vercel/analytics, @vercel/speed-insights).
+// Both are cookieless and collect no personal data, so no consent banner is required.
+// Both must also be enabled in the Vercel dashboard: Project → Analytics → Enable, and
+// Project → Speed Insights → Enable.
 //
-// Both features must also be switched ON in the Vercel dashboard (Project → Analytics →
-// Enable, and Project → Speed Insights → Enable). Until then these scripts 404 harmlessly
-// and nothing is recorded.
-//
-// The events block below is progressive enhancement: it tells me which links a visitor
-// actually used and how far down a case study they read. It no-ops if the analytics
-// script hasn't loaded, so it can never break a page.
+// The events block is progressive enhancement. It records which links a visitor actually
+// used and how far down a page they read. It no-ops if the analytics script is blocked or
+// disabled, so it can never break a page.
+// aliased: a bare `Analytics` import collides with this file's own component name
+import VercelAnalytics from '@vercel/analytics/astro';
+import VercelSpeedInsights from '@vercel/speed-insights/astro';
+
 const { events = true } = Astro.props;
 ---
-<script defer src="/_vercel/insights/script.js"></script>
-<script defer src="/_vercel/speed-insights/script.js"></script>
+<VercelAnalytics />
+<VercelSpeedInsights />
 
 {events && (
   <script is:inline>
     (function () {
-      // window.va is Vercel's event queue. If analytics is disabled or blocked, this is a
-      // no-op rather than an error.
+      // window.va is Vercel's event queue, installed by the analytics script above.
       function track(name, data) {
         try { if (typeof window.va === 'function') window.va('event', { name: name, data: data || {} }); }
         catch (e) { /* never let instrumentation break the page */ }
