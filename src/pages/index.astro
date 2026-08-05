@@ -1,5 +1,6 @@
 ---
 // src/pages/index.astro
+import Analytics from '../components/Analytics.astro';
 ---
 
 <!DOCTYPE html>
@@ -28,8 +29,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Fraunces:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Lora:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Serif:wght@400;700&family=IBM+Plex+Mono:wght@400;700&family=JetBrains+Mono:wght@400;700&family=Caveat:wght@400;700&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
 
-  <!-- Vercel Web Analytics — auto-enabled once you flip the toggle in your Vercel project's Analytics tab. No token needed. -->
-  <script is:inline defer src="/_vercel/insights/script.js"></script>
 
   <style>
     * {
@@ -8996,5 +8995,6 @@
       if (e.target === cmdOverlay) closeCmd();
     });
   </script>
+<Analytics />
 </body>
 </html>

@@ -1,0 +1,61 @@
+---
+// Traffic + performance instrumentation, in one place.
+//
+// Vercel Web Analytics and Speed Insights are served from the deployment itself, so this
+// needs no npm dependency and no third-party domain. Both are cookieless and collect no
+// personal data, which means no consent banner is required.
+//
+// Both features must also be switched ON in the Vercel dashboard (Project → Analytics →
+// Enable, and Project → Speed Insights → Enable). Until then these scripts 404 harmlessly
+// and nothing is recorded.
+//
+// The events block below is progressive enhancement: it tells me which links a visitor
+// actually used and how far down a case study they read. It no-ops if the analytics
+// script hasn't loaded, so it can never break a page.
+const { events = true } = Astro.props;
+---
+<script defer src="/_vercel/insights/script.js"></script>
+<script defer src="/_vercel/speed-insights/script.js"></script>
+
+{events && (
+  <script is:inline>
+    (function () {
+      // window.va is Vercel's event queue. If analytics is disabled or blocked, this is a
+      // no-op rather than an error.
+      function track(name, data) {
+        try { if (typeof window.va === 'function') window.va('event', { name: name, data: data || {} }); }
+        catch (e) { /* never let instrumentation break the page */ }
+      }
+
+      // 1. Outbound and asset clicks: which proof did they actually open?
+      document.addEventListener('click', function (e) {
+        var a = e.target && e.target.closest ? e.target.closest('a') : null;
+        if (!a || !a.href) return;
+        var href = a.getAttribute('href') || '';
+        if (href.endsWith('.pdf')) return track('resume_open', { href: href });
+        if (/^mailto:/.test(href)) return track('email_click', {});
+        if (/^https?:/.test(href) && a.host !== location.host) {
+          track('outbound', { host: a.host, href: href.slice(0, 120) });
+        }
+      }, { passive: true });
+
+      // 2. Read depth: a case study nobody scrolls is a case study nobody read.
+      var marks = [25, 50, 75, 100], fired = {};
+      function onScroll() {
+        var h = document.documentElement;
+        var max = h.scrollHeight - h.clientHeight;
+        if (max <= 0) return;
+        var pct = (h.scrollTop / max) * 100;
+        for (var i = 0; i < marks.length; i++) {
+          var m = marks[i];
+          if (pct >= m && !fired[m]) {
+            fired[m] = true;
+            track('read_depth', { page: location.pathname, depth: m });
+          }
+        }
+      }
+      addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    })();
+  </script>
+)}
