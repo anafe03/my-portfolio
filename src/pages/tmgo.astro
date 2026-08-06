@@ -778,7 +778,22 @@ import Analytics from '../components/Analytics.astro';
         </div>
         <p class="snip-note">The bench deliberately <b>bypasses</b> that layer to isolate the model, which is what makes it the cleanest evidence I have that the layer earns its place.</p>
         <div class="principle"><span class="wl">The buying rule</span>Spend on the model only where the model is the constraint. Here it isn't. Accuracy is flat across a 5× price range, and the one real failure is answered by code rather than a bigger checkbook. The money that would have gone to Opus buys nothing, while an afternoon spent on a triage function bought the only point on the table.</div>
-        <div class="honest"><b>Limits worth stating.</b> First, these are Anthropic tiers only. There was no OpenAI key on the machine that ran it, so this doesn't re-litigate the primary, and that's a TODO rather than a conclusion. Second, it's single-pass over 32 cases, so a one-case swing moves the number 3 points. Third, three models tying may mean <b>the set can't separate them</b>, which is a finding about my eval rather than about the models. The honest read is "no evidence the big model is better here," not "proof it couldn't be."</div>
+        <div class="honest"><b>Limits worth stating.</b> This run covered the Anthropic tiers on a 32-case set, single-pass, so a one-case swing moves the number 3 points. And three models tying may mean <b>the set can't separate them</b>, which is a finding about my eval rather than about the models. The honest read is "no evidence the big model is better here," not "proof it couldn't be."</div>
+
+        <h3 style="margin-top:38px;font-size:1.15rem">Then I ran the same test on the provider we actually pay</h3>
+        <p class="body">The bench above graded the failover side. The primary is OpenAI, and production sets <code>EXTRACT_MODEL</code> to <b>gpt-4o</b> because extraction touches real tour data and the expensive model felt like the safe choice. Same 42 golden chains, same production prompt, same scorer, both tiers:</p>
+
+        <div class="problem" style="margin-top:20px"><span class="pl">The result</span><b>gpt-4o costs 17.3× what gpt-4o-mini costs, scores exactly the same 100%, and isn't even faster</b> (0.86s vs 0.97s per call, which is inside the noise). The expensive tier is buying nothing here except the feeling of having chosen it.</div>
+
+        <p class="body">That's a live config change worth making: extraction can move to the cheap tier and the eval gate is what makes the downgrade safe rather than a gamble. The full graphic, generated from the run data:</p>
+        <div style="border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#0a0e26;box-shadow:0 10px 30px rgba(26,37,64,.18)">
+          <iframe src="/model-comparison.html" title="TM Go model comparison"
+                  style="width:100%;height:900px;border:0;display:block" loading="lazy"></iframe>
+        </div>
+        <p style="margin-top:10px;font-size:13px;color:var(--muted)">
+          <a href="/model-comparison.html" target="_blank" rel="noopener">Open the comparison full-screen →</a>
+        </p>
+        <div class="honest"><b>Why the comparison is half-finished, stated plainly:</b> the Anthropic row in that graphic reads <i>unavailable</i>, because the account hit its credit limit during this work. It renders as a blank row rather than a zero, which matters: an earlier version of this harness scored unreachable models as 0.0 and produced a confident, entirely false result. A cross-provider head-to-head on one identical case set is still owed.</div>
       </div>
     </section>
 
