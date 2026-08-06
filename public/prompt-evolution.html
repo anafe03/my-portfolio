@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TM GO — how the prompt learned</title>
+<style>
+  :root { --bg:#0a0e26; --card:#0e1230; --line:#232a55; --ink:#eaeeff;
+    --text:#c3cbef; --dim:#8a93bd; --pink:#ff3399; --green:#3ecf8e; --amber:#ffb020;
+    --mono:ui-monospace,"SF Mono",Menlo,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif; }
+  * { box-sizing:border-box } body { margin:0 }
+  body { background:radial-gradient(120% 80% at 50% -8%,#161c46 0%,rgba(10,14,38,0) 58%),var(--bg);
+    color:var(--text); font-family:var(--sans); padding:0 20px 80px; }
+  .wrap { max-width:900px; margin:0 auto }
+  .eyebrow { font-family:var(--mono); font-size:12px; letter-spacing:.22em; text-transform:uppercase;
+    color:#ff77bb; padding-top:40px }
+  h1 { font-size:clamp(1.9rem,5vw,2.9rem); line-height:1.05; letter-spacing:-.028em;
+    color:var(--ink); margin:.3em 0 0; font-weight:800 }
+  .sub { color:var(--text); font-size:1.05rem; line-height:1.55; margin-top:16px; max-width:68ch }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px;
+    padding:20px; margin-top:18px }
+  .head { display:flex; align-items:center; justify-content:space-between; gap:12px }
+  .stage { font-family:var(--mono); font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--dim) }
+  .badge { font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase;
+    padding:3px 9px; border-radius:999px; border:1px solid }
+  .badge.promoted { color:var(--green); border-color:#2f8f5f; background:#0d2a1e }
+  .badge.baseline { color:var(--dim); border-color:var(--line); background:#0b0f26 }
+  .badge.rejected { color:var(--amber); border-color:#c79210; background:#2a2008 }
+  .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line);
+    border:1px solid var(--line); border-radius:10px; overflow:hidden; margin:14px 0 }
+  .stats div { background:#0f1436; padding:12px }
+  .stats b { display:block; font-family:var(--mono); font-size:1.35rem; color:var(--ink);
+    font-variant-numeric:tabular-nums }
+  .stats small { color:var(--dim); font-size:11px }
+  .why { color:var(--text); font-size:14.5px; line-height:1.55; margin:0 0 12px }
+  .gain { font-family:var(--mono); color:var(--green); font-size:12px }
+  .row { display:flex; gap:10px; align-items:baseline; margin-top:6px; flex-wrap:wrap }
+  .lbl { font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:.1em;
+    color:var(--dim); min-width:64px }
+  .chip { font-family:var(--mono); font-size:11px; padding:2px 8px; border-radius:999px;
+    border:1px solid var(--line); margin-right:5px; display:inline-block }
+  .chip.bad { color:#ff8888; border-color:#ff505055 }
+  .chip.ok { color:var(--green); border-color:#2f8f5f55 }
+  .chip.warn { color:var(--amber); border-color:#c7921055 }
+  .diff { margin-top:14px; border:1px solid var(--line); border-radius:10px; overflow:auto;
+    font-family:var(--mono); font-size:12px; line-height:1.5 }
+  .l { padding:2px 12px; white-space:pre-wrap; word-break:break-word }
+  .l.add { background:rgba(62,207,142,.10); color:#bff0d4 }
+  .l.del { background:rgba(255,80,80,.10); color:#ffb3b3 }
+  .l.ctx { color:var(--dim) }
+  details { margin-top:12px } summary { cursor:pointer; font-family:var(--mono); font-size:12px; color:#ff77bb }
+  pre { white-space:pre-wrap; word-break:break-word; background:#0b0f26; border:1px solid var(--line);
+    border-radius:8px; padding:12px; font-size:11.5px; color:var(--text); overflow:auto; max-height:340px }
+  footer { margin-top:40px; padding-top:20px; border-top:1px solid var(--line);
+    font-family:var(--mono); font-size:12px; color:var(--dim) }
+</style></head><body><div class="wrap">
+  <div class="eyebrow">TM GO · eval-driven prompts</div>
+  <h1>How the prompt learned.</h1>
+  <p class="sub">Every rule in the live extraction prompt exists because a test failed without it.
+  This is the actual record: the score, the case that broke, the rewrite that fixed it, and the diff.
+  Candidates are proposed by an optimizer model, scored on the <b>same</b> harness with repeat runs, and
+  promoted only on a real gain with no new instability — then a human reviews the diff before it ships.</p>
+  <p class="sub" style="color:var(--dim);font-size:14px">Best so far: <b style="color:var(--ink)">100.0%</b>
+  across the golden set. Generated from <code>evals/prompt_history.json</code>.</p>
+  
+        <section class="card">
+          <div class="head">
+            <span class="stage">baseline</span>
+            <span class="badge baseline">baseline</span>
+          </div>
+          <div class="stats">
+            <div><b>97.6%</b><small>mean score</small></div>
+            <div><b>98%</b><small>passed every run</small></div>
+            <div><b>1</b><small>failing case(s)</small></div>
+            <div><b>—</b><small>candidates tried</small></div>
+          </div>
+          <p class="why">current production prompt </p>
+          <div class="row"><span class="lbl">failing</span><div><span class="chip bad">Lincoln Hall</span></div></div>
+          <div class="row"><span class="lbl">stability</span><div><span class="chip ok">no flaky cases</span></div></div>
+          
+          <details><summary>Full prompt at this step</summary><pre>You read an email conversation between a touring band (US) and a venue. Pull the VENUE&#x27;s answers and map them to these sheet fields (keep the venue&#x27;s own wording as the value):
+{FIELD_SPEC}.
+{WANT_LINE}Rules — each one matters:
+1. Read IN CONTEXT — match each answer to the question it responds to (if we asked about catering and they said &#x27;ham &amp; cheese sandwiches&#x27;, that&#x27;s catering).
+2. Only the VENUE&#x27;s statements are answers. Never extract from the band&#x27;s own messages or from quoted copies of them inside a reply.
+3. The LATEST statement wins — if the venue corrects itself (&#x27;actually load-in is 3, not 2&#x27;), return the correction.
+4. An explicit NO **is an answer** — &#x27;no food provided&#x27;, &#x27;no wifi&#x27;, &#x27;no parking&#x27; → return that field with a clear negative like &#x27;None — not provided&#x27;. If they refuse but name an alternative (&#x27;no house backline, rental via XYZ&#x27;), keep both.
+5. A deferred or conditional answer IS an answer — &#x27;password given at load-in&#x27;, &#x27;parking only if you arrive before 5&#x27; → capture it as stated, qualifier and all.
+6. A question BACK to us is NOT an answer (&#x27;how many in your party?&#x27; answers nothing). Pleasantries and signatures answer nothing.
+7. Map colloquial times to the right field: &#x27;music at 8&#x27; → show; &#x27;hard curfew at 11&#x27; → curfew (not show); &#x27;doors 7:30&#x27; → doors.
+8. Never invent; omit any field the venue didn&#x27;t address.
+Also CLASSIFY the venue&#x27;s latest message as &quot;kind&quot;, exactly one of:
+  answer   — they answered/confirmed advancing details (even partially)
+  redirect — they point us to a DIFFERENT person/address for advancing (&#x27;wrong person&#x27;, &#x27;email production@…&#x27;, &#x27;I don&#x27;t handle this&#x27;) — put the new address/phone in &quot;redirect_to&quot; AND in updates.contact/promoterPhone
+  question — they only asked us something back, no answers
+  problem  — cancellation, postponement, date change, double-booking, payment dispute, or anything threatening the show. NEVER extract field updates from a problem message — a human must see it first
+  other    — spam, pleasantries, or unrelated content; no updates
+Return ONLY a JSON object: {&quot;kind&quot;: &quot;…&quot;, &quot;updates&quot;: {field: value}, &quot;redirect_to&quot;: &quot;&quot;}.</pre></details>
+        </section>
+        <section class="card">
+          <div class="head">
+            <span class="stage">iteration-1</span>
+            <span class="badge promoted">promoted</span>
+          </div>
+          <div class="stats">
+            <div><b>100.0%</b><small>mean score</small></div>
+            <div><b>100%</b><small>passed every run</small></div>
+            <div><b>0</b><small>failing case(s)</small></div>
+            <div><b>3</b><small>candidates tried</small></div>
+          </div>
+          <p class="why">I clarified that questions back to us, even if they contain a potential answer, should be classified as &#x27;question&#x27; and not provide updates. <span class="gain">+2.4 pts</span></p>
+          <div class="row"><span class="lbl">failing</span><div><span class="chip ok">all cases pass</span></div></div>
+          <div class="row"><span class="lbl">stability</span><div><span class="chip ok">no flaky cases</span></div></div>
+          <div class="diff"><div class="l ctx"> 5. A deferred or conditional answer IS an answer — &#x27;password given at load-in&#x27;, &#x27;parking only if you arrive before 5&#x27; → capture it as stated, qualifier and all.</div><div class="l del">-6. A question BACK to us is NOT an answer (&#x27;how many in your party?&#x27; answers nothing). Pleasantries and signatures answer nothing.</div><div class="l add">+6. A question BACK to us is NOT an answer (&#x27;how many in your party?&#x27; answers nothing). Even if the question suggests a potential answer (&#x27;Would 3pm work for load-in?&#x27;), it provides no confirmation. Pleasantries and signatures answer nothing.</div><div class="l ctx"> 7. Map colloquial times to the right field: &#x27;music at 8&#x27; → show; &#x27;hard curfew at 11&#x27; → curfew (not show); &#x27;doors 7:30&#x27; → doors.</div></div>
+          <details><summary>Full prompt at this step</summary><pre>You read an email conversation between a touring band (US) and a venue. Pull the VENUE&#x27;s answers and map them to these sheet fields (keep the venue&#x27;s own wording as the value):
+{FIELD_SPEC}.
+{WANT_LINE}Rules — each one matters:
+1. Read IN CONTEXT — match each answer to the question it responds to (if we asked about catering and they said &#x27;ham &amp; cheese sandwiches&#x27;, that&#x27;s catering).
+2. Only the VENUE&#x27;s statements are answers. Never extract from the band&#x27;s own messages or from quoted copies of them inside a reply.
+3. The LATEST statement wins — if the venue corrects itself (&#x27;actually load-in is 3, not 2&#x27;), return the correction.
+4. An explicit NO **is an answer** — &#x27;no food provided&#x27;, &#x27;no wifi&#x27;, &#x27;no parking&#x27; → return that field with a clear negative like &#x27;None — not provided&#x27;. If they refuse but name an alternative (&#x27;no house backline, rental via XYZ&#x27;), keep both.
+5. A deferred or conditional answer IS an answer — &#x27;password given at load-in&#x27;, &#x27;parking only if you arrive before 5&#x27; → capture it as stated, qualifier and all.
+6. A question BACK to us is NOT an answer (&#x27;how many in your party?&#x27; answers nothing). Even if the question suggests a potential answer (&#x27;Would 3pm work for load-in?&#x27;), it provides no confirmation. Pleasantries and signatures answer nothing.
+7. Map colloquial times to the right field: &#x27;music at 8&#x27; → show; &#x27;hard curfew at 11&#x27; → curfew (not show); &#x27;doors 7:30&#x27; → doors.
+8. Never invent; omit any field the venue didn&#x27;t address.
+Also CLASSIFY the venue&#x27;s latest message as &quot;kind&quot;, exactly one of:
+  answer   — they answered/confirmed advancing details (even partially)
+  redirect — they point us to a DIFFERENT person/address for advancing (&#x27;wrong person&#x27;, &#x27;email production@…&#x27;, &#x27;I don&#x27;t handle this&#x27;) — put the new address/phone in &quot;redirect_to&quot; AND in updates.contact/promoterPhone
+  question — they only asked us something back, no answers
+  problem  — cancellation, postponement, date change, double-booking, payment dispute, or anything threatening the show. NEVER extract field updates from a problem message — a human must see it first
+  other    — spam, pleasantries, or unrelated content; no updates
+Return ONLY a JSON object: {&quot;kind&quot;: &quot;…&quot;, &quot;updates&quot;: {field: value}, &quot;redirect_to&quot;: &quot;&quot;}.</pre></details>
+        </section>
+  <footer>🎸 TM GO — the prompt is an artifact of the test suite, not of taste.</footer>
+</div></body></html>

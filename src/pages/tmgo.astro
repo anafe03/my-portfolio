@@ -347,6 +347,7 @@ import Analytics from '../components/Analytics.astro';
       <li><button class="rail-item" data-goto="cost"><span class="rn">10</span> Token economics</button></li>
       <li><button class="rail-item" data-goto="stateng"><span class="rn">11</span> The state engine</button></li>
       <li><button class="rail-item" data-goto="modelbreaks"><span class="rn">12</span> When the model breaks</button></li>
+      <li><button class="rail-item" data-goto="evolve"><span class="rn">13</span> How the prompt learned</button></li>
       <li class="rail-div">Forward</li>
       <li><button class="rail-item" data-goto="scale"><span class="rn">02</span> Scaling path</button></li>
       <li><button class="rail-item" data-goto="talk"><span class="rn">03</span> Summary</button></li>
@@ -917,6 +918,57 @@ import Analytics from '../components/Analytics.astro';
       </div>
     </section>
 
+    <!-- PROMPT EVOLUTION -->
+    <section class="panel alt" id="evolve" data-rung="evolve">
+      <div class="panel-inner reveal">
+        <div class="eyebrow"><span class="sec">Depth · 06</span> How the prompt learned</div>
+        <h2>The prompt is an artifact of the test suite, not of taste</h2>
+        <p class="lede">The usual way a prompt gets written is somebody tries wording until the demo looks good, and nobody can say later why any particular sentence is in there. This one has a paper trail. Every rule exists because a case failed without it, and the optimizer that proposes changes is scored by the same harness that gates the build.</p>
+
+        <p class="body">The loop runs in four steps:</p>
+        <div class="spec">
+          <div class="row"><span class="k">① Score</span><span class="v">Run the current production prompt over the golden set with <b>repeat runs</b>, and record which cases fail and which are unstable across runs.</span></div>
+          <div class="row"><span class="k">② Propose</span><span class="v">Hand the failures, the expected answers and the current prompt to an optimizer model. It's told to make the smallest edit that fixes the failure, keep the output contract identical, and never instruct the model to guess.</span></div>
+          <div class="row"><span class="k">③ Compare</span><span class="v">Score every candidate on the same harness. A candidate is promoted only on a <b>real gain with no new instability</b>, so a prompt that wins a point and introduces a flaky case is rejected.</span></div>
+          <div class="row"><span class="k">④ Ship</span><span class="v">A human reads the diff before it goes live. The optimizer finds the fix, a person decides whether it's the right fix.</span></div>
+        </div>
+
+        <div class="metrics">
+          <div class="metric"><div class="mv">97.6%</div><div class="ml">Baseline mean score</div></div>
+          <div class="metric"><div class="mv green">100%</div><div class="ml">After one iteration</div></div>
+          <div class="metric"><div class="mv">3</div><div class="ml">Candidates tried</div></div>
+          <div class="metric"><div class="mv">1</div><div class="ml">Rule actually changed</div></div>
+        </div>
+
+        <p class="body">The one failing case was <b>Lincoln Hall</b>, where the venue asked a question back that happened to contain a plausible answer. The extractor treated the suggestion as a confirmation. Here is the entire fix the optimizer proposed, and it is one sentence added to rule 6:</p>
+        <div class="snip">
+          <div class="sh"><span class="sf">the promoted diff</span><span class="st2">+2.4 points</span></div>
+          <pre><span class="c">  5. A deferred or conditional answer IS an answer...</span>
+<span class="s">- 6. A question BACK to us is NOT an answer ('how many in your party?'
+-    answers nothing). Pleasantries and signatures answer nothing.</span>
+<span class="f">+ 6. A question BACK to us is NOT an answer ('how many in your party?'
++    answers nothing). Even if the question suggests a potential answer
++    ('Would 3pm work for load-in?'), it provides no confirmation.
++    Pleasantries and signatures answer nothing.</span>
+<span class="c">  7. Map colloquial times to the right field...</span></pre>
+        </div>
+        <p class="snip-note">"Would 3pm work for load-in?" is a proposal, not a fact. Writing 3pm into a band's tour sheet because a venue floated it is exactly the class of error this system exists to prevent.</p>
+
+        <div class="principle"><span class="wl">Why this matters more than the two points</span>It makes the prompt <b>reviewable</b>. Any rule in it can be traced back to a specific failing case, so removing one is a decision with a known consequence rather than a guess. That is the difference between a prompt you maintain and a prompt you're afraid to touch.</div>
+
+        <p class="body"><b>The full record, generated from the run history:</b></p>
+        <div style="border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#0a0e26;box-shadow:0 10px 30px rgba(26,37,64,.18)">
+          <iframe src="/prompt-evolution.html" title="TM Go prompt evolution record"
+                  style="width:100%;height:720px;border:0;display:block" loading="lazy"></iframe>
+        </div>
+        <p style="margin-top:10px;font-size:13px;color:var(--muted)">
+          <a href="/prompt-evolution.html" target="_blank" rel="noopener">Open the full record →</a>
+        </p>
+
+        <div class="honest"><b>Scope, stated plainly:</b> this is one promoted iteration on a 42-case set, not a long optimization campaign. It also tunes against the same set that grades it, which is the standard trap: a real campaign needs a held-out split so a candidate has to prove itself on cases it never saw. The loop and the audit trail are the durable part. The 2.4 points are just the first thing it found.</div>
+      </div>
+    </section>
+
     <section class="panel" id="scale" data-rung="scale">
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Forward · 02</span> Scaling path</div>
@@ -1015,7 +1067,7 @@ import Analytics from '../components/Analytics.astro';
 
   var panels = [].slice.call(document.querySelectorAll('.panel'));
   var railItems = [].slice.call(document.querySelectorAll('.rail-item'));
-  var order = ['hero','diagram','stack','d1','d2','d3','d4','d5','d6','d7','intel','breaks','cost','stateng','modelbreaks','scale','talk'];
+  var order = ['hero','diagram','stack','d1','d2','d3','d4','d5','d6','d7','intel','breaks','cost','stateng','modelbreaks','evolve','scale','talk'];
   var progBar = document.getElementById('progBar');
   function railFor(r){ return railItems.find(function(b){ return b.getAttribute('data-goto')===r; }); }
   var ao = new IntersectionObserver(function (entries) {
