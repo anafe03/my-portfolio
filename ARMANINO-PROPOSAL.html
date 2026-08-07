@@ -70,6 +70,23 @@
   .arch .box.model .bt { color: #fff; }
   .arch .box .bs { color: var(--muted); }
   .arch .box.model .bs { color: #ffe9d6; }
+  .archkey { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 9px; font-size: 11px; color: var(--muted); }
+  .archkey i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+  .archkey .sw.model { background: var(--accent); }
+  .archkey .sw.det { background: #fff; border: 1px solid var(--line); }
+  .archkey .sw.gate { background: var(--green); }
+  /* built-already proof band */
+  .proof { border: 1px solid var(--line); border-left: 3px solid var(--green); border-radius: 8px;
+           padding: 14px 18px; margin-top: 16px; background: #fbfdfc; break-inside: avoid; }
+  .proof .pt { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+               color: var(--green); margin-bottom: 7px; }
+  .proof p { font-size: 13px; max-width: 70ch; }
+  .proof .nums { display: flex; flex-wrap: wrap; gap: 0; margin-top: 12px; border: 1px solid var(--line);
+                 border-radius: 7px; overflow: hidden; }
+  .proof .nums div { flex: 1; min-width: 120px; padding: 9px 12px; border-right: 1px solid var(--line-soft); background: #fff; }
+  .proof .nums div:last-child { border-right: none; }
+  .proof .nums b { display: block; font-size: 15px; color: var(--ink); font-weight: 700; }
+  .proof .nums span { font-size: 10.5px; color: var(--muted); }
   .arch-note { font-size: 13px; margin-top: 10px; }
   .arch-note b { color: var(--ink); }
   .guards { display: flex; flex-wrap: wrap; gap: 8px 10px; margin-top: 12px; }
@@ -195,13 +212,40 @@
   <div class="arch">
     <div class="box"><span class="bt">Documents in</span><span class="bs">charter, SPAs, exports</span></div>
     <div class="box"><span class="bt">Parse &amp; retrieve</span><span class="bs">chunk, index, permission</span></div>
-    <div class="box"><span class="bt">Extract or draft</span><span class="bs">the model — cites everything</span></div>
+    <div class="box model"><span class="bt">Extract or draft</span><span class="bs">the model — cites everything</span></div>
     <div class="box"><span class="bt">Facts + citations</span><span class="bs">typed store, source spans</span></div>
     <div class="box"><span class="bt">Deterministic writer</span><span class="bs">code, not a model</span></div>
     <div class="box"><span class="bt">Analyst surface</span><span class="bs">Excel tab · draft · list</span></div>
   </div>
+  <div class="archkey">
+    <span><i class="sw model"></i> the model, once</span>
+    <span><i class="sw det"></i> deterministic code, everywhere else</span>
+    <span><i class="sw gate"></i> a person approves before anything is trusted</span>
+  </div>
   <div class="arch-note"><b>The model occupies one box.</b> It reads and drafts — it never computes, and never writes anywhere a person can't see what it changed and why. Every reviewer override becomes the accuracy number, built from work your team already does.</div>
   <div class="arch-note" style="margin-top:8px;color:var(--muted)">Built the way I build regulated agents: retrieval with permissions, typed extraction schemas, a human review step before anything is trusted, and audit logging on every model call — so any output can be traced and defended.</div>
+
+  <div class="proof">
+    <div class="pt">Pattern 01 is not a sketch — I've built it</div>
+    <p>A working prototype already runs the cap-table pattern end to end: it reads a charter into
+    typed terms with each field cited to its article, an analyst confirms them, and a
+    <b>deterministic engine</b> computes the full breakpoint schedule from the confirmed terms.
+    The model never touches the math. Four approval gates, one per stage, and nothing moves
+    forward until a person clicks.</p>
+    <p style="margin-top:9px">The part worth your attention is that it runs on <b>a second company
+    it was never built against</b> — different account vocabulary, four times the scale, three
+    preferred classes instead of two, and a participating tranche with a cap. That's the difference
+    between a demo and a tool: the same machinery, a different client's file.</p>
+    <div class="nums">
+      <div><b>311</b><span>automated tests</span></div>
+      <div><b>4</b><span>human approval gates</span></div>
+      <div><b>2</b><span>unrelated client structures</span></div>
+      <div><b>0</b><span>model calls in the math</span></div>
+    </div>
+    <p style="margin-top:11px;color:var(--muted);font-size:12px">Runs on synthetic companies only —
+    no client data has touched it. I'd rather walk you through it live than send a video: fifteen
+    minutes, and you can hand it a structure it hasn't seen.</p>
+  </div>
 
   <h2>The pilot — one pattern, six weeks, a stop condition agreed up front</h2>
   <div class="scope"><span class="sc">One of the three patterns — we decide together, on the clearest ground truth and the highest leverage</span><span class="wk">6 weeks</span></div>
