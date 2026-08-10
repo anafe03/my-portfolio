@@ -341,13 +341,14 @@ import Analytics from '../components/Analytics.astro';
       <li><button class="rail-item" data-goto="d5"><span class="rn">05</span> Evaluation</button></li>
       <li><button class="rail-item" data-goto="d6"><span class="rn">06</span> Data model</button></li>
       <li><button class="rail-item" data-goto="d7"><span class="rn">07</span> Delivery</button></li>
+      <li><button class="rail-item" data-goto="d8"><span class="rn">08</span> Tenancy &amp; access</button></li>
       <li style="margin-top:10px;padding:2px 9px;font-family:var(--mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent)">Depth</li>
-      <li><button class="rail-item" data-goto="intel"><span class="rn">08</span> Where the intelligence lives</button></li>
-      <li><button class="rail-item" data-goto="breaks"><span class="rn">09</span> Failure modes &amp; options</button></li>
-      <li><button class="rail-item" data-goto="cost"><span class="rn">10</span> Token economics</button></li>
-      <li><button class="rail-item" data-goto="stateng"><span class="rn">11</span> The state engine</button></li>
-      <li><button class="rail-item" data-goto="modelbreaks"><span class="rn">12</span> When the model breaks</button></li>
-      <li><button class="rail-item" data-goto="evolve"><span class="rn">13</span> How the prompt learned</button></li>
+      <li><button class="rail-item" data-goto="intel"><span class="rn">09</span> Where the intelligence lives</button></li>
+      <li><button class="rail-item" data-goto="breaks"><span class="rn">10</span> Failure modes &amp; options</button></li>
+      <li><button class="rail-item" data-goto="cost"><span class="rn">11</span> Token economics</button></li>
+      <li><button class="rail-item" data-goto="stateng"><span class="rn">12</span> The state engine</button></li>
+      <li><button class="rail-item" data-goto="modelbreaks"><span class="rn">13</span> When the model breaks</button></li>
+      <li><button class="rail-item" data-goto="evolve"><span class="rn">14</span> How the prompt learned</button></li>
       <li class="rail-div">Forward</li>
       <li><button class="rail-item" data-goto="scale"><span class="rn">02</span> Scaling path</button></li>
       <li><button class="rail-item" data-goto="talk"><span class="rn">03</span> Summary</button></li>
@@ -372,9 +373,9 @@ import Analytics from '../components/Analytics.astro';
         </div>
         <div class="exec">
           <div class="cell"><div class="n">LangGraph</div><div class="l">Bounded state-machine agent, not an open loop</div></div>
-          <div class="cell"><div class="n">32</div><div class="l">Adversarial email-chain cases; 100% on both providers</div></div>
+          <div class="cell"><div class="n">61</div><div class="l">Adversarial email-chain cases, 27 with negative controls</div></div>
           <div class="cell"><div class="n">2</div><div class="l">LLM providers with automatic failover</div></div>
-          <div class="cell"><div class="n">59</div><div class="l">API routes; Pydantic-validated, containerized</div></div>
+          <div class="cell"><div class="n">64</div><div class="l">API routes, every one behind the tenancy guard</div></div>
         </div>
       </div>
     </section>
@@ -403,11 +404,12 @@ import Analytics from '../components/Analytics.astro';
         <p class="lede">The real deployed system, with prototype shortcuts named as such rather than hidden.</p>
         <div class="spec">
           <div class="row"><span class="k">Frontend</span><span class="v"><b>React + Vite</b>, deployed on Vercel</span></div>
-          <div class="row"><span class="k">API</span><span class="v"><b>Starlette, now FastAPI</b>. 59 routes, with Pydantic-validated AI endpoints and OpenAPI docs</span></div>
+          <div class="row"><span class="k">API</span><span class="v"><b>Starlette, now FastAPI</b>. 64 routes, with Pydantic-validated AI endpoints and OpenAPI docs</span></div>
           <div class="row"><span class="k">Agent core</span><span class="v"><b>LangGraph StateGraph</b>: a router dispatching to explicit, deterministic pipelines</span></div>
           <div class="row"><span class="k">LLM</span><span class="v">LangChain <code>init_chat_model</code>, OpenAI primary with <b>Anthropic failover</b></span></div>
           <div class="row"><span class="k">SMS</span><span class="v">FastAPI + <b>Twilio</b> webhook</span></div>
-          <div class="row"><span class="k">Data</span><span class="v"><b>Google Sheets</b> as each band's system of record, plus <b>Supabase Postgres</b> for auth, storage and AI telemetry. Postgres is also the <b>migration target</b>: venues and email state are dual-written behind a parity gate, with cutover on <code>TMGO_STORE=db</code></span></div>
+          <div class="row"><span class="k">Data</span><span class="v"><b>Supabase Postgres</b> for auth, storage, tenancy and AI telemetry. New tours are <b>DB-native</b>; onboarding no longer asks anyone to link a spreadsheet. <b>Google Sheets</b> survives only for tours already built on one, and is demoting to an <b>export</b> — venues, email state and the contract path have cut over behind a parity gate on <code>TMGO_STORE=db</code></span></div>
+          <div class="row"><span class="k">Access</span><span class="v">Every tour has an <b>owner and a member list</b>. All <b>64 routes</b> are wrapped at registration by one guard, and a test walks the real route table so an unwrapped endpoint fails the build. See Decision 08</span></div>
           <div class="row"><span class="k">Scheduler</span><span class="v"><b>Railway</b> cron worker for reminders</span></div>
           <div class="row"><span class="k">Reliability</span><span class="v"><code>traced_llm</code> observability, closed-loop evaluation, and an <code>/api/ai-health</code> dashboard</span></div>
           <div class="row"><span class="k">Delivery</span><span class="v"><b>GitHub Actions</b> CI (build, lint, eval gate) and Docker, with Vercel/Render auto-deploy</span></div>
@@ -524,7 +526,7 @@ import Analytics from '../components/Analytics.astro';
         </div>
 
         <h3 style="margin-top:34px;font-size:1.15rem">How the email path is actually tested</h3>
-        <p class="body">Email is where this product lives, and it's the layer with the most ways to fail <i>quietly</i>. Nobody files a bug for replies that never arrive. So it carries the most tests, <b>59 across seven suites</b>, and most of them are about telling apart states that look alike.</p>
+        <p class="body">Email is where this product lives, and it's the layer with the most ways to fail <i>quietly</i>. Nobody files a bug for replies that never arrive. The repo runs <b>141 tests across 12 suites</b>, and the email and extraction path holds the largest share of them — 16 on grounding, 8 on the watch loop, 8 on inbox tagging, 8 on the gateway. Most are about telling apart states that look alike.</p>
         <p class="body">IMAP IDLE is the clearest example. The protocol is full of lookalikes, so each distinction gets pinned:</p>
         <div class="snip">
           <div class="sh"><span class="sf">test_email_watcher.py</span><span class="st2">transport, 8 tests</span></div>
@@ -548,7 +550,7 @@ import Analytics from '../components/Analytics.astro';
         <p class="snip-note">The rest of that suite covers a server <code>BYE</code> raising a connection error, backoff that doubles and caps, and the one I care most about: <b>an exception in a handler never kills the watch loop</b>. One bad message must not silently end email ingestion.</p>
         <div class="spec" style="margin-top:24px">
           <div class="row"><span class="k">Identity <span class="muted">(8 tests)</span></span><span class="v">Which venue owns this message? The precedence is explicit and tested. An <b>explicit binding beats everything</b>, a sent thread <b>re-attaches after a re-upload</b>, <code>watch_since</code> blocks mail that predates the venue, a not-yet-started venue collects nothing, unrelated mail stays untagged, and <b>fuzzy matching runs only when asked for</b>.</span></div>
-          <div class="row"><span class="k">Comprehension <span class="muted">(32 golden chains)</span></span><span class="v">Adversarial threads: multi-show bleed, deal-term soup ("$500 against 80% of the door, settled by midnight"), mid-thread personnel handoffs, negation traps. <b>10 carry negative controls.</b> Broken down in <b>When the model breaks</b>.</span></div>
+          <div class="row"><span class="k">Comprehension <span class="muted">(61 golden chains)</span></span><span class="v">Adversarial threads: multi-show bleed, deal-term soup ("$500 against 80% of the door, settled by midnight"), mid-thread personnel handoffs, negation traps. <b>27 carry negative controls.</b> Broken down in <b>When the model breaks</b>.</span></div>
           <div class="row"><span class="k">Triage <span class="muted">(before the model)</span></span><span class="v">Bounces and out-of-office replies are caught by <b>signature matching in code</b> and never reach the LLM. Everything else is classified, and a <code>problem</code> verdict <b>can't write updates</b>.</span></div>
         </div>
       </div>
@@ -561,13 +563,13 @@ import Analytics from '../components/Analytics.astro';
         <h2>Measuring correctness, and learning from corrections</h2>
         <div class="feat-grid">
           <div class="feat"><h3>Online, a closed loop</h3><p>The human review step logs every accept, edit, and reject. Each correction is a labeled failure, which gives me a live dataset of the agent's weak points at <b>zero labeling cost</b>. Live misses get <b>promoted</b> into the golden set, so the harness grows from real traffic rather than my imagination.</p></div>
-          <div class="feat"><h3>Offline, a CI gate</h3><p>A golden-set harness scores field extraction and <b>fails the build below 80%</b>. It now holds <b>32 email-chain cases</b>, 10 of them with <b>negative controls</b>, so invented answers cost score and abstaining beats guessing. It reruns <b>weekly on a schedule</b>, because model drift doesn't wait for a commit.</p></div>
+          <div class="feat"><h3>Offline, a CI gate</h3><p>A golden-set harness scores field extraction and <b>fails the build below 80%</b>. It now holds <b>61 email-chain cases</b>, 27 of them with <b>negative controls</b>, so invented answers cost score and abstaining beats guessing. It reruns <b>weekly on a schedule</b>, because model drift doesn't wait for a commit.</p></div>
           <div class="feat"><h3>One tracing seam</h3><p><code>traced_llm</code> is the single point every model call passes through. It records endpoint, model, latency, tokens, estimated cost, and whether failover fired.</p></div>
         </div>
         <div class="metrics">
-          <div class="metric"><div class="mv green">100%</div><div class="ml">Golden set, both providers</div></div>
-          <div class="metric"><div class="mv">59</div><div class="ml">Unit tests, seven suites</div></div>
-          <div class="metric"><div class="mv">32 / 10</div><div class="ml">Chain cases / negative controls</div></div>
+          <div class="metric"><div class="mv green">100%</div><div class="ml">Last full pass, both providers</div></div>
+          <div class="metric"><div class="mv">141</div><div class="ml">Unit tests, 12 suites</div></div>
+          <div class="metric"><div class="mv">61 / 27</div><div class="ml">Chain cases / negative controls</div></div>
           <div class="metric"><div class="mv">Weekly</div><div class="ml">Scheduled eval rerun</div></div>
         </div>
         <h3 style="margin-top:30px;font-size:1.15rem">The flywheel: a button in the UI becomes a test case</h3>
@@ -647,6 +649,69 @@ import Analytics from '../components/Analytics.astro';
       </div>
     </section>
 
+    <!-- D8 -->
+    <section class="panel alt" id="d8" data-rung="d8">
+      <div class="panel-inner reveal">
+        <div class="eyebrow"><span class="sec">Decision 08</span> Tenancy</div>
+        <h2>The access boundary, and why signing in was never one</h2>
+        <p class="lede">Every table in the app is keyed by a tour id, and until this week <b>nothing anywhere recorded who owned it</b>. That's the last structural thing that had to land before real users, because after the first paying customer every migration here is a migration of somebody's live data.</p>
+
+        <div class="contrast">
+          <div class="side naive">
+            <div class="st">What authentication answered</div>
+            <p><b>Who are you.</b> And that's all it answered. With enforcement off, anyone could read any tour by passing its id. With enforcement <i>on</i>, any <b>signed-in</b> user still could.</p>
+            <p>For sheet-backed tours that id is the spreadsheet id, which travels in a URL. <b>It was never a secret to begin with.</b></p>
+          </div>
+          <div class="side built">
+            <div class="st">The second question</div>
+            <p><b>Is this yours.</b> A <code>tours</code> table with an owner, a <code>tour_members</code> table so a manager and a TM can share one tour, and a guard that answers exactly that, once per request.</p>
+            <p>Two gates, not one. Having only the first is the common shape of a false sense of safety.</p>
+          </div>
+        </div>
+
+        <p class="body">Three decisions in it are worth more than the schema:</p>
+        <div class="spec">
+          <div class="row"><span class="k">Claim on first use</span><span class="v"><b>No backfill, no downtime, no migration window.</b> A tour with no owner row is unclaimed, and the first authenticated caller to touch it becomes the owner. Existing tours keep working and acquire an owner the moment their owner next opens the app; a unique index on <code>tour_key</code> makes the race safe. Same strangler shape as the store cutover — expand, adopt, contract.</span></div>
+          <div class="row"><span class="k">Applied by wrapping routes</span><span class="v">All <b>64 routes</b> are wrapped at registration rather than each handler calling a helper. A check you have to <i>remember</i> will be missed on the next endpoint, and this codebase adds endpoints weekly. So the boundary isn't a habit — it's applied in one place, to everything, by construction.</span></div>
+          <div class="row"><span class="k">A wrapper, not middleware</span><span class="v">The guard reads the POST body to find the tour key, and <code>request.json()</code> caches on the <b>Request instance</b>. A wrapper hands that same instance to the handler, so the handler's own read hits the cache. <code>BaseHTTPMiddleware</code> builds a fresh Request downstream and the cache goes with it — <b>every POST handler would have seen an empty body</b>. There's a test for exactly that.</span></div>
+        </div>
+
+        <h3 style="margin-top:34px;font-size:1.15rem">The invariant: you can't add a route that skips the boundary</h3>
+        <p class="body">Wrapping at registration only holds if something <b>fails</b> when one slips through. So the suite walks the real route list rather than trusting the convention.</p>
+        <div class="snip">
+          <div class="sh"><span class="sf">test_tour_access.py</span><span class="st2">21 tests · this is the load-bearing one</span></div>
+          <pre><span class="k">def</span> <span class="f">test_every_registered_route_is_wrapped</span>():
+    <span class="s">"""A check you must remember to call WILL be missed on the next endpoint."""</span>
+    unwrapped = []
+    <span class="k">for</span> node <span class="k">in</span> ast.walk(tree):              <span class="s"># the real Route(...) list</span>
+        <span class="k">if</span> <span class="k">not</span> _is_api_route(node):
+            <span class="k">continue</span>
+        handler = node.args[<span class="s">1</span>]
+        <span class="k">if</span> <span class="k">not</span> _wrapped_in(handler, <span class="s">"guard_tour"</span>):
+            unwrapped.append(node.args[<span class="s">0</span>].value)
+    <span class="k">assert</span> <span class="k">not</span> unwrapped, (
+        <span class="s">"these routes bypass the tour boundary — wrap them: "</span> + <span class="s">", "</span>.join(unwrapped))</pre>
+        </div>
+        <p class="snip-note">The other 20 are the bypass attempts and the things that must <i>not</i> break: the key hidden in a POST body, the full spreadsheet URL, the <code>tour_key</code> alias, an anonymous caller, a second member who <b>should</b> get through, a claimed tour locking everyone else out afterwards, and the body surviving the check.</p>
+
+        <div class="contrast" style="margin-top:26px">
+          <div class="side naive">
+            <div class="st">The gate I debugged for an hour</div>
+            <p>Seven tables returned <code>42501</code> and I went looking at the key. <b>RLS and GRANT are different gates with opposite signatures:</b> RLS decides which <i>rows</i> a role sees and denies by returning zero rows; GRANT decides whether it may touch the <i>table</i> at all and denies with 42501.</p>
+            <p>Every schema file enabled row-level security and not one granted the table, so a perfectly valid key was refused everywhere. Health-check now branches on the key's own role claim and <b>names the gate that's actually shut</b>.</p>
+          </div>
+          <div class="side built">
+            <div class="st">So what actually isolates tenants</div>
+            <p><b>The guard, in code.</b> The API holds the service-role key, which bypasses RLS by design — so RLS is not what keeps tour A out of tour B, and saying it was would be the exact false assurance this whole page argues against.</p>
+            <p>RLS-with-no-policies is the <i>second</i> gate: it means a browser key reads nothing directly. Two mechanisms, two jobs, named separately.</p>
+          </div>
+        </div>
+
+        <div class="principle"><span class="wl">Principle</span>A boundary you have to remember is a convention. A boundary that fails the build when it's missing is an <b>invariant</b>. The difference is the whole reason this is applied at registration and tested against the real route table rather than documented in a README.</div>
+        <div class="honest"><b>Honest scope:</b> enforcement is tied to <code>AUTH_ENFORCE</code>, because with auth off there is no user to check against and turning this on alone would lock people out without securing anything. Claim-on-first-use also means the <i>first</i> caller wins — correct for a single-operator tour, and it would need an invite flow before a tour could legitimately have several owners from day one.</div>
+      </div>
+    </section>
+
     <!-- SCALE -->
     <!-- INTEL -->
     <section class="panel alt" id="intel" data-rung="intel">
@@ -706,7 +771,7 @@ import Analytics from '../components/Analytics.astro';
         <div class="principle"><span class="wl">Principle</span>Strategic cost design is architecture rather than discounts. Bound the loop, tier the models, cache the constants, budget the context, and meter everything so each lever's payoff is a measured number.</div>
 
         <h3 style="margin-top:38px;font-size:1.15rem">Which model should be making the call? I ran the experiment.</h3>
-        <p class="body">"Tier your models" is advice everyone repeats and nobody measures. So I built a bench, <code>scripts/model_cost_bench.py</code>. It scores the same 32 golden chains with the <b>production prompt lifted straight out of the running code</b>, across three tiers, recording accuracy, cost and latency in one pass.</p>
+        <p class="body">"Tier your models" is advice everyone repeats and nobody measures. So I built a bench, <code>scripts/model_cost_bench.py</code>. It scores the golden chains with the <b>production prompt lifted straight out of the running code</b>, across three tiers, recording accuracy, cost and latency in one pass. Each bench below is a <b>dated snapshot</b> — this one ran at 32 chains and the OpenAI run further down at 42, because the set has kept growing. What matters is that within a run, the only variable is the model.</p>
 
         <div class="bench">
           <div class="bpanel">
@@ -859,10 +924,10 @@ import Analytics from '../components/Analytics.astro';
         <p class="lede">Reading a venue's email is the one place TM GO <i>must</i> use a model, because free-form human text has no parser. So the useful question was never "is the model accurate?" but <b>which specific way does it fail, and what catches that one.</b></p>
 
         <div class="metrics">
-          <div class="metric"><div class="mv">59</div><div class="ml">Unit tests, seven suites</div></div>
-          <div class="metric"><div class="mv">32</div><div class="ml">Adversarial email-chain cases</div></div>
-          <div class="metric"><div class="mv">10</div><div class="ml">Carry negative controls</div></div>
-          <div class="metric"><div class="mv green">100%</div><div class="ml">On <i>both</i> providers</div></div>
+          <div class="metric"><div class="mv">141</div><div class="ml">Unit tests, 12 suites</div></div>
+          <div class="metric"><div class="mv">61</div><div class="ml">Adversarial email-chain cases</div></div>
+          <div class="metric"><div class="mv">27</div><div class="ml">Carry negative controls</div></div>
+          <div class="metric"><div class="mv green">100%</div><div class="ml">Last full pass, <i>both</i> providers</div></div>
         </div>
 
         <p class="body">Every defense sits in one of three places, and the place matters more than the cleverness:</p>
@@ -929,7 +994,7 @@ import Analytics from '../components/Analytics.astro';
 
         <div class="principle"><span class="wl">The pattern</span>Read those eight down and one shape repeats: <b>the model proposes; code disposes.</b> None of it makes the model more accurate. It makes the model's mistakes <b>cheap</b>, which is the only property that survives contact with production.</div>
 
-        <div class="honest"><b>Still thin:</b> 32 cases scored <i>once</i> measures capability rather than consistency, and an agent can pass once and still be flaky. The fix is multi-trial <code>pass^k</code> with paraphrase perturbations, which I've built on <a href="/intelligence">another system</a> but not here yet. Generation also has <b>2</b> judge-scored cases against extraction's 32, which is the weakest part of the harness and the next thing I'd grow.</div>
+        <div class="honest"><b>Consistency, not just capability:</b> a case scored <i>once</i> measures luck — an agent can pass on one run and still be flaky. So the harness reports <code>pass^k</code>, the share of cases that passed <b>every</b> run, alongside the mean. That's what caught the rule 11–13 ablation being worth <b>2 points of stability</b> and only 0.4 of accuracy, and it's the number I'd trust over a single green pass.<br><br><b>Still thin:</b> paraphrase perturbations cover <b>8 venues × 3 rewordings</b>, not the whole set, so a case I only ever phrased one way is still measuring my prose. Generation has <b>2</b> judge-scored cases against extraction's 61 — the weakest part of the harness and the next thing I'd grow.</div>
       </div>
     </section>
 
@@ -1006,7 +1071,7 @@ import Analytics from '../components/Analytics.astro';
               <li><b>Queue + worker pool</b> <span class="note">Shipped as a Postgres-backed jobs table. Workers claim rows with an atomic conditional update, so a racing pool has <b>exactly one winner, and there's a test for the race</b>. Exponential backoff, dead-letter rows that are never silently dropped. It runs in-process today via <code>TMGO_WORKERS</code> and promotes to a dedicated worker dyno with zero code change.</span></li>
               <li><b>LLM gateway</b> <span class="note">Shipped on the one <code>traced_llm</code> seam: deterministic-call caching, per-tenant daily budgets, and a usage endpoint. Failover was already there.</span></li>
               <li><b>Event-driven email</b> <span class="note">Partial. The Gmail push receiver is live and feeds the worker queue, acking fast and processing async. Pub/sub and watch enablement remain.</span></li>
-              <li><b>Multi-tenant isolation</b> <span class="note">Row-level security is enabled on all five Postgres tables, and the eval gate runs in CI plus a weekly scheduled pass.</span></li>
+              <li><b>Multi-tenant isolation</b> <span class="note">Shipped. Tours have an owner and a member list, and all <b>64 routes</b> are wrapped at registration by one guard, with a test that walks the real route table so an unwrapped endpoint fails the build. That guard is what isolates tenants — the API holds the service-role key, which bypasses RLS by design. RLS-with-no-policies is the second gate, and it's what stops a browser key reading anything directly. <b>Decision 08</b> has the detail.</span></li>
             </ul>
           </div>
         </div>
@@ -1023,7 +1088,7 @@ import Analytics from '../components/Analytics.astro';
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Forward · 03</span> Summary</div>
         <h2>Summary</h2>
-        <p class="quote">TM Go is a tour-management agent for independent bands. It advances shows over email and SMS, drafts venue outreach, parses free-form replies into structured logistics, and keeps each tour's records in sync. The central engineering decision was <strong>constraining the agent</strong>: a hand-authored LangGraph StateGraph replaces an open ReAct loop, with the model confined to drafting and parsing while all state, routing and I/O run as deterministic code. It ships with production-reliability plumbing, including provider failover, tolerant parsing, validated inputs and human-in-the-loop review, plus a <strong>traced_llm observability layer that doubles as a closed-loop evaluation harness</strong>. Every human correction becomes labeled data, and a CI gate blocks any change that reduces extraction accuracy.</p>
+        <p class="quote">TM Go is a tour-management agent for independent bands. It advances shows over email and SMS, drafts venue outreach, parses free-form replies into structured logistics, and keeps each tour's records in sync. The central engineering decision was <strong>constraining the agent</strong>: a hand-authored LangGraph StateGraph replaces an open ReAct loop, with the model confined to drafting and parsing while all state, routing and I/O run as deterministic code. It ships with production-reliability plumbing, including provider failover, tolerant parsing, validated inputs and human-in-the-loop review, plus a <strong>traced_llm observability layer that doubles as a closed-loop evaluation harness</strong>. Every human correction becomes labeled data, and a CI gate blocks any change that reduces extraction accuracy. Tenant isolation is <strong>structural rather than remembered</strong>: every tour has an owner, all 64 routes are wrapped by one guard at registration, and a test walks the real route table so an unwrapped endpoint fails the build.</p>
         <div class="oneline"><span class="ql">One-line version</span><i>"I constrained an agent so it could be trusted with real data, then instrumented it so that every human correction became evaluation data gating deployment."</i></div>
         <div class="close-links">
           <a class="btn primary" href="https://toursync-deploy.vercel.app" target="_blank" rel="noopener">View the live application</a>
@@ -1082,7 +1147,7 @@ import Analytics from '../components/Analytics.astro';
 
   var panels = [].slice.call(document.querySelectorAll('.panel'));
   var railItems = [].slice.call(document.querySelectorAll('.rail-item'));
-  var order = ['hero','diagram','stack','d1','d2','d3','d4','d5','d6','d7','intel','breaks','cost','stateng','modelbreaks','evolve','scale','talk'];
+  var order = ['hero','diagram','stack','d1','d2','d3','d4','d5','d6','d7','d8','intel','breaks','cost','stateng','modelbreaks','evolve','scale','talk'];
   var progBar = document.getElementById('progBar');
   function railFor(r){ return railItems.find(function(b){ return b.getAttribute('data-goto')===r; }); }
   var ao = new IntersectionObserver(function (entries) {
