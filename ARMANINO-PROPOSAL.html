@@ -85,6 +85,11 @@
                  border-radius: 7px; overflow: hidden; }
   .proof .nums div { flex: 1; min-width: 120px; padding: 9px 12px; border-right: 1px solid var(--line-soft); background: #fff; }
   .proof .nums div:last-child { border-right: none; }
+  .proof .evrow { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+  .proof .evrow div { flex: 1; min-width: 130px; border: 1px solid var(--line); border-radius: 7px;
+        padding: 9px 11px; background: #fff; }
+  .proof .evrow b { display: block; font-size: 15px; color: var(--green); font-weight: 700; }
+  .proof .evrow span { font-size: 10px; color: var(--muted); line-height: 1.45; display: block; margin-top: 2px; }
   .proof .nums b { display: block; font-size: 15px; color: var(--ink); font-weight: 700; }
   .proof .nums span { font-size: 10.5px; color: var(--muted); }
   .arch-note { font-size: 13px; margin-top: 10px; }
@@ -149,7 +154,7 @@
   <p class="lead">The judgment in a valuation — methodology, inputs, defensibility — is your team's, and stays that way. But that judgment is wrapped in a great deal of <strong>repeatable document and data labor</strong>: re-keying facts, drafting boilerplate, screening lists, tying out numbers, chasing intake. That labor is where AI helps. Below are three recurring shapes of it, each with one worked example.</p>
   <div class="premise"><b>The pattern is the asset.</b> Solve a shape once for 409A and the same machinery serves PPA, goodwill, and ESOP work at a fraction of the cost — inside this practice, on this P&amp;L.</div>
 
-  <h2>The three patterns</h2>
+  <h2>The three patterns — all three are built</h2>
 
   <div class="pattern">
     <div class="pnum">01</div>
@@ -166,7 +171,7 @@
         <div class="fb human"><span class="fl">Human</span>Reviews low-confidence rows</div>
       </div>
       <div class="floop"><span class="lp">↩</span> Every override feeds back — it becomes the accuracy number, and trains the model to stop asking about the rows the human keeps fixing.</div>
-      <div class="pmeta"><span><b>Measured by</b> field accuracy vs an analyst baseline on ten past deals.</span> <span class="never"><b>Never</b> chooses inputs or touches a model cell.</span> <span><b>Reuses on</b> PPA, ESOP, and litigation deal files.</span></div>
+      <div class="pmeta"><span><b>Measured by</b> field accuracy vs an analyst baseline on ten past deals. <b>Built:</b> 100% on a 47-field golden set, identical across repeat runs.</span> <span class="never"><b>Never</b> chooses inputs or touches a model cell.</span> <span><b>Reuses on</b> PPA, ESOP, and litigation deal files.</span></div>
     </div>
   </div>
 
@@ -185,7 +190,7 @@
         <div class="fb human"><span class="fl">Human</span>BD reviews &amp; sends</div>
       </div>
       <div class="floop"><span class="lp">↩</span> Every edit feeds back — the sent version becomes a new example, so the next draft starts closer to what you'd actually send.</div>
-      <div class="pmeta"><span><b>Measured by</b> hours to first draft; share of text surviving review; uncited claims (target zero).</span> <span class="never"><b>Never</b> chooses the sources or writes the conclusion.</span> <span><b>Reuses on</b> repeatable report sections — company description, methodology narrative.</span></div>
+      <div class="pmeta"><span><b>Measured by</b> hours to first draft; share of text surviving review; uncited claims (target zero). <b>Built:</b> drafts a reviewer's covering note from the findings alone — 8/8 drafts with zero uncited claims.</span> <span class="never"><b>Never</b> chooses the sources or writes the conclusion.</span> <span><b>Reuses on</b> repeatable report sections — company description, methodology narrative.</span></div>
     </div>
   </div>
 
@@ -204,7 +209,7 @@
         <div class="fb human"><span class="fl">Human</span>Accepts / edits / rejects</div>
       </div>
       <div class="floop"><span class="lp">↩</span> Every accept and reject feeds back — each becomes a labeled check, so the review gets sharper on the gaps your reviewers actually catch.</div>
-      <div class="pmeta"><span><b>Measured by</b> defects caught before review vs after; review cycles per report.</span> <span class="never"><b>Never</b> edits the report — it suggests, a human decides.</span></div>
+      <div class="pmeta"><span><b>Measured by</b> defects caught before review vs after; review cycles per report. <b>Built:</b> on a draft with four planted defects, caught both unreconciled figures and both missing disclosures, no false alarms.</span> <span class="never"><b>Never</b> edits the report — it suggests, a human decides.</span></div>
     </div>
   </div>
 
@@ -226,32 +231,56 @@
   <div class="arch-note" style="margin-top:8px;color:var(--muted)">Built the way I build regulated agents: retrieval with permissions, typed extraction schemas, a human review step before anything is trusted, and audit logging on every model call — so any output can be traced and defended.</div>
 
   <div class="proof">
-    <div class="pt">Pattern 01 is not a sketch — I've built it</div>
-    <p>A working prototype already runs the cap-table pattern end to end: it reads a charter into
-    typed terms with each field cited to its article, an analyst confirms them, and a
-    <b>deterministic engine</b> computes the full breakpoint schedule from the confirmed terms.
-    The model never touches the math. Four approval gates, one per stage, and nothing moves
-    forward until a person clicks.</p>
-    <p style="margin-top:9px">The part worth your attention is that it runs on <b>a second company
-    it was never built against</b> — different account vocabulary, four times the scale, three
-    preferred classes instead of two, and a participating tranche with a cap. That's the difference
-    between a demo and a tool: the same machinery, a different client's file.</p>
+    <div class="pt">All three patterns are built, and measured</div>
+    <p>A working prototype runs the full engagement: a folder of unlabelled documents goes in,
+    each file is identified and routed to the reader that suits it, and out come the terms, the
+    breakpoint schedule, a reviewed model and a drafted covering note. Four approval gates, one
+    per stage. <b>The model reads and drafts; it never computes.</b> The waterfall is
+    deterministic code, and the same tool runs on a second company it was never built against.</p>
+
+    <p style="margin-top:10px"><b>What is measured, not asserted:</b></p>
+    <div class="evrow">
+      <div><b>100%</b><span>Extraction accuracy<br>47/47 fields, 6/6 cases identical across 3 trials</span></div>
+      <div><b>100%</b><span>Review recall<br>caught 5/5 planted defects; precision 71%</span></div>
+      <div><b>73→92→100%</b><span>Mapping, as it learns<br>0 wrong mappings at every rung</span></div>
+      <div><b>0</b><span>Uncited claims in the drafted note<br>8/8 drafts clean</span></div>
+    </div>
+
+    <p style="margin-top:12px">The middle number is the one worth a minute of your time. Mapping a
+    client's chart of accounts starts at <b>73%</b> on the shipped dictionary, reaches <b>92%</b>
+    once the synonyms learned from real client files are added, and <b>100%</b> with a model asked
+    only about the lines the dictionary could not place. <b>Every analyst correction is a permanent
+    synonym</b>, so the middle rung is free, instant, and comes from work your team already does.
+    The model is the last rung, not the first.</p>
+
+    <p style="margin-top:10px">Compliance checking works the same way: figures in the narrative are
+    reconciled to the model arithmetically, and each required disclosure is checked by a model that
+    <b>must quote the sentence it relied on</b> — a claim of compliance with no findable quote is
+    downgraded to missing rather than trusted. On a draft with four planted defects it caught both
+    unreconciled figures and both missing disclosures, with no false alarms.</p>
+
     <div class="nums">
-      <div><b>311</b><span>automated tests</span></div>
+      <div><b>351</b><span>automated tests</span></div>
       <div><b>4</b><span>human approval gates</span></div>
       <div><b>2</b><span>unrelated client structures</span></div>
       <div><b>0</b><span>model calls in the math</span></div>
     </div>
     <p style="margin-top:11px;color:var(--muted);font-size:12px">Runs on synthetic companies only —
-    no client data has touched it. I'd rather walk you through it live than send a video: fifteen
-    minutes, and you can hand it a structure it hasn't seen.</p>
+    no client data has touched it, and the defects it finds were planted deliberately so the
+    reviewer has something to catch. I'd rather walk you through it live than send a video: fifteen
+    minutes, and you can hand it a document it has never seen.</p>
   </div>
 
   <h2>The pilot — one pattern, six weeks, a stop condition agreed up front</h2>
   <div class="scope"><span class="sc">One of the three patterns — we decide together, on the clearest ground truth and the highest leverage</span><span class="wk">6 weeks</span></div>
+  <p style="font-size:13px;margin-top:10px;max-width:70ch">The prototype means weeks 3–4 start from working
+  machinery rather than a blank page. <b>What it cannot start from is your ground truth</b>, and that is the
+  part that decides whether any of this is worth keeping. Everything measured above was measured against
+  invented companies. The pilot's first two weeks exist to replace those with real past engagements and a
+  reviewer's definition of "good" — which is also what turns the accuracy numbers from mine into yours.</p>
   <div class="phases">
     <div class="ph"><div class="pw">Weeks 1–2</div><div class="pt">Ground truth</div><div class="pd">A set of past examples with their known-good outputs; a reviewer defines "good."</div></div>
-    <div class="ph"><div class="pw">Weeks 3–4</div><div class="pt">Build</div><div class="pd">Build the tool for the chosen pattern — cited and evaluated throughout.</div></div>
+    <div class="ph"><div class="pw">Weeks 3–4</div><div class="pt">Build</div><div class="pd">Adapt the working prototype to your documents, your template and your review checklist — cited and evaluated throughout.</div></div>
     <div class="ph"><div class="pw">Week 5</div><div class="pt">Bake-off</div><div class="pd">Live engagements, side by side. Reviewer marks up blind.</div></div>
     <div class="ph"><div class="pw">Week 6</div><div class="pt">Decide</div><div class="pd">Go, adjust, or stop — on the numbers.</div></div>
   </div>
