@@ -100,16 +100,20 @@ import Analytics from '../components/Analytics.astro';
   .reveal.in { opacity: 1; transform: none; }
 
   /* staggered children — grids and tables deal themselves in rather than snapping as a block */
-  .reveal .spec .row, .reveal .feat, .reveal .metric, .reveal .fail,
+  .reveal .spec .row, .reveal .feat, .reveal .metric, .reveal .fail, .reveal .gnode,
   .reveal .layer, .reveal .bpanel, .reveal .side, .reveal .exec .cell, .reveal .road .col {
     opacity: 0; transform: translateY(12px);
     transition: opacity .5s cubic-bezier(.22,.61,.36,1), transform .5s cubic-bezier(.22,.61,.36,1),
                 border-color .18s ease, box-shadow .25s ease;
   }
-  .reveal.in .spec .row, .reveal.in .feat, .reveal.in .metric, .reveal.in .fail,
+  .reveal.in .spec .row, .reveal.in .feat, .reveal.in .metric, .reveal.in .fail, .reveal.in .gnode,
   .reveal.in .layer, .reveal.in .bpanel, .reveal.in .side, .reveal.in .exec .cell, .reveal.in .road .col {
     opacity: 1; transform: none;
   }
+  /* gates deal themselves left to right; the arrows sit between, hence the odd indices */
+  .reveal.in .gnode:nth-child(3) { transition-delay: .10s; }
+  .reveal.in .gnode:nth-child(5) { transition-delay: .20s; }
+  .reveal.in .gnode:nth-child(7) { transition-delay: .30s; }
   .reveal.in .spec .row:nth-child(1), .reveal.in .feat:nth-child(1), .reveal.in .metric:nth-child(1),
   .reveal.in .fail:nth-child(1), .reveal.in .layer:nth-child(1), .reveal.in .bpanel:nth-child(1),
   .reveal.in .exec .cell:nth-child(1) { transition-delay: .04s; }
@@ -128,7 +132,7 @@ import Analytics from '../components/Analytics.astro';
   .reveal.in .side:nth-child(2) { transition-delay: .12s; }
 
   /* hover: cards lift and warm their border — feedback, not decoration */
-  .feat:hover, .metric:hover, .fail:hover, .layer:hover, .bpanel:hover, .side:hover {
+  .feat:hover, .metric:hover, .fail:hover, .layer:hover, .bpanel:hover, .side:hover, .gnode:hover {
     transform: translateY(-3px); border-color: #d8c7a8;
     box-shadow: 0 2px 4px rgba(26,37,64,.05), 0 12px 28px rgba(26,37,64,.10);
   }
@@ -226,6 +230,27 @@ import Analytics from '../components/Analytics.astro';
   .fail .fc b { color: var(--ink); font-weight: 600; }
   .fail .fc .lbl { color: var(--green); font-weight: 700; }
 
+  /* the gates a request passes — one diagram, left to right */
+  .gates { display: flex; align-items: stretch; margin-top: 28px; }
+  .gnode { flex: 1 1 0; min-width: 0; border: 1px solid var(--line); border-radius: 12px;
+    background: var(--card); box-shadow: var(--shadow); padding: 17px 19px; }
+  .gnode.g2 { border-color: #f0c9ae; background: var(--accent-tint); }
+  /* the endpoints are context, the two gates are the content — so they get less room */
+  .gnode.edge { flex: 0.82 1 0; background: var(--alt); box-shadow: none; }
+  .gnode.edge .gk { font-size: 0.95rem; color: var(--muted); font-weight: 600; }
+  .gnode .gt { font-size: 10.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    display: flex; align-items: center; gap: 7px; color: var(--faint); }
+  .gnode .gt::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--faint); flex-shrink: 0; }
+  .gnode.g1 .gt { color: var(--green); } .gnode.g1 .gt::before { background: var(--green); }
+  .gnode.g2 .gt { color: var(--accent); } .gnode.g2 .gt::before { background: var(--accent); }
+  .gnode .gk { display: block; margin-top: 10px; font-size: 1rem; font-weight: 650; color: var(--ink); letter-spacing: -.008em; }
+  .gnode .gd { display: block; margin-top: 7px; font-size: 12.5px; color: var(--muted); line-height: 1.55; }
+  .gnode .gd b { color: var(--ink); font-weight: 600; }
+  .garrow { flex: 0 0 32px; display: grid; place-items: center; color: var(--faint); font-family: var(--mono); font-size: 15px; }
+  .garrow::before { content: "\2192"; }
+  .gates-note { margin-top: 12px; font-size: 13px; color: var(--muted); }
+  .gates-note b { color: var(--red); font-weight: 600; }
+
   /* code samples: real tests and cases, pulled from the repo */
   .snip { margin-top: 20px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #14202f; box-shadow: var(--shadow); }
   .snip .sh { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 9px 16px; background: #1a2840; border-bottom: 1px solid #26364f; }
@@ -289,6 +314,7 @@ import Analytics from '../components/Analytics.astro';
   @media (max-width: 920px) {
     .rail { display: none; } .progress { left: 0; } main { width: 100%; }
     .contrast, .road, .carry, .fails, .layers, .bench { grid-template-columns: 1fr; }
+    .gates { flex-direction: column; } .garrow { flex-basis: 26px; } .garrow::before { content: "\2193"; }
     .exec { grid-template-columns: repeat(2, 1fr); } .exec .cell:nth-child(2) { border-right: none; }
     .spec .row { grid-template-columns: 1fr; gap: 4px; }
     .panel { padding: 56px 22px; } body { font-size: 16px; }
@@ -317,7 +343,7 @@ import Analytics from '../components/Analytics.astro';
       { opacity: 1; transform: none; }
     .bfill { width: var(--w); }
     .eyebrow::after { transform: scaleX(1); }
-    .feat:hover, .metric:hover, .fail:hover, .layer:hover, .bpanel:hover, .side:hover { transform: none; }
+    .feat:hover, .metric:hover, .fail:hover, .layer:hover, .bpanel:hover, .side:hover, .gnode:hover { transform: none; }
   }
 </style>
 </head>
@@ -654,26 +680,40 @@ import Analytics from '../components/Analytics.astro';
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Decision 08</span> Tenancy</div>
         <h2>The access boundary, and why signing in was never one</h2>
-        <p class="lede">Every table in the app is keyed by a tour id, and until this week <b>nothing anywhere recorded who owned it</b>. That's the last structural thing that had to land before real users, because after the first paying customer every migration here is a migration of somebody's live data.</p>
+        <p class="lede">Every table in the app is keyed by a tour id, and until this week <b>nothing anywhere recorded who owned it</b>. Signing in proved who you were. It never proved the tour was yours.</p>
 
-        <div class="contrast">
-          <div class="side naive">
-            <div class="st">What authentication answered</div>
-            <p><b>Who are you.</b> And that's all it answered. With enforcement off, anyone could read any tour by passing its id. With enforcement <i>on</i>, any <b>signed-in</b> user still could.</p>
-            <p>For sheet-backed tours that id is the spreadsheet id, which travels in a URL. <b>It was never a secret to begin with.</b></p>
+        <div class="gates">
+          <div class="gnode edge">
+            <span class="gt">Request</span>
+            <span class="gk">Carries a tour id</span>
+            <span class="gd">In the query string, the POST body, or a whole spreadsheet URL. All three had to be covered.</span>
           </div>
-          <div class="side built">
-            <div class="st">The second question</div>
-            <p><b>Is this yours.</b> A <code>tours</code> table with an owner, a <code>tour_members</code> table so a manager and a TM can share one tour, and a guard that answers exactly that, once per request.</p>
-            <p>Two gates, not one. Having only the first is the common shape of a false sense of safety.</p>
+          <div class="garrow"></div>
+          <div class="gnode g1">
+            <span class="gt">Gate 1</span>
+            <span class="gk">Who are you?</span>
+            <span class="gd">Authentication, shipped earlier. Necessary, and on its own it changed nothing here — <b>any signed-in user could still read any tour</b> by passing its id.</span>
+          </div>
+          <div class="garrow"></div>
+          <div class="gnode g2">
+            <span class="gt">Gate 2</span>
+            <span class="gk">Is this yours?</span>
+            <span class="gd">Ownership, and the gap. A <code>tours</code> table with an owner and a member list, so a manager and a TM share one tour and nobody else can.</span>
+          </div>
+          <div class="garrow"></div>
+          <div class="gnode edge">
+            <span class="gt">Handler</span>
+            <span class="gk">64 of them</span>
+            <span class="gd">The boundary has to hold for every one — including the one added next week.</span>
           </div>
         </div>
+        <p class="gates-note"><b>Only the first gate existed</b> — and for sheet-backed tours the id <i>is</i> the spreadsheet id, which travels in a URL. It was never a secret to begin with.</p>
 
-        <p class="body">Three decisions in it are worth more than the schema:</p>
+        <p class="body">This was the last structural thing that had to land before real users: after the first paying customer, every migration here is a migration of somebody's live data. Three decisions in it matter more than the schema.</p>
         <div class="spec">
-          <div class="row"><span class="k">Claim on first use</span><span class="v"><b>No backfill, no downtime, no migration window.</b> A tour with no owner row is unclaimed, and the first authenticated caller to touch it becomes the owner. Existing tours keep working and acquire an owner the moment their owner next opens the app; a unique index on <code>tour_key</code> makes the race safe. Same strangler shape as the store cutover — expand, adopt, contract.</span></div>
-          <div class="row"><span class="k">Applied by wrapping routes</span><span class="v">All <b>64 routes</b> are wrapped at registration rather than each handler calling a helper. A check you have to <i>remember</i> will be missed on the next endpoint, and this codebase adds endpoints weekly. So the boundary isn't a habit — it's applied in one place, to everything, by construction.</span></div>
-          <div class="row"><span class="k">A wrapper, not middleware</span><span class="v">The guard reads the POST body to find the tour key, and <code>request.json()</code> caches on the <b>Request instance</b>. A wrapper hands that same instance to the handler, so the handler's own read hits the cache. <code>BaseHTTPMiddleware</code> builds a fresh Request downstream and the cache goes with it — <b>every POST handler would have seen an empty body</b>. There's a test for exactly that.</span></div>
+          <div class="row"><span class="k">Claim on first use</span><span class="v"><b>No backfill, no downtime, no migration window.</b> A tour with no owner row is unclaimed, and the first authenticated caller to touch it becomes the owner — a unique index on <code>tour_key</code> makes that race safe. Existing tours keep working and acquire an owner the moment their owner next opens the app. Same strangler shape as the store cutover: expand, adopt, contract.</span></div>
+          <div class="row"><span class="k">Wrapped at registration</span><span class="v">Not a helper each handler calls. <b>A check you have to remember will be missed on the next endpoint</b>, and this codebase adds endpoints weekly — so the boundary is applied in one place, to all 64 routes, by construction rather than by discipline.</span></div>
+          <div class="row"><span class="k">A wrapper, not middleware</span><span class="v">The guard reads the POST body to find the tour key, and <code>request.json()</code> caches on the <b>Request instance</b>. A wrapper hands that same instance down, so the handler's own read hits the cache. <code>BaseHTTPMiddleware</code> builds a fresh Request and the cache goes with it — <b>every POST handler would have seen an empty body</b>. There's a test for exactly that.</span></div>
         </div>
 
         <h3 style="margin-top:34px;font-size:1.15rem">The invariant: you can't add a route that skips the boundary</h3>
@@ -714,7 +754,7 @@ import Analytics from '../components/Analytics.astro';
 
     <!-- SCALE -->
     <!-- INTEL -->
-    <section class="panel alt" id="intel" data-rung="intel">
+    <section class="panel" id="intel" data-rung="intel">
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Depth · 01</span> Where the intelligence lives</div>
         <h2>Two LLM seams, and everything else is code</h2>
@@ -737,7 +777,7 @@ import Analytics from '../components/Analytics.astro';
     </section>
 
     <!-- BREAKS -->
-    <section class="panel" id="breaks" data-rung="breaks">
+    <section class="panel alt" id="breaks" data-rung="breaks">
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Depth · 02</span> Failure modes &amp; options</div>
         <h2>Where it breaks, where it doesn't, and the options when it does</h2>
@@ -756,7 +796,7 @@ import Analytics from '../components/Analytics.astro';
     </section>
 
     <!-- COST -->
-    <section class="panel alt" id="cost" data-rung="cost">
+    <section class="panel" id="cost" data-rung="cost">
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Depth · 03</span> Token economics</div>
         <h2>Cost as a designed number, not a surprise</h2>
@@ -863,7 +903,7 @@ import Analytics from '../components/Analytics.astro';
     </section>
 
     <!-- STATE ENGINE -->
-    <section class="panel" id="stateng" data-rung="stateng">
+    <section class="panel alt" id="stateng" data-rung="stateng">
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Depth · 04</span> The state engine</div>
         <h2>Records, events, projections, and why the views can't disagree</h2>
@@ -917,7 +957,7 @@ import Analytics from '../components/Analytics.astro';
     </section>
 
     <!-- WHEN THE MODEL BREAKS -->
-    <section class="panel alt" id="modelbreaks" data-rung="modelbreaks">
+    <section class="panel" id="modelbreaks" data-rung="modelbreaks">
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Depth · 05</span> When the model breaks</div>
         <h2>The model is wrong sometimes. That's a design input, not a bug report.</h2>
