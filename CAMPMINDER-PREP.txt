@@ -1,0 +1,624 @@
+CAMPMINDER — SENIOR AI PLATFORM ENGINEER
+Interview prep. Every number below is checked against the code.
+
+
+====================================================================
+NUMBERS TO QUOTE
+====================================================================
+
+Learn these five. They are the difference between sounding like someone
+who ran evals and someone who reads them.
+
+  GOLDEN SET
+  61 adversarial email chains, 27 negative controls, CI gate at 80%,
+  rerun weekly on a schedule.
+
+  PROMPT SATURATION
+  12 rules -> 89%.  13 rules -> 88%.  Guards moved into code -> 98%.
+  The thirteenth rule made it worse.
+
+  THE ABLATION THAT DISPROVED ME
+  Removing rules 11-13: 97.5% -> 97.1% mean, and 97% -> 95% pass^k.
+
+  HARNESS DISAGREEMENT
+  Same 42 cases: 100% offline vs 85.7% live. The offline one had drifted.
+
+  MODEL SPEND
+  gpt-4o costs 17.3x gpt-4o-mini and scores the same 100%.
+
+Secondary, if it goes there: three Claude tiers all scored 98.4% across a
+5x price range ($1.04 / $2.96 / $5.13 per 1,000 extractions; p50 1.02s /
+1.87s / 3.24s). Access boundary: 64 routes, 21 tests. Retrieval in the
+triage app: BM25 + embeddings fused with reciprocal-rank fusion, k=3.
+
+
+====================================================================
+ELEVATOR PITCH  (90 seconds)
+====================================================================
+
+I graduated from IU about five years ago. I came in as a business student
+with some programming background, realised quickly I wanted to be much
+more technical, moved into computer science and stayed for my master's.
+
+Then about three and a half years at PwC. I started in emerging
+technology — traditional ML, optimisation, simulation, AI research — and
+as generative AI took off I moved into our AI Factory. There I rotated
+across business units building AI systems for financial research, RFPs,
+document workflows, accounting, capital markets and forensics, and worked
+with cloud partners on generating compliant infrastructure.
+
+More recently I've been building products myself. TM Go is a
+tour-management platform for independent bands — it advances shows over
+email, and the engineering interest is that the agent is deliberately
+constrained: the model drafts and parses, code does everything else.
+
+I'm looking for a role that combines those — hands-on AI engineering,
+working directly with users and leadership, and building capability other
+teams reuse.
+
+  NOTE: say "deliberately constrained", not "agentic". Your best
+  architecture story is that you did NOT build an open-ended agent.
+  Leading with "agentic" sets up a contradiction you then walk back.
+
+
+====================================================================
+STORY 1 — TM GO, AGENT ARCHITECTURE
+====================================================================
+
+SITUATION
+TM Go is a tour-management platform for independent bands. Advancing a
+show means chasing venues over email for load-in, soundcheck, catering,
+parking, merch splits and contacts, then keeping every answer in sync
+across a tour.
+
+TASK
+Automate that coordination without an open-ended agent that could wander,
+make unpredictable tool calls, or write wrong information into a band's
+records.
+
+ACTION
+A hand-authored LangGraph StateGraph rather than a ReAct loop. A router
+classifies intent once, then dispatches to explicit deterministic
+pipelines. The model appears at exactly two seams, both genuine language
+problems: parsing a free-form venue reply into typed fields, and drafting
+the outbound message. Routing, state, validation, retries, scheduling and
+every write are ordinary Python.
+
+The safety property comes from the graph, not the prompt: send has
+exactly one inbound edge, from human approval.
+
+    Draft = LLM.  Approve = human.  Send = code.
+
+No router decision, no classification and no prompt injection can reach
+it, because there is no path.
+
+RESULT
+Predictable behaviour, debuggable failures, two model calls per advance
+cycle so cost scales with shows advanced rather than agent wandering, and
+a small blast radius when the model is wrong.
+
+TRADEOFF — state it first, don't wait to be asked
+Less flexible. A new capability means writing a pipeline, not prompting
+the agent to improvise one. The system can't handle a workflow nobody
+designed. For this product that is right; I'd reach for more agency when
+the path genuinely isn't knowable in advance.
+
+
+====================================================================
+STORY 2 — TM GO, EVALS AND RELIABILITY
+====================================================================
+
+SITUATION
+Reading a venue's email is the one place the system must use a model,
+because free-form human text has no parser. So the useful question was
+never "is it accurate" but WHICH SPECIFIC WAY DOES IT FAIL, AND WHAT
+CATCHES THAT ONE.
+
+TASK
+Make correctness a number that gates deploys.
+
+ACTION
+  - 61-case golden set of adversarial chains: multi-show bleed, deal-term
+    soup ("$500 against 80% of the door, settled by midnight"), mid-thread
+    personnel handoffs, negation traps.
+  - 27 negative controls — cases with forbid fields that must come back
+    empty, so a hallucination costs score exactly like a miss and
+    abstaining beats guessing.
+  - pass^k, not pass@1. One run per case measures luck; I report the share
+    that passed every run, because models are stochastic even at
+    temperature 0.
+  - A closed loop. The human review step logs every accept, edit and
+    reject. Each correction is a labelled failure at zero labelling cost,
+    and live misses get promoted into the golden set.
+  - CI and schedule. GitHub Actions runs the gate on every push and blocks
+    the merge below 80%. It also reruns weekly, because model drift
+    doesn't wait for a commit.
+
+RESULT
+Regressions can't merge, and the eval set grows from real traffic rather
+than my imagination.
+
+THE FINDING WORTH LEADING WITH
+The extractor was inventing values, so I wrote more prompt rules — and
+the score went DOWN. 12 rules 89%, 13 rules 88%, with previously-passing
+cases regressing. The prompt was saturated: attention is finite and each
+sentence dilutes the others. Moving the mechanical invariants into code
+took it to 98%.
+
+The line I drew: if it can be checked from the SHAPE of a value, it's
+code. If it needs MEANING, it stays in the prompt.
+
+THEN I DISPROVED MY OWN FOLLOW-UP CLAIM
+I'd written that the three moved rules were now dead weight. I measured
+it: 97.5% -> 97.1% mean, 97% -> 95% pass^k without them. Small, real, and
+mostly stability rather than accuracy.
+
+  "Move it to code and delete the prompt rule" was one step too far. The
+  prompt got the model closer; the code made it certain.
+
+IMPROVE — say it before they find it
+Generation has 2 judge-scored cases against extraction's 61. That's the
+weakest part of the harness and the next thing I'd grow.
+
+
+====================================================================
+STORY 3 — TM GO, THE ACCESS BOUNDARY
+====================================================================
+   *** Most relevant story you have for a company holding camp health
+       records, family data and finances. ***
+
+SITUATION
+Every table was keyed by a tour id, and nothing recorded who owned it.
+
+TASK
+Close it before real users, because after the first paying customer every
+migration is a migration of somebody's live data.
+
+ACTION
+The framing first: authentication answered "who are you", and that was
+all it answered. With enforcement off, anyone could read any tour by
+passing its id. With enforcement ON, any signed-in user still could. And
+for sheet-backed tours the id travels in a URL, so it was never secret.
+
+Three decisions worth more than the schema:
+
+  CLAIM ON FIRST USE
+  No backfill, no downtime. An unclaimed tour goes to the first
+  authenticated caller; a unique index makes the race safe; existing tours
+  acquire an owner the moment their owner next opens the app.
+
+  WRAPPED AT REGISTRATION, NOT A HELPER EACH HANDLER CALLS
+  A check you have to REMEMBER will be missed on the next endpoint, and
+  this codebase adds endpoints weekly. So it's applied in one place to all
+  64 routes, and a test walks the real route table and fails the build if
+  one slips through.
+
+  A WRAPPER, DELIBERATELY NOT MIDDLEWARE
+  The guard reads the POST body to find the tour key, and request.json()
+  caches on the Request INSTANCE. A wrapper passes that instance down;
+  BaseHTTPMiddleware builds a fresh one, and every POST handler would have
+  seen an empty body. There's a test for exactly that.
+
+RESULT
+21 tests including the bypass attempts: key in the body, the full
+spreadsheet URL, the alias, anonymous callers.
+
+THE LINE
+A boundary you have to remember is a convention. A boundary that fails
+the build when it's missing is an invariant.
+
+PAIR WITH THE INJECTION FINDING if untrusted input comes up
+Venue email is untrusted text read by an LLM whose output writes to a
+band's records. Three attacks: imperative override resisted, social
+engineering resisted, and a venue pasting JSON-shaped data wrote two
+forged values to the sheet. Why the third worked — the model is trained
+to resist being TOLD what to do, and is not trained to distinguish data a
+venue is QUOTING from data it is ASSERTING.
+
+
+====================================================================
+STORY 4 — PWC, AI FACTORY / CROSS-FUNCTIONAL
+====================================================================
+
+SITUATION
+PwC stood up an internal AI Factory to find valuable generative-AI
+applications across the business. I rotated across accounting, capital
+markets, forensics, RFP workflows, financial research and internal
+operations.
+
+TASK
+Understand unfamiliar workflows quickly and turn them into useful
+prototypes — not generic chatbot demos.
+
+ACTION
+EDGAR and financial-document search, knowledge-base retrieval, RFP
+generation, internal analytics, document extraction and transformation.
+
+The process each time:
+    understand the workflow -> find the opportunity -> prototype ->
+    SME testing -> refine
+
+Working directly with the people doing the job to establish what was
+actually manual, where judgment was genuinely required, and where
+reliability mattered more than speed.
+
+RESULT
+Tested AI across multiple business functions, built reusable patterns,
+and got comfortable entering a domain I didn't know, talking to the
+people doing the work, and turning that into something technical quickly.
+
+  GO DEEP ON ONE, NOT WIDE ON SIX. Pick the strongest and have ready:
+  what the manual baseline was, who did it and how long it took, what
+  production failure you found and fixed, and what adoption looked like.
+  Breadth is the setup; one specific story is the answer.
+
+
+====================================================================
+STORY 5 — PWC, COMPLIANT TERRAFORM FROM DOCUMENTATION
+====================================================================
+   *** This is your strongest RAG story. Lead with it, not the triage
+       app — real institution, real compliance documents, real
+       consequence. ***
+
+SITUATION
+Financial institutions needed Azure environments — SQL Database, Key
+Vault and the rest — that complied with internal standards plus
+financial-services and security controls.
+
+TASK
+Turn requirements and compliance documentation into compliant
+infrastructure code.
+
+ACTION
+A LangChain workflow that retrieved the standards, controls and internal
+documentation, mapped requirements onto infrastructure configuration,
+generated or modified Terraform, and verified the output.
+
+    documentation -> retrieval -> requirement mapping -> Terraform
+    -> validation
+
+RESULT
+Removed a large part of the manual requirements-mapping step and made the
+output consistent across environments.
+
+HOW I'D BUILD IT TODAY — this is the part that shows growth
+Separate the stages so each can fail and be measured independently:
+retrieval -> reasoning -> generation -> deterministic validation -> evals.
+
+For Terraform specifically, the validation tier is not optional. Three
+strengths, and the model only occupies the weakest one:
+
+  1. PROMPT LEVEL — module conventions, required tags, approved provider
+     versions. Cheapest, and it degrades as you add rules. That's the
+     ceiling I later measured on TM Go.
+
+  2. DETERMINISTIC VALIDATORS — terraform validate and fmt, tflint,
+     tfsec / checkov, and policy-as-code for the non-negotiables: no
+     0.0.0.0/0 ingress, no public storage, encryption at rest, mandatory
+     tagging. These fail loudly and log every drop. A prompt rule fails
+     silently.
+
+  3. STRUCTURAL — terraform plan as a mandatory artifact, reviewed as a
+     diff, credentials scoped so the pipeline CANNOT apply outside its
+     blast radius, apply gated on approval.
+
+THE LINE
+A hallucinated function throws at runtime and you see it. A hallucinated
+security group applies cleanly, looks right in the diff, and becomes a
+finding in someone's audit. The model drafts, a human approves, code
+applies.
+
+AND VERIFY THE GUARDRAIL ACTUALLY FIRES
+I've had a lint gate that existed to catch undefined references miss a
+missing import and white-screen an app, because the rule didn't see JSX
+element names. The fix wasn't adding the rule — it was deleting the
+import again to prove the gate now caught it.
+
+
+====================================================================
+STORY 6 — PWC, ENABLEMENT
+====================================================================
+
+SITUATION
+Employees had wildly different levels of AI experience.
+
+TASK
+Help technical and non-technical people use AI in their actual work.
+
+ACTION
+The focus was where AI actually fits, repeatable patterns, verification,
+failure modes, and where deterministic automation is simply better.
+
+Communication changed by audience:
+    Engineers  — architecture, APIs, retrieval, evals
+    Business   — workflow, inputs and outputs, verification
+    Executives — value, risk, cost, adoption, KPIs
+
+RESULT
+Enabled hundreds of employees, and learned to translate the same system
+across three very different audiences.
+
+  The goal isn't teaching someone AI. It's helping them use AI
+  appropriately in the job they already have.
+
+THE COUNTERWEIGHT, WHICH MAKES IT CREDIBLE
+On TM Go the product decision that came from watching non-technical users
+was REMOVING AI surface. The upload flow went from a five-way override to
+leading with a recommendation, because too many options was the actual
+problem. Enablement isn't always "more AI".
+
+
+====================================================================
+TECHNICAL QUICK REFERENCE — RAG
+====================================================================
+
+DEBUG PATH
+  query understanding -> retrieval -> entitlement filter -> reranking ->
+  context assembly -> generation -> citation validation
+
+Name a failure mode at each layer, and say you'd measure retrieval and
+generation SEPARATELY — otherwise a chunking change and a prompt change
+get credited to the same end-to-end number.
+
+METRICS
+  Retrieval  — recall@k, precision@k, was the right passage in the window
+  Generation — groundedness, correctness, completeness, citation
+               correctness
+
+FAILURE MODES
+  Document not in the corpus. Bad ranking. Bad chunking. Context
+  pollution. Wrong permissions. Model ignores retrieved evidence.
+
+YOUR DIFFERENTIATED ANSWER — matters most at a company holding camp
+health data. From the prior-auth triage app:
+
+BM25 + embeddings fused with reciprocal-rank fusion. Keyword catches
+exact codes and plan IDs that embeddings blur; semantics catches
+paraphrases keyword misses. Retrieval degrades to BM25-only without an
+embeddings key rather than going dark. Then the part worth being asked
+about:
+
+  Authorization is applied at retrieval, BEFORE generation. Every
+  document carries a plan tag; a guest reaches only general documents, a
+  verified member also reaches their plan's. The filter runs on the fused
+  ranking, so it isn't a prompt instruction the model could talk itself
+  out of. And PHI is never in the index at all — claims, balances and
+  member records come from tools behind the verification gate.
+
+  Filter what's retrievable, and keep the sensitive class out of the
+  retrievable set entirely.
+
+SAY THE SCALE BEFORE THEY ASK
+16 documents, 15 golden cases. Demonstration scale.
+
+AND THE HONEST GAP
+Grounding is currently one boolean per case, which is a smoke test rather
+than retrieval evaluation — it can't tell "retrieval failed" from
+"retrieval worked and generation ignored it". Context precision and
+recall is what I'd build next.
+
+NOTE: TM GO HAS NO RETRIEVAL. Say it out loud once before the interview
+so it comes naturally. Your RAG stories are the Terraform work and the
+triage app.
+
+
+====================================================================
+TECHNICAL QUICK REFERENCE — EVALS
+====================================================================
+
+LAYERS
+  Retrieval
+  Generation
+  System   — latency, cost, tool-call success, error rate
+  Business — time saved, adoption, correction and escalation rate
+
+LIFECYCLE
+  golden set -> regression gate in CI -> production traces ->
+  sampled human review -> failures promoted back into the golden set
+
+WHAT MOST CANDIDATES SKIP, AND YOU HAVE ALL FOUR
+  Negative controls — cases where the right answer is NOTHING, so a
+    confident wrong answer costs what a miss costs.
+  pass^k over pass@1 — one run measures luck.
+  Paraphrase perturbations — a set that only holds under the phrasing you
+    wrote is measuring your prose.
+  A held-out split — my prompt optimiser currently tunes against the same
+    set that grades it. That's the standard trap. Say it before they find
+    it.
+
+ALERT ON DELTA, NOT THRESHOLD
+A set sliding 100% -> 94% -> 88% never trips an 80% gate, and that
+gradual shape is exactly what drift looks like.
+
+THE TWO BEATS THAT WIN THIS SECTION
+
+  1. I DIDN'T BELIEVE MY OWN 100%. I found a full pass rate implausible,
+     went looking, and every real bug found afterwards came from the
+     adversarial cases that instinct produced.
+
+  2. TWO HARNESSES DISAGREED BY 14 POINTS. The same 42 cases graded 100%
+     offline and 85.7% against the live endpoint, because the offline one
+     had drifted and dropped two structural guards.
+
+     An eval number without its harness version and configuration is not
+     a number.
+
+     I wrote a parity script that runs both and exits non-zero on any
+     disagreement.
+
+
+====================================================================
+TECHNICAL QUICK REFERENCE — OBSERVABILITY
+====================================================================
+
+LOG
+  Model and version. Prompt version. Retrieved context. Tool calls and
+  results. Latency. Tokens and cost. Output. Error state. Eval score and
+  user feedback.
+
+DON'T LOG
+  Secrets, credentials, unnecessary PII. Venue email is third-party
+  personal data the band never consented on behalf of — structurally
+  identical to camp family communications. Log the trace envelope; keep
+  bodies out by default. The golden set is curated, consented and
+  synthetic, which is what makes it safe to keep forever and rerun weekly.
+
+THE PART MOST PEOPLE DON'T BUILD
+Per-endpoint cost attribution. It answers "which feature is expensive",
+not just "the bill went up".
+
+
+====================================================================
+TECHNICAL QUICK REFERENCE — AGENT DESIGN
+====================================================================
+
+Workflow = known sequence, deterministic orchestration.
+Agent = the model picks the next action because the path isn't knowable
+in advance.
+
+Prefer the smallest amount of agency the problem requires.
+
+Know cold: tools and structured outputs, state machines and graphs,
+retries and idempotency, checkpoints, human-in-the-loop gates, max
+iterations and budget, sandboxing, context management.
+
+
+====================================================================
+FAQs
+====================================================================
+
+WHY CAMPMINDER?
+This isn't a feature-level AI role. You're building shared capability
+across the company and putting it into the product, and the role pairs
+building the system with working directly with the people using it.
+That's the part of my previous work I've enjoyed most.
+
+HOW DO YOU DECIDE WHETHER TO USE AI?
+Start with the workflow and the business metric, not the model. Separate
+the part that genuinely needs language or judgment from the part that's
+deterministic, and keep the deterministic part deterministic. Then make
+sure the value justifies the uncertainty. I've argued AGAINST the more-AI
+answer twice with data — the thirteenth prompt rule that made accuracy
+worse, and the model that cost 17x for zero gain.
+
+THE CEO WANTS AI FOR X AND YOU THINK IT'S WRONG.
+I wouldn't frame it as AI versus no AI. I'd clarify the goal and the
+current baseline, separate the judgment part from the deterministic part,
+then prototype the smallest thing that tests the assumption. If
+deterministic software gets the outcome more reliably and more cheaply,
+that's what I'd recommend — and I'd bring the measurement rather than the
+argument.
+
+WHAT DO YOU DO WHEN AN AI SYSTEM FAILS?
+Classify the layer — retrieval, context, reasoning, generation, tool
+call, or workflow logic. Reproduce it, add it to the eval set, fix that
+layer, and the case becomes a regression test. The failure is only
+expensive if it can happen twice.
+
+HOW DO YOU KEEP UP?
+I use new tools on real projects. I form opinions by building something,
+seeing where it breaks, and comparing it against the simpler alternative
+— which is how I ended up with numbers on prompt rules versus code guards
+rather than a preference.
+
+LIKELY SYSTEM DESIGN: "How would you let a customer customise the product
+with a coding agent without breaking things?"
+Start with blast radius, not the model.
+  - Constrained APIs rather than raw DB access
+  - Credentials scoped and tenant-pinned at the boundary, so an injection
+    has nothing to spend
+  - Every generated change is a diff a human approves
+  - Preview environments over trust
+  - Audit log, because the question after an incident is always what it
+    actually did
+Then the invariant: the boundary is applied structurally and a test walks
+the real surface, so it can't be forgotten on the next endpoint.
+
+
+====================================================================
+WHEN TO USE THE ARCHITECTURE DIAGRAM
+====================================================================
+
+Never in the elevator pitch. Never as a screen-share of the full writeup
+— it's a fourteen-section page and it reads as a portfolio tour rather
+than an answer.
+
+DRAW IT, DON'T SHOW IT. When someone asks "how did you build it?", take
+thirty seconds and five boxes:
+
+   intake -> router -> [parse] -> state -> [draft] -> APPROVAL -> send
+                        LLM                  LLM        human      code
+
+Building it live shows how you think. A finished graphic shows you once
+made a graphic. And that one drawing answers three questions at once —
+where the model is, where code is, and why send has exactly one inbound
+edge.
+
+THREE MOMENTS IT PAYS OFF
+  1. Hiring-manager round, when TM GO comes up.
+  2. Technical round, on any system-design question. Draw first, talk
+     second — it also buys thinking time.
+  3. CTO round — but draw the PLATFORM version, not TM GO's.
+
+THE REAL PAGE BELONGS IN THE FOLLOW-UP EMAIL
+One line: "the full architecture writeup with the measured numbers is at
+austinnafe.com/tmgo". Strong as something read alone, weak as something
+narrated.
+
+If you're remote and they want to see something concrete, the one
+artifact worth sharing is the model comparison graphic — single screen,
+makes its point instantly.
+
+
+====================================================================
+LINES TO REMEMBER
+====================================================================
+
+AGENTS       The smallest amount of agency the problem requires.
+
+PRODUCT      Start with the workflow and the business metric, not the
+             model.
+
+EVALS        Make correctness measurable, not a vibe. And distrust your
+             own green dashboard.
+
+GUARDRAILS   A prompt rule is a request to a probabilistic system; a
+             guardrail is a constraint. Controls fail quietly, validators
+             log every drop.
+
+BOUNDARIES   A check you have to remember is a convention; one that fails
+             the build is an invariant.
+
+RAG          Separate retrieval failures from generation failures, and
+             filter by entitlement before generation, not in the prompt.
+
+MEASUREMENT  A metric computed through the same assumption as the system
+             it measures tells you nothing.
+
+PLATFORM     Make the safe path the easy path.
+
+EXECUTIVES   Outcome, risk, cost, measurable impact.
+
+
+====================================================================
+THE NIGHT BEFORE
+====================================================================
+
+[ ] The five numbers, out loud, without notes.
+[ ] Story 2 and Story 3 rehearsed. Both under two minutes, both ending on
+    the line.
+[ ] One PwC story picked and taken deep: baseline, who did the work, what
+    broke, what changed.
+[ ] Say "TM Go has no retrieval" once, so it comes out naturally.
+[ ] Draw the five-box diagram on paper twice.
+
+FIVE QUESTIONS FOR THEM
+  1. What does the platform team own that product teams don't rebuild —
+     and what's still getting rebuilt?
+  2. How do you know today that a retrieval or prompt change didn't break
+     something? Is there a gate, or a rollback?
+  3. Where's the line between what a customer can customise and what they
+     can't?
+  4. Which team adopted AI tooling fastest, and what did they have that
+     the others didn't?
+  5. What would you want measurably different six months after this hire?
