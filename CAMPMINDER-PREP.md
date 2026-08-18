@@ -425,8 +425,12 @@ If you're remote and they want to see something concrete, the one artifact worth
 - [ ] The five numbers above, out loud, without notes.
 - [ ] Story 2 and Story 3 rehearsed — both under two minutes, both end on the line.
 - [ ] One PwC story picked and taken deep: baseline, who did the work, what broke, what changed.
-- [ ] Say **"TM Go has no retrieval"** once, so it comes out naturally when RAG comes up — your
-      RAG stories are the Terraform work and the triage app.
+- [ ] **TM Go now HAS retrieval** — pgvector over uploaded documents. It did not when these
+      notes were written, and the old instruction here said the opposite. Your RAG stories are
+      now, in order: **TM Go** (the strongest — you argued against vectors, the cost numbers
+      flipped it, then you audited your own new code and found three bugs), **PwC Terraform**
+      (real institution, real compliance corpus), and the triage app (for the permissions
+      question).
 - [ ] Draw the five-box diagram on paper twice.
 - [ ] Five questions for them:
       What does the platform team own that product teams don't rebuild — and what's still getting

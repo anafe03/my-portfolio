@@ -368,13 +368,14 @@ import Analytics from '../components/Analytics.astro';
       <li><button class="rail-item" data-goto="d6"><span class="rn">06</span> Data model</button></li>
       <li><button class="rail-item" data-goto="d7"><span class="rn">07</span> Delivery</button></li>
       <li><button class="rail-item" data-goto="d8"><span class="rn">08</span> Tenancy &amp; access</button></li>
+      <li><button class="rail-item" data-goto="d9"><span class="rn">09</span> Document retrieval</button></li>
       <li style="margin-top:10px;padding:2px 9px;font-family:var(--mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent)">Depth</li>
-      <li><button class="rail-item" data-goto="intel"><span class="rn">09</span> Where the intelligence lives</button></li>
-      <li><button class="rail-item" data-goto="breaks"><span class="rn">10</span> Failure modes &amp; options</button></li>
-      <li><button class="rail-item" data-goto="cost"><span class="rn">11</span> Token economics</button></li>
-      <li><button class="rail-item" data-goto="stateng"><span class="rn">12</span> The state engine</button></li>
-      <li><button class="rail-item" data-goto="modelbreaks"><span class="rn">13</span> When the model breaks</button></li>
-      <li><button class="rail-item" data-goto="evolve"><span class="rn">14</span> How the prompt learned</button></li>
+      <li><button class="rail-item" data-goto="intel"><span class="rn">10</span> Where the intelligence lives</button></li>
+      <li><button class="rail-item" data-goto="breaks"><span class="rn">11</span> Failure modes &amp; options</button></li>
+      <li><button class="rail-item" data-goto="cost"><span class="rn">12</span> Token economics</button></li>
+      <li><button class="rail-item" data-goto="stateng"><span class="rn">13</span> The state engine</button></li>
+      <li><button class="rail-item" data-goto="modelbreaks"><span class="rn">14</span> When the model breaks</button></li>
+      <li><button class="rail-item" data-goto="evolve"><span class="rn">15</span> How the prompt learned</button></li>
       <li class="rail-div">Forward</li>
       <li><button class="rail-item" data-goto="scale"><span class="rn">02</span> Scaling path</button></li>
       <li><button class="rail-item" data-goto="talk"><span class="rn">03</span> Summary</button></li>
@@ -552,7 +553,7 @@ import Analytics from '../components/Analytics.astro';
         </div>
 
         <h3 style="margin-top:34px;font-size:1.15rem">How the email path is actually tested</h3>
-        <p class="body">Email is where this product lives, and it's the layer with the most ways to fail <i>quietly</i>. Nobody files a bug for replies that never arrive. The repo runs <b>141 tests across 12 suites</b>, and the email and extraction path holds the largest share of them — 16 on grounding, 8 on the watch loop, 8 on inbox tagging, 8 on the gateway. Most are about telling apart states that look alike.</p>
+        <p class="body">Email is where this product lives, and it's the layer with the most ways to fail <i>quietly</i>. Nobody files a bug for replies that never arrive. The repo runs <b>378 tests across 18 suites</b>, and the conversational and document path holds the largest share — 77 on the chat brain alone, plus grounding, the watch loop, inbox tagging and the gateway. Most are about telling apart states that look alike.</p>
         <p class="body">IMAP IDLE is the clearest example. The protocol is full of lookalikes, so each distinction gets pinned:</p>
         <div class="snip">
           <div class="sh"><span class="sf">test_email_watcher.py</span><span class="st2">transport, 8 tests</span></div>
@@ -594,7 +595,7 @@ import Analytics from '../components/Analytics.astro';
         </div>
         <div class="metrics">
           <div class="metric"><div class="mv green">100%</div><div class="ml">Last full pass, both providers</div></div>
-          <div class="metric"><div class="mv">141</div><div class="ml">Unit tests, 12 suites</div></div>
+          <div class="metric"><div class="mv">378</div><div class="ml">Unit tests, 18 suites</div></div>
           <div class="metric"><div class="mv">61 / 27</div><div class="ml">Chain cases / negative controls</div></div>
           <div class="metric"><div class="mv">Weekly</div><div class="ml">Scheduled eval rerun</div></div>
         </div>
@@ -752,9 +753,69 @@ import Analytics from '../components/Analytics.astro';
       </div>
     </section>
 
+    <!-- D9 -->
+    <section class="panel" id="d9" data-rung="d9">
+      <div class="panel-inner reveal">
+        <div class="eyebrow"><span class="sec">Decision 09</span> Document retrieval</div>
+        <h2>I argued against vector search twice. The numbers settled it.</h2>
+        <p class="lede">A tour manager uploads a rider, a contract, a hotel confirmation and a stage plot, then asks <i>"what time do we arrive?"</i> — a question whose answer could be in any of them. This is the decision I got wrong longest, and the record of changing my mind is more useful than the design I landed on.</p>
+
+        <div class="spec">
+          <div class="row"><span class="k">① Keyword windows</span><span class="v">Score paragraphs against the question's words, keep the head of the document for parties and dates. Deterministic, free, debuggable. <b>Fails on paraphrase:</b> "what gear does the house provide?" shares no word with "BACKLINE: Vox AC30 supplied by venue."</span></div>
+          <div class="row"><span class="k">② A synonym map</span><span class="v">Hand-written domain vocabulary — backline means amps, hospitality means catering. Cheaper than embeddings and <b>correctable</b>, which a general embedding model is not. It worked, and it was the first sign I was building the wrong thing.</span></div>
+          <div class="row"><span class="k">③ Whole documents</span><span class="v">The real bug turned out to be a <b>number, not a strategy</b>: documents are stored capped at 20k characters, the model's window is 128k, and my excerpt budget was 6k — so 70% of a rider that would have fitted comfortably was discarded before the model saw it. When everything fits, selecting can only <i>lose</i> the answer.</span></div>
+          <div class="row"><span class="k">④ Don't filter by kind</span><span class="v">Retrieval fetched the document whose <i>type</i> matched the question. Arrival time lives in the hotel confirmation, not the contract the question sounds like — so filtering by kind <b>misses by construction</b>. All of a venue's documents go in; the kind cue only orders them.</span></div>
+          <div class="row"><span class="k">⑤ pgvector</span><span class="v">Chunk, embed, and search by meaning. What I had resisted through the four steps above.</span></div>
+        </div>
+
+        <h3 style="margin-top:34px;font-size:1.15rem">Why I was wrong, argument by argument</h3>
+        <p class="body">The tell wasn't a benchmark. It was <b>what I had accumulated instead</b>: keyword scoring, a synonym dictionary, a relevance gate, a budget packer and kind-ordering — five pieces of homemade machinery approximating what Postgres does natively, and two of my own tests fighting each other over it. So I checked the arguments honestly rather than defending them.</p>
+        <div class="fails">
+          <div class="fail"><div class="fh"><span class="ft">"It's new infrastructure"</span><span class="tag score">false</span></div>
+            <p class="fw">Supabase ships pgvector. One extension, one column, one SQL function. There was no new system to run.</p></div>
+          <div class="fail"><div class="fh"><span class="ft">"A new place for tenant bugs"</span><span class="tag score">overstated</span></div>
+            <p class="fw">Same table, same <code>sheet_id</code> filter — and now <i>inside</i> the SQL function, where a caller can't forget it. That omission is the actual way vector stores leak.</p></div>
+          <div class="fail"><div class="fh"><span class="ft">"Everything fits in context"</span><span class="tag score">true, then false</span></div>
+            <p class="fw">True at one to three documents. False for the stated use case — dump every document for a show and ask across it. Fifteen documents is <b>~75k tokens per question</b> to surface one paragraph.</p></div>
+          <div class="fail"><div class="fh"><span class="ft">Cost</span><span class="tag gate">the one that flipped it</span></div>
+            <p class="fw">Stuffing 8 documents: <b>~$0.0060</b> a question. Retrieving 6 chunks: <b>~$0.0003</b>. <b>20×</b> — and the gap widens with every upload, which is the wrong direction for a feature whose whole promise is "put everything in here."</p></div>
+        </div>
+
+        <div class="principle"><span class="wl">The lesson worth keeping</span>I wasn't reasoning from the problem, I was defending a position. The signal was <b>five hand-built pieces approximating one library</b>, and I should have read it as an argument against myself several commits earlier than I did.</div>
+
+        <h3 style="margin-top:34px;font-size:1.15rem">Then I audited what I had just shipped, and found three bugs</h3>
+        <p class="body">Reviewing the new design as a design rather than defending it, in the same session it landed. All three were live.</p>
+        <div class="fails">
+          <div class="fail"><div class="fh"><span class="ft">Duplicates accumulated forever</span><span class="tag test">dedupe never fired</span></div>
+            <p class="fw">Chunks were keyed on <code>document_id</code>, but the store returns a bool and never an id — so the key was always <code>NULL</code>, and <b>Postgres treats NULLs as DISTINCT in a unique index</b>. Upload indexed 20 chunks; approve indexed 20 more.</p>
+            <p class="fc"><span class="lbl">Fixed by</span> keying on <code>content_hash</code> — derivable, stable across re-uploads, never null.</p></div>
+          <div class="fail"><div class="fh"><span class="ft">Top-k always returned k</span><span class="tag gate">the hallucination path</span></div>
+            <p class="fw">With no similarity floor, a question the documents don't answer comes back with the <i>k least-unrelated</i> paragraphs. The model is handed noise and invited to build an answer on it — <b>a hallucination wearing a citation</b>, which is worse than no answer.</p>
+            <p class="fc"><span class="lbl">Fixed by</span> a cosine floor of 0.25 in the SQL function, so <b>"nothing matched" is expressible</b>.</p></div>
+          <div class="fail"><div class="fh"><span class="ft">Cross-venue questions never reached the index</span><span class="tag code">scoping bug</span></div>
+            <p class="fw">Retrieval only ran once a venue had been named, so <i>"which venues have a radius clause?"</i> — the exact question a vector index is best at, and impossible to answer any other way — skipped documents entirely.</p>
+            <p class="fc"><span class="lbl">Fixed by</span> searching the whole tour when no venue is named. It was also the case I'd argued was the <i>only</i> reason to add vectors, and I'd shipped it broken.</p></div>
+        </div>
+
+        <h3 style="margin-top:34px;font-size:1.15rem">The shape it settled into</h3>
+        <div class="spec">
+          <div class="row"><span class="k">Chunking</span><span class="v"><b>1,000 characters on paragraph boundaries</b>, so a clause keeps the heading that says what it is, with <b>150 characters of overlap</b> so a sentence split at a boundary survives whole somewhere.</span></div>
+          <div class="row"><span class="k">Index</span><span class="v"><code>text-embedding-3-small</code> with an <b>HNSW</b> index — no training step, so it stays accurate as uploads trickle in one at a time rather than needing a rebuild.</span></div>
+          <div class="row"><span class="k">Indexed twice, deliberately</span><span class="v">At upload <i>and</i> again at approve. Chunks carry the venue and search filters on it, so a corrected venue that reaches the document but not its chunks leaves <b>the file findable and its contents not</b>.</span></div>
+          <div class="row"><span class="k">Query rewriting</span><span class="v">"What about parking?" is four words, two of them stopwords; its nearest neighbours are whatever the index thinks four stopwords mean. Short follow-ups now carry the venue and the previous question. <b>Concatenation, not a model call</b> — no latency, no cost, nothing new that can hallucinate. Spend a call on it only when concatenation demonstrably isn't enough.</span></div>
+          <div class="row"><span class="k">Fallback</span><span class="v">No key, nothing indexed yet, or a failed search falls back to whole-document stuffing. <b>Degraded, not broken.</b> The synonym map survives only there, and stops growing.</span></div>
+        </div>
+
+        <h3 style="margin-top:30px;font-size:1.15rem">Why Postgres rather than a vector database</h3>
+        <p class="body">A tour is roughly <b>2,400 chunks</b>; a thousand customers about <b>2.4M</b> — which HNSW handles on ordinary Postgres. But scale isn't the reason. <b>Tenancy lives in Postgres.</b> A second store means the same tenant rule enforced in two systems, a venue delete that has to succeed in both, and "delete my data" becoming a two-phase problem.</p>
+        <p class="body">The specific tell: both common framework wrappers put the tenant filter in a <b>caller-supplied metadata dict</b> — somewhere it can be forgotten. Ours is in the SQL function signature, where it cannot be.</p>
+        <div class="honest"><b>Still honest about this:</b> the similarity floor is one number chosen by hand, not tuned against a labelled set — I know it stops noise reaching the model, and I can't yet tell you what it costs in recall. That needs a retrieval eval with graded relevance, which is the next thing this deserves and doesn't have.</div>
+      </div>
+    </section>
+
     <!-- SCALE -->
     <!-- INTEL -->
-    <section class="panel" id="intel" data-rung="intel">
+    <section class="panel alt" id="intel" data-rung="intel">
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Depth · 01</span> Where the intelligence lives</div>
         <h2>Two LLM seams, and everything else is code</h2>
@@ -777,7 +838,7 @@ import Analytics from '../components/Analytics.astro';
     </section>
 
     <!-- BREAKS -->
-    <section class="panel alt" id="breaks" data-rung="breaks">
+    <section class="panel" id="breaks" data-rung="breaks">
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Depth · 02</span> Failure modes &amp; options</div>
         <h2>Where it breaks, where it doesn't, and the options when it does</h2>
@@ -796,7 +857,7 @@ import Analytics from '../components/Analytics.astro';
     </section>
 
     <!-- COST -->
-    <section class="panel" id="cost" data-rung="cost">
+    <section class="panel alt" id="cost" data-rung="cost">
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Depth · 03</span> Token economics</div>
         <h2>Cost as a designed number, not a surprise</h2>
@@ -903,7 +964,7 @@ import Analytics from '../components/Analytics.astro';
     </section>
 
     <!-- STATE ENGINE -->
-    <section class="panel alt" id="stateng" data-rung="stateng">
+    <section class="panel" id="stateng" data-rung="stateng">
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Depth · 04</span> The state engine</div>
         <h2>Records, events, projections, and why the views can't disagree</h2>
@@ -957,14 +1018,14 @@ import Analytics from '../components/Analytics.astro';
     </section>
 
     <!-- WHEN THE MODEL BREAKS -->
-    <section class="panel" id="modelbreaks" data-rung="modelbreaks">
+    <section class="panel alt" id="modelbreaks" data-rung="modelbreaks">
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Depth · 05</span> When the model breaks</div>
         <h2>The model is wrong sometimes. That's a design input, not a bug report.</h2>
         <p class="lede">Reading a venue's email is the one place TM GO <i>must</i> use a model, because free-form human text has no parser. So the useful question was never "is the model accurate?" but <b>which specific way does it fail, and what catches that one.</b></p>
 
         <div class="metrics">
-          <div class="metric"><div class="mv">141</div><div class="ml">Unit tests, 12 suites</div></div>
+          <div class="metric"><div class="mv">378</div><div class="ml">Unit tests, 18 suites</div></div>
           <div class="metric"><div class="mv">61</div><div class="ml">Adversarial email-chain cases</div></div>
           <div class="metric"><div class="mv">27</div><div class="ml">Carry negative controls</div></div>
           <div class="metric"><div class="mv green">100%</div><div class="ml">Last full pass, <i>both</i> providers</div></div>
@@ -1039,7 +1100,7 @@ import Analytics from '../components/Analytics.astro';
     </section>
 
     <!-- PROMPT EVOLUTION -->
-    <section class="panel alt" id="evolve" data-rung="evolve">
+    <section class="panel" id="evolve" data-rung="evolve">
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Depth · 06</span> How the prompt learned</div>
         <h2>The prompt is an artifact of the test suite, not of taste</h2>
@@ -1089,7 +1150,7 @@ import Analytics from '../components/Analytics.astro';
       </div>
     </section>
 
-    <section class="panel" id="scale" data-rung="scale">
+    <section class="panel alt" id="scale" data-rung="scale">
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Forward · 02</span> Scaling path</div>
         <h2>The scaling path, no longer just a plan</h2>
@@ -1124,11 +1185,11 @@ import Analytics from '../components/Analytics.astro';
     </section>
 
     <!-- SUMMARY -->
-    <section class="panel alt" id="talk" data-rung="talk">
+    <section class="panel" id="talk" data-rung="talk">
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Forward · 03</span> Summary</div>
         <h2>Summary</h2>
-        <p class="quote">TM Go is a tour-management agent for independent bands. It advances shows over email and SMS, drafts venue outreach, parses free-form replies into structured logistics, and keeps each tour's records in sync. The central engineering decision was <strong>constraining the agent</strong>: a hand-authored LangGraph StateGraph replaces an open ReAct loop, with the model confined to drafting and parsing while all state, routing and I/O run as deterministic code. It ships with production-reliability plumbing, including provider failover, tolerant parsing, validated inputs and human-in-the-loop review, plus a <strong>traced_llm observability layer that doubles as a closed-loop evaluation harness</strong>. Every human correction becomes labeled data, and a CI gate blocks any change that reduces extraction accuracy. Tenant isolation is <strong>structural rather than remembered</strong>: every tour has an owner, all 64 routes are wrapped by one guard at registration, and a test walks the real route table so an unwrapped endpoint fails the build.</p>
+        <p class="quote">TM Go is a tour-management agent for independent bands. It advances shows over email and SMS, drafts venue outreach, parses free-form replies into structured logistics, and keeps each tour's records in sync. The central engineering decision was <strong>constraining the agent</strong>: a hand-authored LangGraph StateGraph replaces an open ReAct loop, with the model confined to drafting and parsing while all state, routing and I/O run as deterministic code. It ships with production-reliability plumbing, including provider failover, tolerant parsing, validated inputs and human-in-the-loop review, plus a <strong>traced_llm observability layer that doubles as a closed-loop evaluation harness</strong>. Every human correction becomes labeled data, and a CI gate blocks any change that reduces extraction accuracy. Tenant isolation is <strong>structural rather than remembered</strong>: every tour has an owner, all 64 routes are wrapped by one guard at registration, and a test walks the real route table so an unwrapped endpoint fails the build. Documents a band uploads — riders, contracts, hotel confirmations — are chunked and embedded into <strong>pgvector alongside the tenancy they belong to</strong>, so a question can be asked across every document for a show at once, and the tenant filter lives in the SQL function signature where it cannot be omitted.</p>
         <div class="oneline"><span class="ql">One-line version</span><i>"I constrained an agent so it could be trusted with real data, then instrumented it so that every human correction became evaluation data gating deployment."</i></div>
         <div class="close-links">
           <a class="btn primary" href="https://toursync-deploy.vercel.app" target="_blank" rel="noopener">View the live application</a>
@@ -1187,7 +1248,7 @@ import Analytics from '../components/Analytics.astro';
 
   var panels = [].slice.call(document.querySelectorAll('.panel'));
   var railItems = [].slice.call(document.querySelectorAll('.rail-item'));
-  var order = ['hero','diagram','stack','d1','d2','d3','d4','d5','d6','d7','d8','intel','breaks','cost','stateng','modelbreaks','evolve','scale','talk'];
+  var order = ['hero','diagram','stack','d1','d2','d3','d4','d5','d6','d7','d8','d9','intel','breaks','cost','stateng','modelbreaks','evolve','scale','talk'];
   var progBar = document.getElementById('progBar');
   function railFor(r){ return railItems.find(function(b){ return b.getAttribute('data-goto')===r; }); }
   var ao = new IntersectionObserver(function (entries) {

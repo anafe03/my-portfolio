@@ -298,9 +298,11 @@ backstop stays structural: extraction only ever proposes; a human approves.
 
 # 8 · RAG — hybrid retrieval with an entitlement filter ⭐ *your RAG story*
 
-> **Note:** this is the prior-auth triage app, **not** TM Go. TM Go has no retrieval at all — its
-> model seams are extraction and drafting. Don't let an interviewer walk away thinking TM Go is a
-> RAG system; the correction lands badly if it comes later.
+> **Superseded.** TM Go now has retrieval — pgvector over uploaded documents — and it is the
+> better RAG story of the two: you argued against vectors, the cost numbers flipped it (20x per
+> question, widening with every upload), and you then audited your own new code and found three
+> bugs in it. Keep the triage app below for the **permissions** question, where the entitlement
+> filter on the fused ranking is the differentiated answer.
 
 **S** — A member-services triage assistant over health-plan documents. Members ask things like
 *"is an MRI covered"* or *"what's my deductible"*, and the answer differs by plan.
@@ -472,5 +474,5 @@ options was the actual problem. Enablement isn't always "more AI."
 
 - [ ] Fill every bracket in §9. Rough is fine, invented is not.
 - [ ] Pull live numbers off the observability dashboard the morning of — quote what it says then.
-- [ ] Say **"TM Go has no retrieval"** out loud once, so it comes naturally when RAG comes up.
+- [ ] TM Go HAS retrieval now (pgvector). Lead RAG with it, not the triage app.
 - [ ] Practice §3 and §5 out loud. They're the two that win the room, and both are under 2 minutes.
