@@ -818,8 +818,17 @@ import Analytics from '../components/Analytics.astro';
     <section class="panel alt" id="intel" data-rung="intel">
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Depth · 01</span> Where the intelligence lives</div>
-        <h2>Two LLM seams, and everything else is code</h2>
-        <p class="lede">The model appears at exactly two points, both of them language problems: <b>parsing</b> a venue's free-form reply into typed fields, and <b>drafting</b> the outbound message. Routing, scheduling, sheet writes, validation and retries are all deterministic Python. That placement is the load-bearing decision the other six hang off.</p>
+        <h2>Seven model seams, none of them able to write</h2>
+        <p class="lede">This section used to say <i>"exactly two."</i> It hasn't been two since document intake and chat landed, and the honest count is more convincing than the tidy one — because the rule it was protecting never changed. <b>The model appears wherever there is language to read or write, and nowhere near a fact.</b></p>
+        <div class="spec">
+          <div class="row"><span class="k">Read a document</span><span class="v"><code>classify_upload</code> decides what a file <i>is</i>; <code>extract_by_kind</code> and <code>parse_contract</code> read fields out of it once the kind is known. All three propose — the analyst confirms before anything lands.</span></div>
+          <div class="row"><span class="k">Read a reply</span><span class="v"><code>process_reply</code> turns a venue's free-form email into typed logistics. Still the seam with the most tests behind it, because it's the one whose mistakes reach a band's records.</span></div>
+          <div class="row"><span class="k">Write language</span><span class="v"><code>draft_reply</code> composes the outbound message; <code>rundown_brief</code> summarises a show. Both produce prose a human sends, never a value a system stores.</span></div>
+          <div class="row"><span class="k">Answer a question</span><span class="v">The chat graph — nine nodes: <code>decide · advance · send · cancel · answer · inbox · remember · redirect · chat</code>. The model picks the lane and writes the answer; the lanes themselves are code.</span></div>
+          <div class="row"><span class="k">Find the passage</span><span class="v"><code>text-embedding-3-small</code> over document chunks. Retrieval isn't generation, but it's a model in the path and it belongs on this list — its failure mode is handing the answer-writer the wrong paragraph. See <b>Decision 09</b>.</span></div>
+          <div class="row"><span class="k">Grade the output</span><span class="v"><code>judge_email</code> — a model scoring generation quality in the eval harness. Off the production path entirely, which is why it can be a model at all.</span></div>
+        </div>
+        <p class="body">Routing between lanes, scheduling, every write, validation, retries and the entire state engine remain deterministic Python. <b>That placement is the load-bearing decision the other eight hang off</b>, and it survived the seam count more than tripling — which is the actual test of whether a rule was structural or just a small system's convenience.</p>
         <div class="contrast">
           <div class="side naive">
             <div class="st">What this costs me</div>
@@ -832,7 +841,7 @@ import Analytics from '../components/Analytics.astro';
             <p><b>Blast-radius control.</b> The model's worst output is a bad draft or a bad parse, and both sit behind a human gate. It structurally cannot send, write or delete.</p>
           </div>
         </div>
-        <div class="principle"><span class="wl">Tied together</span>All seven decisions are one bet made seven times: <b>trade flexibility for verifiability wherever the system touches real data</b>. The orthogonal state machines, the queue view, the eval gate, the parity-gated migration. Each is that same trade in a different subsystem. They don't contradict each other, they compound.</div>
+        <div class="principle"><span class="wl">Tied together</span>All nine decisions are one bet made nine times: <b>trade flexibility for verifiability wherever the system touches real data</b>. The orthogonal state machines, the queue view, the eval gate, the parity-gated migration. Each is that same trade in a different subsystem. They don't contradict each other, they compound.</div>
         <p class="body"><b>The shape underneath all of them</b> is a decision about where a truth is allowed to come from. The model proposes language, never facts. A projection is computed in one place. Booking status comes from a human because nothing else knows it. Cutover comes from a parity number rather than confidence. Put that way, "constrain the agent" stops being a safety slogan and becomes the same rule the data model already follows: <b>one source per truth, and name it.</b></p>
       </div>
     </section>
@@ -861,7 +870,14 @@ import Analytics from '../components/Analytics.astro';
       <div class="panel-inner reveal">
         <div class="eyebrow"><span class="sec">Depth · 03</span> Token economics</div>
         <h2>Cost as a designed number, not a surprise</h2>
-        <p class="lede">One advance cycle touches the model exactly twice, to parse the reply and draft the response. So cost scales with <b>shows advanced</b> rather than chat length or agent wandering. That's the bounded graph paying out: no re-planning loops means no unbounded spend. The levers, in the order I'd pull them:</p>
+        <p class="lede">One advance cycle still touches the model exactly twice — parse the reply, draft the response — so <b>that</b> surface scales with shows advanced rather than agent wandering. That's the bounded graph paying out: no re-planning loops means no unbounded spend. But it is no longer the only surface, and saying so is the point of metering:</p>
+        <div class="spec">
+          <div class="row"><span class="k">Advancing</span><span class="v"><b>Two calls per cycle</b>, bounded by the graph. Predictable, and the cheapest thing here.</span></div>
+          <div class="row"><span class="k">Document intake</span><span class="v">One classification plus one extraction <b>per uploaded file</b> — a one-off per document, not per question, which is what makes it affordable to index rather than re-read.</span></div>
+          <div class="row"><span class="k">Chat and document Q&amp;A</span><span class="v">The surface that actually grows. It's why <b>Decision 09</b> matters as a cost decision and not only a quality one: stuffing eight documents ran <b>~$0.0060</b> a question against <b>~$0.0003</b> retrieving six chunks — and the stuffing figure climbs with every upload while the retrieval figure doesn't.</span></div>
+          <div class="row"><span class="k">Embedding</span><span class="v">Paid once at upload and again at approve, never per question. The re-index at approve is a correctness cost, not a wasted one: chunks carry the venue and search filters on it.</span></div>
+        </div>
+        <p class="body">The levers, in the order I'd pull them:</p>
         <div class="spec">
           <div class="row"><span class="k">Metering first</span><span class="v"><code>traced_llm</code> records tokens and cost per call, per provider. Every lever below is verified against that meter rather than assumed.</span></div>
           <div class="row"><span class="k">Model tiering <em>(shipped)</em></span><span class="v">Light classification and summaries run a small model. Extraction went on a larger one, because grounding errors there reach real tour data. Then I measured that assumption, and <b>it didn't survive</b>. See below.</span></div>
