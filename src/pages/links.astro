@@ -1,0 +1,169 @@
+---
+// src/pages/links.astro — link-in-bio page for Instagram and other social profiles.
+// One screen, phone-first, no maps or heavy embeds so it loads fast inside in-app browsers.
+import Analytics from '../components/Analytics.astro';
+
+const links = [
+  { group: 'Listen & play' },
+  { href: 'https://soundcloud.com/user-611195779', icon: '🎵', label: 'SoundCloud', sub: 'Tracks and audio experiments', ext: true },
+  { href: '/#games', icon: '🌃', label: 'Games & Toys', sub: 'Night Drive, Neon Bloom, Flappy Beer and more' },
+
+  { group: 'Things I built' },
+  { href: 'https://toursync-deploy.vercel.app/', icon: '🚐', label: 'TM Go', sub: 'AI tour management for touring artists', ext: true },
+  { href: 'https://meridian-agent-gmrna3eeqnqrztusprskfy.streamlit.app', icon: '🩺', label: 'Meridian', sub: 'Health-insurance support agent, live demo', ext: true },
+  { href: 'https://festival-companion-5yqpazq44yjp24fz6dcsmj.streamlit.app', icon: '🎪', label: 'Festival Companion', sub: 'Snap a lineup poster, get your schedule', ext: true },
+
+  { group: 'Read' },
+  { href: '/intelligence', icon: '🧠', label: 'What Is AI?', sub: 'A scroll-through explainer, starts from zero' },
+  { href: '/tmgo', icon: '📐', label: 'TM Go case study', sub: 'How I bounded an agent to trust it with real data' },
+
+  { group: 'Connect' },
+  { href: 'https://github.com/anafe03', icon: '💻', label: 'GitHub', sub: '@anafe03', ext: true },
+  { href: 'https://www.linkedin.com/in/austinnafe/', icon: '💼', label: 'LinkedIn', sub: '@austinnafe', ext: true },
+  { href: 'mailto:austinnafe@aol.com', icon: '📧', label: 'Email', sub: 'austinnafe@aol.com' },
+  { href: '/RESUME_2026.pdf', icon: '📄', label: 'Resume', sub: 'PDF', ext: true },
+];
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Austin Nafe — Links</title>
+  <meta name="description" content="Austin Nafe: AI engineer, founder of TM Go, music and small games. Everything in one place.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta name="theme-color" content="#0a0e27">
+
+  <meta property="og:type" content="profile">
+  <meta property="og:title" content="Austin Nafe — Links">
+  <meta property="og:description" content="AI engineer, founder of TM Go, music and small games. Everything in one place.">
+  <meta property="og:url" content="https://www.austinnafe.com/links">
+  <meta property="og:image" content="https://www.austinnafe.com/profile.jpg">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Austin Nafe — Links">
+  <meta name="twitter:description" content="AI engineer, founder of TM Go, music and small games. Everything in one place.">
+  <meta name="twitter:image" content="https://www.austinnafe.com/profile.jpg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --ocean: #0077be;
+      --coral: #ff6b6b;
+      --bg: #0a0e27;
+      --bg-light: #1a1f3a;
+      --bg-card: #252b4a;
+      --text: #e8eef7;
+      --text-dim: #8b95b0;
+      --border: #2d3557;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: var(--font);
+      background:
+        radial-gradient(700px 420px at 50% -120px, rgba(0, 119, 190, 0.28), transparent 70%),
+        radial-gradient(500px 360px at 100% 100%, rgba(255, 107, 107, 0.12), transparent 70%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100dvh;
+      -webkit-font-smoothing: antialiased;
+      padding: max(28px, env(safe-area-inset-top)) 16px max(32px, env(safe-area-inset-bottom));
+    }
+    a { color: inherit; text-decoration: none; }
+    :focus-visible { outline: 2px solid var(--coral); outline-offset: 3px; border-radius: 14px; }
+
+    .card { max-width: 480px; margin: 0 auto; }
+
+    .profile { text-align: center; }
+    .avatar {
+      width: 112px; height: 112px; border-radius: 50%; object-fit: cover; object-position: center 20%;
+      border: 3px solid transparent;
+      background: linear-gradient(135deg, var(--ocean), var(--coral)) border-box;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+      display: block; margin: 0 auto 16px;
+    }
+    .pill {
+      display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: 0.02em;
+      color: #7ee0b0; background: rgba(126, 224, 176, 0.12); border: 1px solid rgba(126, 224, 176, 0.35);
+      border-radius: 999px; padding: 4px 12px; margin-bottom: 12px;
+    }
+    .pill::before { content: ''; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #7ee0b0; margin-right: 7px; vertical-align: 1px; }
+    h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; }
+    .handle { color: var(--text-dim); font-size: 14px; margin-top: 4px; }
+    .bio { color: var(--text); opacity: 0.9; font-size: 15px; margin: 14px auto 0; max-width: 380px; }
+
+    .links { margin-top: 28px; display: flex; flex-direction: column; gap: 10px; }
+    .group {
+      font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em;
+      color: var(--text-dim); margin: 14px 4px 0;
+    }
+    .group:first-child { margin-top: 0; }
+    .link {
+      display: grid; grid-template-columns: 44px 1fr 20px; align-items: center; gap: 12px;
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
+      padding: 14px 16px; min-height: 64px;
+      transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+    }
+    .link:hover, .link:active { transform: translateY(-1px); border-color: var(--ocean); background: #2a3157; }
+    .icon {
+      width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center;
+      font-size: 22px; background: var(--bg-light); border: 1px solid var(--border);
+    }
+    .label { font-weight: 600; font-size: 16px; }
+    .sub { color: var(--text-dim); font-size: 13px; margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .arrow { color: var(--text-dim); font-size: 18px; text-align: right; }
+
+    .site {
+      display: block; text-align: center; margin-top: 28px; padding: 16px;
+      border-radius: 16px; font-weight: 600; font-size: 15px;
+      background: linear-gradient(135deg, var(--ocean), var(--coral)); color: #fff;
+      box-shadow: 0 10px 30px rgba(0, 119, 190, 0.25);
+    }
+    .foot { text-align: center; color: var(--text-dim); font-size: 12px; margin-top: 20px; }
+
+    @media (min-width: 720px) {
+      body { padding-top: 64px; }
+      .avatar { width: 128px; height: 128px; }
+      h1 { font-size: 32px; }
+    }
+    @media (prefers-reduced-motion: reduce) { .link { transition: none; } .link:hover { transform: none; } }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <header class="profile">
+      <img class="avatar" src="/profile.jpg" alt="Austin Nafe" width="112" height="112" />
+      <div class="pill">Open to work — AI Engineer / Research</div>
+      <h1>Austin Nafe</h1>
+      <p class="handle">AI Engineer · Founder · Music</p>
+      <p class="bio">I build production AI agents in Python, FastAPI, and LangGraph, make music, and ship small games for fun.</p>
+    </header>
+
+    <nav class="links" aria-label="Links">
+      {links.map((l) =>
+        l.group ? (
+          <div class="group">{l.group}</div>
+        ) : (
+          <a class="link" href={l.href} target={l.ext ? '_blank' : undefined} rel={l.ext ? 'noopener' : undefined}>
+            <span class="icon" aria-hidden="true">{l.icon}</span>
+            <span>
+              <span class="label" style="display:block">{l.label}</span>
+              <span class="sub" style="display:block">{l.sub}</span>
+            </span>
+            <span class="arrow" aria-hidden="true">→</span>
+          </a>
+        )
+      )}
+    </nav>
+
+    <a class="site" href="/">Explore the full site →</a>
+    <p class="foot">austinnafe.com</p>
+  </main>
+  <Analytics />
+</body>
+</html>
