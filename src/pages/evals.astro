@@ -1,0 +1,187 @@
+---
+// src/pages/evals.astro — every AI project I ship, graded by the same harness (goldloop).
+// Numbers come from a dated snapshot of goldloop's docs/scorecards.json, not typed by hand.
+import Analytics from '../components/Analytics.astro';
+import data from '../data/goldloop-scorecards.json';
+
+type SC = (typeof data.projects)[keyof typeof data.projects];
+
+// What each project is, what ran it, and the one change story worth telling.
+const about: Record<string, { name: string; what: string; model: string; real: boolean; change: string; href: string; hrefLabel: string }> = {
+  'TM GO (email → tour sheet)': {
+    name: 'TM Go', what: 'Reads messy venue emails into a tour sheet. My production app.',
+    model: 'gpt-4o-mini · API', real: true,
+    change: 'goldloop found 7 missing names that had silently broken TM Go’s own offline tests since Sept 24.',
+    href: '/tmgo', hrefLabel: 'Case study',
+  },
+  'Support agent (refunds)': {
+    name: 'Support agent', what: 'Looks up orders and issues refunds under guardrails. goldloop’s own demo.',
+    model: 'gpt-4o-mini · API', real: true,
+    change: '14 of 14 deliberate breakages caught. A prompt “improvement” was rejected as noise hiding a bug.',
+    href: 'https://github.com/anafe03/goldloop/tree/main/examples/harness_demo', hrefLabel: 'Code',
+  },
+  'Meridian (health insurance support)': {
+    name: 'Meridian', what: 'Answers health-insurance members and stages bill payments for approval.',
+    model: 'Claude Haiku · Claude Code, no API key', real: true,
+    change: 'Swapping keyword rules for the LLM broke one question: “how much of my deductible is left?” lands in the wrong lane 2 times in 3.',
+    href: 'https://github.com/anafe03/meridian-agent', hrefLabel: 'Code',
+  },
+  'TripTalk (travel concierge)': {
+    name: 'TripTalk', what: 'Finds flights, answers policy questions, stages bookings for approval.',
+    model: 'Claude Haiku · Claude Code, no API key', real: true,
+    change: 'Swapping keyword rules for the LLM fixed 3 phrasings and broke none.',
+    href: 'https://github.com/anafe03/triptalk', hrefLabel: 'Code',
+  },
+  'Bakery assistant (learns from corrections)': {
+    name: 'Bakery assistant', what: 'Drafts replies for a small bakery and learns from the owner’s corrections.',
+    model: 'Offline stand-in model', real: false,
+    change: 'Learned from 7 corrections: 6 → 11 of 11 new messages. Rejected 2 lessons that would have broken a rule; learning everything breaks 2.',
+    href: 'https://github.com/anafe03/goldloop/tree/main/examples/learning_assistant', hrefLabel: 'Code',
+  },
+};
+
+const pct = (x: number | null | undefined) => (x == null ? 'n/a' : `${Math.round(x * 100)}%`);
+const projects = Object.entries(data.projects).map(([key, sc]) => ({ key, sc: sc as SC, a: about[key] })).filter((p) => p.a);
+const totalTests = projects.reduce((n, p) => n + p.sc.n_cases, 0);
+const violations = projects.reduce((n, p) => n + (p.sc.risk?.critical_violations ?? 0), 0);
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Austin Nafe — Evals</title>
+  <meta name="description" content="Every AI project I ship is graded by the same eval harness: cost, reliability, risk and change, measured the same way.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta name="theme-color" content="#0a0e27">
+  <meta property="og:title" content="Austin Nafe — Evals">
+  <meta property="og:description" content="Five AI projects, one eval harness, one scorecard.">
+  <meta property="og:url" content="https://www.austinnafe.com/evals">
+  <meta property="og:image" content="https://www.austinnafe.com/profile.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ocean: #0077be; --ocean-soft: #4fb3ea; --coral: #ff6b6b; --green: #4fd1a5;
+      --bg: #0a0e27; --bg-light: #1a1f3a; --bg-card: #252b4a;
+      --text: #e8eef7; --text-dim: #8b95b0; --border: #2d3557;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font); color: var(--text); line-height: 1.55; -webkit-font-smoothing: antialiased;
+      background: radial-gradient(800px 460px at 50% -140px, rgba(0, 119, 190, 0.25), transparent 70%), var(--bg);
+      min-height: 100dvh;
+      padding: max(40px, env(safe-area-inset-top)) 16px max(48px, env(safe-area-inset-bottom));
+    }
+    a { color: var(--ocean-soft); }
+    a:focus-visible { outline: 2px solid var(--coral); outline-offset: 3px; border-radius: 6px; }
+    .wrap { max-width: 1040px; margin: 0 auto; display: grid; gap: 40px; }
+    .back { font-size: 0.9rem; color: var(--text-dim); text-decoration: none; }
+    .back:hover { color: var(--text); }
+    header { display: grid; gap: 14px; }
+    .eyebrow { font: 700 0.75rem/1 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--coral); }
+    h1 { font-size: clamp(2rem, 5vw, 3.1rem); line-height: 1.08; letter-spacing: -0.02em; font-weight: 800; max-width: 20ch; text-wrap: balance; }
+    .lede { color: var(--text-dim); font-size: 1.1rem; max-width: 62ch; }
+    .totals { display: flex; flex-wrap: wrap; gap: 12px 36px; margin-top: 6px; }
+    .totals div { display: grid; gap: 2px; }
+    .totals b { font: 700 1.6rem/1.1 var(--mono); }
+    .totals span { color: var(--text-dim); font-size: 0.9rem; }
+    .questions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .q { background: var(--bg-light); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; display: grid; gap: 4px; }
+    .q b { font: 700 0.72rem/1 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ocean-soft); }
+    .q span { color: var(--text-dim); font-size: 0.92rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+    .card { background: var(--bg-light); border: 1px solid var(--border); border-radius: 18px; padding: 22px; display: grid; gap: 14px; align-content: start; }
+    .card h2 { font-size: 1.3rem; font-weight: 800; }
+    .what { color: var(--text-dim); font-size: 0.95rem; }
+    .meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .pill { font: 700 0.68rem/1 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; padding: 6px 8px; border-radius: 6px; }
+    .pill.real { background: rgba(79, 209, 165, 0.14); color: var(--green); }
+    .pill.offline { border: 1px dashed var(--text-dim); color: var(--text-dim); }
+    .pill.n { background: var(--bg-card); color: var(--text-dim); }
+    dl { display: grid; gap: 0; }
+    .row { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 12px; padding: 10px 0; border-top: 1px solid var(--border); }
+    dt { font: 700 0.7rem/1.6 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); }
+    dd { font-size: 0.93rem; min-width: 0; }
+    dd strong { font: 700 1.05rem/1.3 var(--mono); color: var(--text); margin-right: 6px; }
+    dd span { color: var(--text-dim); }
+    .card-link { font-size: 0.9rem; font-weight: 600; text-decoration: none; }
+    .card-link:hover { text-decoration: underline; }
+    .how { background: var(--bg-light); border: 1px solid var(--border); border-radius: 18px; padding: 24px; display: grid; gap: 10px; color: var(--text-dim); font-size: 0.95rem; }
+    .how h2 { color: var(--text); font-size: 1.15rem; }
+    .how p { max-width: 72ch; }
+    footer { color: var(--text-dim); font-size: 0.85rem; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; border-top: 1px solid var(--border); padding-top: 20px; }
+    @media (max-width: 760px) { .questions { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <a class="back" href="/">← austinnafe.com</a>
+    <header>
+      <span class="eyebrow">Evals</span>
+      <h1>Every AI project I ship runs through the same eval harness.</h1>
+      <p class="lede">Each one answers the same four questions, measured the same way, by <a href="https://github.com/anafe03/goldloop" target="_blank" rel="noopener">goldloop</a>. Only the tests change between projects. Every number below comes from a real, dated run.</p>
+      <div class="totals">
+        <div><b>{projects.length}</b><span>projects</span></div>
+        <div><b>{totalTests}</b><span>tests, each run several times</span></div>
+        <div><b>{violations}</b><span>must-hold rules broken</span></div>
+      </div>
+    </header>
+
+    <section class="questions" aria-label="The four questions">
+      <div class="q"><b>Cost</b><span>What does each task cost to run?</span></div>
+      <div class="q"><b>Reliability</b><span>Does it work every time, not just once?</span></div>
+      <div class="q"><b>Risk</b><span>Do the rules that must hold, hold?</span></div>
+      <div class="q"><b>Change</b><span>Did the last change help, or break something?</span></div>
+    </section>
+
+    <section class="grid" aria-label="Scorecards">
+      {projects.map(({ sc, a }) => (
+        <article class="card">
+          <div>
+            <h2>{a.name}</h2>
+            <p class="what">{a.what}</p>
+          </div>
+          <div class="meta">
+            <span class={`pill ${a.real ? 'real' : 'offline'}`}>{a.model}</span>
+            <span class="pill n">{sc.n_cases} tests × {sc.repeat}</span>
+          </div>
+          <dl>
+            <div class="row"><dt>Cost</dt><dd>
+              {sc.cost.usd_per_task != null
+                ? <><strong>${sc.cost.usd_per_task.toFixed(4)}</strong><span>per task</span></>
+                : sc.cost.tokens_per_task > 0
+                  ? <><strong>{Math.round(sc.cost.tokens_per_task).toLocaleString()}</strong><span>tokens per task, on a subscription</span></>
+                  : <span>Measured once it runs on a real model.</span>}
+            </dd></div>
+            <div class="row"><dt>Reliability</dt><dd>
+              <strong>{sc.reliability.k}/{sc.reliability.n}</strong><span>pass every run ({pct(sc.reliability.ci95[0])}–{pct(sc.reliability.ci95[1])}){sc.reliability.flaky ? ` · ${sc.reliability.flaky} flaky` : ''}</span>
+            </dd></div>
+            <div class="row"><dt>Risk</dt><dd>
+              <strong>{Math.round((sc.risk.pass_all ?? 0) * sc.risk.guardrail_tests)}/{sc.risk.guardrail_tests}</strong><span>guardrail tests pass every run · {sc.risk.critical_violations} must-hold rules broken</span>
+            </dd></div>
+            <div class="row"><dt>Change</dt><dd><span>{a.change}</span></dd></div>
+          </dl>
+          <a class="card-link" href={a.href} target={a.href.startsWith('http') ? '_blank' : undefined} rel="noopener">{a.hrefLabel} →</a>
+        </article>
+      ))}
+    </section>
+
+    <section class="how">
+      <h2>How to read this</h2>
+      <p><b>Pass every run</b> counts a test only if it passed on every repeat. A test that passes 2 times in 3 fails one user in three. The range is a 95% interval, because a few dozen tests can't pin a number down exactly.</p>
+      <p><b>Guardrail tests</b> guard money, permissions and made-up answers. The hardest of them are <b>must-hold rules</b> (never pay without approval, never auto-fill a cancellation): breaking one fails the project outright, whatever its average.</p>
+      <p><b>Outages aren't failures.</b> When a provider is down or out of credit, the run is marked unfinished and isn't scored. Meridian and TripTalk ran on a Claude subscription through Claude Code, with no API key.</p>
+    </section>
+
+    <footer>
+      <span>Snapshot {data.snapshot} · <a href={data.source} target="_blank" rel="noopener">raw scorecards</a></span>
+      <a href="https://github.com/anafe03/goldloop" target="_blank" rel="noopener">github.com/anafe03/goldloop</a>
+    </footer>
+  </main>
+  <Analytics />
+</body>
+</html>
