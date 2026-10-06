@@ -4027,6 +4027,115 @@ import Analytics from '../components/Analytics.astro';
       animation: pulse 2s infinite;
     }
 
+    .patterns-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .pattern-card {
+      background: var(--bg-light);
+      border: 2px solid var(--border);
+      border-radius: 24px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .pattern-num {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      color: var(--coral);
+    }
+
+    .pattern-card h3 {
+      font-size: 1.35rem;
+      color: var(--text);
+    }
+
+    .pattern-line {
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    .pattern-line b {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--ocean);
+      margin-bottom: 0.15rem;
+    }
+
+    .pattern-proof {
+      color: var(--text);
+      line-height: 1.6;
+      padding: 0.85rem 1rem;
+      border-left: 3px solid var(--coral);
+      background: var(--bg-card);
+      border-radius: 0 12px 12px 0;
+    }
+
+    .pattern-proof a {
+      color: var(--text);
+      font-weight: 700;
+      text-decoration: underline;
+      text-decoration-color: var(--coral);
+      text-underline-offset: 3px;
+      white-space: nowrap;
+    }
+
+    .pattern-jump {
+      margin-top: auto;
+      align-self: flex-start;
+      padding: 0.45rem 1rem;
+      background: transparent;
+      border: 2px solid var(--border);
+      border-radius: 24px;
+      color: var(--text-dim);
+      font: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .pattern-jump:hover {
+      border-color: var(--ocean);
+      color: var(--text);
+    }
+
+    :global(.pattern-chips) {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+
+    :global(.pattern-chip) {
+      padding: 0.25rem 0.7rem;
+      background: transparent;
+      border: 1px solid color-mix(in srgb, var(--coral) 55%, transparent);
+      border-radius: 12px;
+      color: var(--coral);
+      font: inherit;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    :global(.pattern-chip:hover) {
+      background: color-mix(in srgb, var(--coral) 14%, transparent);
+    }
+
+    @media (max-width: 600px) {
+      .pattern-card { padding: 1.5rem; }
+    }
+
     .games-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
@@ -5165,7 +5274,8 @@ import Analytics from '../components/Analytics.astro';
       <ul>
         <li><a href="#now">Now</a></li>
         <li><a href="#businesses">Ventures</a></li>
-        <li><a href="#projects">Projects</a></li>
+        <li data-theme-only="midnight,agents,cyber"><a href="#themes">Themes</a></li>
+        <li><a href="#projects">Use Cases</a></li>
         <li><a href="#blog">Writing</a></li>
         <li><a href="/RESUME_2026.pdf" target="_blank">Resume</a></li>
         <li><a href="#contact">Contact</a></li>
@@ -5336,58 +5446,131 @@ import Analytics from '../components/Analytics.astro';
     </div>
   </section>
 
+  <section id="themes">
+    <div class="container">
+      <div class="section-header">
+        <h2>Themes</h2>
+        <p>The hard problems I keep running into, and the pattern I use for each one</p>
+      </div>
+      <div class="patterns-grid">
+        <article class="pattern-card">
+          <span class="pattern-num">01</span>
+          <h3>LLM reads, code decides</h3>
+          <p class="pattern-line"><b>Problem</b> Models read messy input well, but they can't be trusted to make the decision.</p>
+          <p class="pattern-line"><b>Pattern</b> The model pulls out the structure or picks one lane per turn. Deterministic code does the work.</p>
+          <p class="pattern-proof">Festival Companion: Claude vision reads the lineup poster, and a weighted-interval scheduler picks your sets. <a href="https://github.com/anafe03/festival-companion" target="_blank">Code →</a></p>
+          <button class="pattern-jump" data-pattern-jump="decides">See 4 use cases ↓</button>
+        </article>
+        <article class="pattern-card">
+          <span class="pattern-num">02</span>
+          <h3>Gate the irreversible</h3>
+          <p class="pattern-line"><b>Problem</b> An agent that can spend money can spend it twice, or spend it wrong.</p>
+          <p class="pattern-line"><b>Pattern</b> Propose → approve → commit, with idempotent side effects that survive a crash.</p>
+          <p class="pattern-proof">A double-pay race pinned as a failing test, then closed with a row lock plus an idempotency key, which each close a different hole. <a href="https://github.com/anafe03/meridian-agent/commit/4967e5d" target="_blank">The commit →</a></p>
+          <button class="pattern-jump" data-pattern-jump="gate">See 3 use cases ↓</button>
+        </article>
+        <article class="pattern-card">
+          <span class="pattern-num">03</span>
+          <h3>Evals that gate change</h3>
+          <p class="pattern-line"><b>Problem</b> Agent changes ship on vibes, and a single-run eval hides the flaky cases.</p>
+          <p class="pattern-line"><b>Pattern</b> Golden sets run several times and graded on the answer and the trace. A gate blocks any change that breaks a case that used to pass.</p>
+          <p class="pattern-proof">goldloop catches 14 of 14 deliberate breakages of its demo harness, and it found a silent break in TM Go's own eval tooling. <a href="/evals">Scorecard for 5 projects →</a></p>
+          <button class="pattern-jump" data-pattern-jump="evals">See 4 use cases ↓</button>
+        </article>
+        <article class="pattern-card">
+          <span class="pattern-num">04</span>
+          <h3>Assume the model is compromised</h3>
+          <p class="pattern-line"><b>Problem</b> Sooner or later, a prompt injection gets past the model.</p>
+          <p class="pattern-line"><b>Pattern</b> Treat model output as untrusted, enforce permissions in code, and attack your own agent first.</p>
+          <p class="pattern-proof">A model that obeys an injected refund request still moves no money, because the policy gate blocks the action. <a href="https://github.com/anafe03/goldloop#a-case" target="_blank">The test →</a></p>
+          <button class="pattern-jump" data-pattern-jump="adversarial">See 2 use cases ↓</button>
+        </article>
+        <article class="pattern-card">
+          <span class="pattern-num">05</span>
+          <h3>Survives load and failure</h3>
+          <p class="pattern-line"><b>Problem</b> Demos break under concurrency, outages and migrations.</p>
+          <p class="pattern-line"><b>Pattern</b> Find where it breaks, take slow work off the request path, rehearse failure, and migrate behind a reversible switch.</p>
+          <p class="pattern-proof">Moving the model off the request path took p95 from 1.36s to 15.5ms. Under kill -9 mid-payment, not a cent was lost or duplicated. <a href="https://github.com/anafe03/meridian-agent/blob/main/LOADTEST.md" target="_blank">Load test →</a> <a href="https://github.com/anafe03/meridian-agent/blob/main/CHAOS.md" target="_blank">Chaos drills →</a></p>
+          <button class="pattern-jump" data-pattern-jump="load">See 2 use cases ↓</button>
+        </article>
+        <article class="pattern-card">
+          <span class="pattern-num">06</span>
+          <h3>Learn from corrections, safely</h3>
+          <p class="pattern-line"><b>Problem</b> An assistant that learns from every correction also learns the wrong lessons.</p>
+          <p class="pattern-line"><b>Pattern</b> Keep a lesson only if it helps on messages the assistant hasn't seen and breaks no rule.</p>
+          <p class="pattern-proof">Bakery assistant: with gated learning it passes 11 of 11 cases. Learning everything breaks 2 must-hold rules. <a href="https://github.com/anafe03/goldloop/tree/main/examples/learning_assistant" target="_blank">Code →</a></p>
+          <button class="pattern-jump" data-pattern-jump="learns">See 1 use case ↓</button>
+        </article>
+      </div>
+    </div>
+  </section>
+
   <section id="projects">
     <div class="container">
       <div class="section-header">
-        <h2>Projects</h2>
-        <p>Building at the intersection of tech, health, and creativity</p>
+        <h2>Use Cases</h2>
+        <p>The same patterns, applied to real problems</p>
       </div>
-      <div class="project-filters" id="projectFilters" data-theme-only="midnight">
+      <div class="project-filters" id="projectFilters" data-theme-only="midnight,agents,cyber">
         <button class="project-filter active" data-filter="all">All</button>
-        <button class="project-filter" data-filter="ai">AI / Agents</button>
-        <button class="project-filter" data-filter="security">Security</button>
-        <button class="project-filter" data-filter="health">Health</button>
-        <button class="project-filter" data-filter="finance">Finance</button>
-        <button class="project-filter" data-filter="music">Music</button>
-        <button class="project-filter" data-filter="wip">In Progress</button>
+        <button class="project-filter" data-filter="decides">LLM reads, code decides</button>
+        <button class="project-filter" data-filter="gate">Gate the irreversible</button>
+        <button class="project-filter" data-filter="evals">Evals</button>
+        <button class="project-filter" data-filter="adversarial">Compromised model</button>
+        <button class="project-filter" data-filter="load">Load &amp; failure</button>
+        <button class="project-filter" data-filter="learns">Learning</button>
+        <button class="project-filter" data-filter="other">Other builds</button>
       </div>
       <div class="projects-grid">
-        <div class="project-card" data-theme-only="midnight,agents,healthcare,cyber" data-category="ai,health">
+        <div class="project-card" data-theme-only="midnight,agents,healthcare,cyber" data-category="ai,health" data-pattern="decides,gate,evals,load">
           <h3>Meridian — Member-Support Agent</h3>
-          <p>A health-insurance support agent: an LLM router picks one lane per turn; deterministic workflows do the work. Hybrid RAG over plan docs, two-factor sign-in the model never sees, propose → approve → commit payment gating, and a golden-set eval scored locally and as LangSmith experiments — with a live, clickable graph of every routing decision.</p>
+          <p>A health-insurance support agent: an LLM router picks one lane per turn; deterministic workflows do the work. Hybrid RAG over plan docs, two-factor sign-in the model never sees, propose → approve → commit payment gating, and a golden-set eval scored locally and as LangSmith experiments. Load-tested and chaos-drilled on Postgres.</p>
           <div class="project-tags">
             <span class="tag">LangGraph</span>
-            <span class="tag">LangChain</span>
             <span class="tag">LangSmith</span>
             <span class="tag">RAG</span>
+            <span class="tag">Postgres</span>
             <span class="tag">Streamlit</span>
           </div>
           <a href="https://meridian-agent-gmrna3eeqnqrztusprskfy.streamlit.app" target="_blank" class="project-link">Try it live →</a>
           &nbsp;·&nbsp;
           <a href="https://github.com/anafe03/meridian-agent" target="_blank" class="project-link">GitHub →</a>
         </div>
-        <div class="project-card" data-theme-only="midnight,healthcare,wellness" data-category="health,signal">
-          <h3>HRV Detector</h3>
-          <p>Camera-based heart rate variability detection using photoplethysmography. No wearables required — just your phone camera.</p>
-          <div class="project-tags">
-            <span class="tag">JavaScript</span>
-            <span class="tag">Signal Processing</span>
-            <span class="tag">Health Tech</span>
-          </div>
-          <a href="https://github.com/anafe03/hrv-detector" target="_blank" class="project-link">View Project →</a>
-        </div>
-        <div class="project-card" data-theme-only="midnight,agents,cyber" data-category="ai,security">
-          <h3>Octagon — AI Agent Red Team</h3>
-          <p>Adversarial testing playground for AI agents. Probes agents for prompt-injection, jailbreaks, tool-misuse, and unsafe behavior using reinforcement-learning-driven attack policies.</p>
+        <div class="project-card" data-theme-only="midnight,agents,cyber" data-category="ai,infra" data-pattern="evals,gate,adversarial,learns">
+          <h3>goldloop — Agent Eval Harness</h3>
+          <p>Golden-set evals for LLM agents, built around one question: <strong>did that change actually help?</strong> It runs every case several times, grades the answer and the trace, blocks regressions, and turns production corrections into new cases. Every project here is graded on the same scorecard: cost, reliability, risk and change.</p>
           <div class="project-tags">
             <span class="tag">Python</span>
-            <span class="tag">RL</span>
-            <span class="tag">AI Security</span>
+            <span class="tag">LangGraph</span>
+            <span class="tag">Evals</span>
+            <span class="tag">Statistics</span>
+          </div>
+          <a href="/evals" class="project-link">Scorecard →</a>
+          &nbsp;·&nbsp;
+          <a href="https://github.com/anafe03/goldloop" target="_blank" class="project-link">GitHub →</a>
+        </div>
+        <div class="project-card" data-theme-only="midnight,agents,cyber" data-category="ai,agents" data-pattern="decides,evals,load">
+          <h3>TM Go — Tour-Management Agent</h3>
+          <p>In production for touring bands. A bounded state-machine agent reads venue email, and code decides what to ask next. A 61-case adversarial golden set, and a migration off spreadsheets onto Postgres run as a strangler fig that rolls back with one environment variable.</p>
+          <div class="project-tags">
+            <span class="tag">LangGraph</span>
+            <span class="tag">FastAPI</span>
+            <span class="tag">Postgres</span>
+          </div>
+          <a href="/tmgo" class="project-link">Case study →</a>
+        </div>
+        <div class="project-card" data-theme-only="midnight,agents,cyber" data-category="ai,agents" data-pattern="decides,gate,evals">
+          <h3>TripTalk — Travel Concierge</h3>
+          <p>A travel agent built the same safe way as Meridian: a LangGraph router sorts each request into one lane — flights, policy RAG, trip lookups — and anything that <strong>spends money or can't be undone</strong> is staged and <strong>waits for your approval</strong> before it acts.</p>
+          <div class="project-tags">
+            <span class="tag">LangGraph</span>
+            <span class="tag">LangChain</span>
+            <span class="tag">RAG</span>
             <span class="tag">Streamlit</span>
           </div>
-          <a href="https://github.com/anafe03/octagon" target="_blank" class="project-link">View Project →</a>
+          <a href="https://github.com/anafe03/triptalk" target="_blank" class="project-link">View Project →</a>
         </div>
-        <div class="project-card" data-theme-only="midnight,agents,creative" data-category="ai,agents">
+        <div class="project-card" data-theme-only="midnight,agents,creative,cyber" data-category="ai,agents" data-pattern="decides">
           <h3>Festival Companion</h3>
           <p>Snap a festival lineup poster → Claude <strong>vision</strong> reads the artists, days, and tiers into structured data → a from-scratch <strong>weighted-interval scheduler</strong> picks your best conflict-free sets per day, with regret notes for the ones you had to skip. LLM reads, code decides.</p>
           <div class="project-tags">
@@ -5400,27 +5583,26 @@ import Analytics from '../components/Analytics.astro';
           &nbsp;·&nbsp;
           <a href="https://github.com/anafe03/festival-companion" target="_blank" class="project-link">GitHub →</a>
         </div>
-        <div class="project-card" data-theme-only="midnight,agents,cyber" data-category="ai,agents">
-          <h3>TripTalk — Travel Concierge</h3>
-          <p>A travel agent built the same safe way as Meridian: a LangGraph router sorts each request into one lane — flights, policy RAG, trip lookups — and anything that <strong>spends money or can't be undone</strong> is staged and <strong>waits for your approval</strong> before it acts.</p>
-          <div class="project-tags">
-            <span class="tag">LangGraph</span>
-            <span class="tag">LangChain</span>
-            <span class="tag">RAG</span>
-            <span class="tag">Streamlit</span>
-          </div>
-          <a href="https://github.com/anafe03/triptalk" target="_blank" class="project-link">View Project →</a>
-        </div>
-        <div class="project-card" data-theme-only="midnight,agents,cyber" data-category="ai,infra,wip">
-          <span class="wip-badge">In Progress</span>
-          <h3>LangGraph Eval Harness</h3>
-          <p>Open-source evaluation framework for LangGraph agents. Auto-generates test suites, runs evals against golden outputs, tracks regressions across runs, logs token cost, and visualizes results.</p>
+        <div class="project-card" data-theme-only="midnight,agents,cyber" data-category="ai,security" data-pattern="adversarial">
+          <h3>Octagon — AI Agent Red Team</h3>
+          <p>Adversarial testing playground for AI agents. Probes agents for prompt-injection, jailbreaks, tool-misuse, and unsafe behavior using reinforcement-learning-driven attack policies.</p>
           <div class="project-tags">
             <span class="tag">Python</span>
-            <span class="tag">LangGraph</span>
-            <span class="tag">Evals</span>
-            <span class="tag">AWS</span>
+            <span class="tag">RL</span>
+            <span class="tag">AI Security</span>
+            <span class="tag">Streamlit</span>
           </div>
+          <a href="https://github.com/anafe03/octagon" target="_blank" class="project-link">View Project →</a>
+        </div>
+        <div class="project-card" data-theme-only="midnight,healthcare,wellness" data-category="health,signal">
+          <h3>HRV Detector</h3>
+          <p>Camera-based heart rate variability detection using photoplethysmography. No wearables required — just your phone camera.</p>
+          <div class="project-tags">
+            <span class="tag">JavaScript</span>
+            <span class="tag">Signal Processing</span>
+            <span class="tag">Health Tech</span>
+          </div>
+          <a href="https://github.com/anafe03/hrv-detector" target="_blank" class="project-link">View Project →</a>
         </div>
       </div>
     </div>
@@ -6426,7 +6608,7 @@ import Analytics from '../components/Analytics.astro';
             <span class="decision-date">Mar 2026</span>
             <span class="decision-outcome open">Open</span>
           </div>
-          <h4>Open-sourcing the LangGraph eval harness early.</h4>
+          <h4>Open-sourcing the eval harness (<a href="https://github.com/anafe03/goldloop" target="_blank" style="color: inherit; text-decoration-color: var(--coral); text-underline-offset: 3px;">goldloop</a>) early.</h4>
           <p>Tempted to keep it private and let it be a moat. Decided the opposite: distribution beats moat when the tool itself is the demonstration of skill. Watching adoption to see if the bet is right.</p>
         </article>
 
@@ -8569,11 +8751,11 @@ import Analytics from '../components/Analytics.astro';
     }
 
     // Section IDs that may be present. Visibility is driven entirely by config.order.
-    const ALL_SECTIONS = ['now', 'businesses', 'projects', 'blog', 'music', 'contact', 'picks', 'portfolio', 'dispatches', 'studio', 'journey', 'tracks', 'videos', 'garden', 'calendar', 'harvest', 'observations', 'press', 'manifesto', 'stack', 'faq', 'why-healthcare', 'games', 'album', 'nowplaying', 'letter', 'charts', 'bucket', 'pack', 'numbers', 'decisions', 'rig', 'parks', 'fests', 'practice', 'routines', 'notebook', 'rehab-tech'];
+    const ALL_SECTIONS = ['now', 'businesses', 'themes', 'projects', 'blog', 'music', 'contact', 'picks', 'portfolio', 'dispatches', 'studio', 'journey', 'tracks', 'videos', 'garden', 'calendar', 'harvest', 'observations', 'press', 'manifesto', 'stack', 'faq', 'why-healthcare', 'games', 'album', 'nowplaying', 'letter', 'charts', 'bucket', 'pack', 'numbers', 'decisions', 'rig', 'parks', 'fests', 'practice', 'routines', 'notebook', 'rehab-tech'];
 
     const themes: Record<string, ThemeConfig> = {
       midnight: {
-        order: ['now', 'businesses', 'projects', 'blog', 'stack', 'faq', 'contact'],
+        order: ['now', 'businesses', 'themes', 'projects', 'blog', 'stack', 'faq', 'contact'],
         subtitle: 'AI Engineer. Founder. Technologist.',
         bio: 'I build production AI agents in Python, FastAPI, and LangGraph. Currently looking for roles in AI agents, healthcare tech, and AI research.',
         badge: 'Open to work — AI Engineer / Research'
@@ -8603,13 +8785,13 @@ import Analytics from '../components/Analytics.astro';
         badge: 'Open to creative collaborations'
       },
       agents: {
-        order: ['projects', 'stack', 'blog', 'now', 'businesses', 'faq', 'contact'],
+        order: ['themes', 'projects', 'stack', 'blog', 'now', 'businesses', 'faq', 'contact'],
         subtitle: 'AI Agent Engineer.',
         bio: 'I ship production multi-step agents — LangGraph, FastAPI, persistent memory, evaluation harnesses, adversarial testing. Reliability over demos.',
         badge: 'Open to work — Agent Infrastructure / Platform'
       },
       cyber: {
-        order: ['projects', 'stack', 'now', 'businesses', 'faq', 'contact'],
+        order: ['themes', 'projects', 'stack', 'now', 'businesses', 'faq', 'contact'],
         subtitle: 'AI Security Researcher.',
         bio: 'I red-team AI agents. Octagon explores RL-driven attack policies against agent stacks. PwC background in compliance and risk underwrites the rigor.',
         badge: 'Open to work — AI Security / Red Team'
@@ -8753,10 +8935,10 @@ import Analytics from '../components/Analytics.astro';
       activeProjectFilter = category;
       const theme = document.body.getAttribute('data-theme') || 'midnight';
       document.querySelectorAll<HTMLElement>('#projects .project-card').forEach(card => {
-        const cats = (card.dataset.category || '').split(',').map(s => s.trim());
+        const pats = (card.dataset.pattern || '').split(',').map(s => s.trim()).filter(Boolean);
         const themes = card.dataset.themeOnly ? card.dataset.themeOnly.split(',').map(s => s.trim()) : null;
         const themeOk = !themes || themes.includes(theme);
-        const catOk = category === 'all' || cats.includes(category);
+        const catOk = category === 'all' || (category === 'other' ? !pats.length : pats.includes(category));
         card.style.display = (themeOk && catOk) ? '' : 'none';
       });
       document.querySelectorAll<HTMLElement>('#projectFilters .project-filter').forEach(btn => {
@@ -8768,6 +8950,36 @@ import Analytics from '../components/Analytics.astro';
       btn.addEventListener('click', () => {
         applyProjectFilter(btn.dataset.filter || 'all');
       });
+    });
+
+    // Themes ↔ use cases: each use case lists its themes as chips; a theme
+    // card's button (or a chip) filters the use cases to that theme.
+    const PATTERN_LABELS: Record<string, string> = {
+      decides: 'LLM reads, code decides',
+      gate: 'Gate the irreversible',
+      evals: 'Evals that gate change',
+      adversarial: 'Compromised model',
+      load: 'Load & failure',
+      learns: 'Learns safely'
+    };
+    function jumpToPattern(key: string) {
+      applyProjectFilter(key);
+      document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
+    }
+    document.querySelectorAll<HTMLElement>('#projects .project-card[data-pattern]').forEach(card => {
+      const chips = document.createElement('div');
+      chips.className = 'pattern-chips';
+      (card.dataset.pattern || '').split(',').map(s => s.trim()).filter(Boolean).forEach(key => {
+        const chip = document.createElement('button');
+        chip.className = 'pattern-chip';
+        chip.textContent = PATTERN_LABELS[key] || key;
+        chip.addEventListener('click', () => jumpToPattern(key));
+        chips.appendChild(chip);
+      });
+      card.querySelector('.project-tags')?.before(chips);
+    });
+    document.querySelectorAll<HTMLElement>('[data-pattern-jump]').forEach(btn => {
+      btn.addEventListener('click', () => jumpToPattern(btn.dataset.patternJump || 'all'));
     });
 
     // Theme resolution priority: URL ?theme=X → localStorage → midnight
