@@ -89,6 +89,17 @@ const violations = projects.reduce((n, p) => n + (p.sc.risk?.critical_violations
     .totals div { display: grid; gap: 2px; }
     .totals b { font: 700 1.6rem/1.1 var(--mono); }
     .totals span { color: var(--text-dim); font-size: 0.9rem; }
+    .how-it { display: grid; gap: 16px; scroll-margin-top: 24px; }
+    .how-it h2 { font-size: 1.5rem; font-weight: 800; }
+    .how-it .sub { color: var(--text-dim); }
+    .steps { list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; counter-reset: step; }
+    .steps li { background: var(--bg-light); border: 1px solid var(--border); border-radius: 16px; padding: 18px; display: grid; gap: 6px; align-content: start; counter-increment: step; }
+    .steps li::before { content: counter(step); font: 700 0.8rem/1 var(--mono); color: var(--coral); }
+    .steps b { font-size: 1.05rem; }
+    .steps span { color: var(--text-dim); font-size: 0.93rem; }
+    .steps em { font-style: normal; font-family: var(--mono); font-size: 0.82rem; color: var(--ocean-soft); }
+    @media (max-width: 860px) { .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 480px) { .steps { grid-template-columns: minmax(0, 1fr); } }
     .questions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
     .q { background: var(--bg-light); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; display: grid; gap: 4px; }
     .q b { font: 700 0.72rem/1 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ocean-soft); }
@@ -130,6 +141,17 @@ const violations = projects.reduce((n, p) => n + (p.sc.risk?.critical_violations
         <div><b>{violations}</b><span>must-hold rules broken</span></div>
       </div>
     </header>
+
+    <section class="how-it" id="how">
+      <h2>How it works</h2>
+      <p class="sub">It's a test for an AI, like a spelling test.</p>
+      <ol class="steps">
+        <li><b>Write the test.</b><span>Questions, each with the right answer.</span><em>“When is load-in?” → 3pm</em></li>
+        <li><b>Ask more than once.</b><span>AI can answer differently each time. It only passes if it's right every time.</span></li>
+        <li><b>Some answers are never OK.</b><span>Like spending money without asking. One of those fails everything.</span></li>
+        <li><b>Test before and after.</b><span>If a change makes anything worse, it doesn't ship.</span></li>
+      </ol>
+    </section>
 
     <section class="questions" aria-label="The four questions">
       <div class="q"><b>Cost</b><span>What does each task cost to run?</span></div>
