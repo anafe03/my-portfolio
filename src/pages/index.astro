@@ -4051,6 +4051,29 @@ import Analytics from '../components/Analytics.astro';
       color: var(--coral);
     }
 
+    .pattern-card .pattern-word {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.05;
+    }
+
+    .pattern-tagline {
+      color: var(--text);
+      font-size: 1.05rem;
+      line-height: 1.45;
+    }
+
+    a.pattern-proof {
+      display: block;
+      text-decoration: none;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    a.pattern-proof:hover { color: var(--ocean); }
+
     .pattern-card h3 {
       font-size: 1.35rem;
       color: var(--text);
@@ -5450,56 +5473,50 @@ import Analytics from '../components/Analytics.astro';
     <div class="container">
       <div class="section-header">
         <h2>Themes</h2>
-        <p>The hard problems I keep running into, and the pattern I use for each one</p>
+        <p>Six problems I keep solving</p>
       </div>
       <div class="patterns-grid">
         <article class="pattern-card">
           <span class="pattern-num">01</span>
-          <h3>LLM reads, code decides</h3>
-          <p class="pattern-line"><b>Problem</b> Models read messy input well, but they can't be trusted to make the decision.</p>
-          <p class="pattern-line"><b>Pattern</b> The model pulls out the structure or picks one lane per turn. Deterministic code does the work.</p>
-          <p class="pattern-proof">Festival Companion: Claude vision reads the lineup poster, and a weighted-interval scheduler picks your sets. <a href="https://github.com/anafe03/festival-companion" target="_blank">Code →</a></p>
-          <button class="pattern-jump" data-pattern-jump="decides">See 4 use cases ↓</button>
+          <h3 class="pattern-word">Control</h3>
+          <p class="pattern-tagline">The model reads. Code decides.</p>
+          <a class="pattern-proof" href="https://github.com/anafe03/festival-companion" target="_blank">Claude reads the lineup poster; a scheduler picks your sets.</a>
+          <button class="pattern-jump" data-pattern-jump="decides">4 use cases ↓</button>
         </article>
         <article class="pattern-card">
           <span class="pattern-num">02</span>
-          <h3>Gate the irreversible</h3>
-          <p class="pattern-line"><b>Problem</b> An agent that can spend money can spend it twice, or spend it wrong.</p>
-          <p class="pattern-line"><b>Pattern</b> Propose → approve → commit, with idempotent side effects that survive a crash.</p>
-          <p class="pattern-proof">A double-pay race pinned as a failing test, then closed with a row lock plus an idempotency key, which each close a different hole. <a href="https://github.com/anafe03/meridian-agent/commit/4967e5d" target="_blank">The commit →</a></p>
-          <button class="pattern-jump" data-pattern-jump="gate">See 3 use cases ↓</button>
+          <h3 class="pattern-word">Money</h3>
+          <p class="pattern-tagline">Nothing moves without approval, or twice.</p>
+          <a class="pattern-proof" href="https://github.com/anafe03/meridian-agent/commit/4967e5d" target="_blank">Double-pay race closed with a row lock and an idempotency key.</a>
+          <button class="pattern-jump" data-pattern-jump="gate">3 use cases ↓</button>
         </article>
         <article class="pattern-card">
           <span class="pattern-num">03</span>
-          <h3>Evals that gate change</h3>
-          <p class="pattern-line"><b>Problem</b> Agent changes ship on vibes, and a single-run eval hides the flaky cases.</p>
-          <p class="pattern-line"><b>Pattern</b> Golden sets run several times and graded on the answer and the trace. A gate blocks any change that breaks a case that used to pass.</p>
-          <p class="pattern-proof">goldloop catches 14 of 14 deliberate breakages of its demo harness, and it found a silent break in TM Go's own eval tooling. <a href="/evals">Scorecard for 5 projects →</a></p>
-          <button class="pattern-jump" data-pattern-jump="evals">See 4 use cases ↓</button>
+          <h3 class="pattern-word">Evals</h3>
+          <p class="pattern-tagline">No change ships unless it beats the last.</p>
+          <a class="pattern-proof" href="/evals">14/14 breakages caught. 5 projects scored.</a>
+          <button class="pattern-jump" data-pattern-jump="evals">4 use cases ↓</button>
         </article>
         <article class="pattern-card">
           <span class="pattern-num">04</span>
-          <h3>Assume the model is compromised</h3>
-          <p class="pattern-line"><b>Problem</b> Sooner or later, a prompt injection gets past the model.</p>
-          <p class="pattern-line"><b>Pattern</b> Treat model output as untrusted, enforce permissions in code, and attack your own agent first.</p>
-          <p class="pattern-proof">A model that obeys an injected refund request still moves no money, because the policy gate blocks the action. <a href="https://github.com/anafe03/goldloop#a-case" target="_blank">The test →</a></p>
-          <button class="pattern-jump" data-pattern-jump="adversarial">See 2 use cases ↓</button>
+          <h3 class="pattern-word">Security</h3>
+          <p class="pattern-tagline">Assume the model gets fooled.</p>
+          <a class="pattern-proof" href="https://github.com/anafe03/goldloop#a-case" target="_blank">Injected refund request: $0 moved.</a>
+          <button class="pattern-jump" data-pattern-jump="adversarial">2 use cases ↓</button>
         </article>
         <article class="pattern-card">
           <span class="pattern-num">05</span>
-          <h3>Survives load and failure</h3>
-          <p class="pattern-line"><b>Problem</b> Demos break under concurrency, outages and migrations.</p>
-          <p class="pattern-line"><b>Pattern</b> Find where it breaks, take slow work off the request path, rehearse failure, and migrate behind a reversible switch.</p>
-          <p class="pattern-proof">Moving the model off the request path took p95 from 1.36s to 15.5ms. Under kill -9 mid-payment, not a cent was lost or duplicated. <a href="https://github.com/anafe03/meridian-agent/blob/main/LOADTEST.md" target="_blank">Load test →</a> <a href="https://github.com/anafe03/meridian-agent/blob/main/CHAOS.md" target="_blank">Chaos drills →</a></p>
-          <button class="pattern-jump" data-pattern-jump="load">See 2 use cases ↓</button>
+          <h3 class="pattern-word">Resilience</h3>
+          <p class="pattern-tagline">Holds up under load and crashes.</p>
+          <a class="pattern-proof" href="https://github.com/anafe03/meridian-agent/blob/main/CHAOS.md" target="_blank">p95 1.36s → 15.5ms. kill -9 mid-payment: $0 lost.</a>
+          <button class="pattern-jump" data-pattern-jump="load">2 use cases ↓</button>
         </article>
         <article class="pattern-card">
           <span class="pattern-num">06</span>
-          <h3>Learn from corrections, safely</h3>
-          <p class="pattern-line"><b>Problem</b> An assistant that learns from every correction also learns the wrong lessons.</p>
-          <p class="pattern-line"><b>Pattern</b> Keep a lesson only if it helps on messages the assistant hasn't seen and breaks no rule.</p>
-          <p class="pattern-proof">Bakery assistant: with gated learning it passes 11 of 11 cases. Learning everything breaks 2 must-hold rules. <a href="https://github.com/anafe03/goldloop/tree/main/examples/learning_assistant" target="_blank">Code →</a></p>
-          <button class="pattern-jump" data-pattern-jump="learns">See 1 use case ↓</button>
+          <h3 class="pattern-word">Learning</h3>
+          <p class="pattern-tagline">Keep only the lessons that help.</p>
+          <a class="pattern-proof" href="https://github.com/anafe03/goldloop/tree/main/examples/learning_assistant" target="_blank">11/11 with the gate. 2 rules broken without it.</a>
+          <button class="pattern-jump" data-pattern-jump="learns">1 use case ↓</button>
         </article>
       </div>
     </div>
@@ -5513,11 +5530,11 @@ import Analytics from '../components/Analytics.astro';
       </div>
       <div class="project-filters" id="projectFilters" data-theme-only="midnight,agents,cyber">
         <button class="project-filter active" data-filter="all">All</button>
-        <button class="project-filter" data-filter="decides">LLM reads, code decides</button>
-        <button class="project-filter" data-filter="gate">Gate the irreversible</button>
+        <button class="project-filter" data-filter="decides">Control</button>
+        <button class="project-filter" data-filter="gate">Money</button>
         <button class="project-filter" data-filter="evals">Evals</button>
-        <button class="project-filter" data-filter="adversarial">Compromised model</button>
-        <button class="project-filter" data-filter="load">Load &amp; failure</button>
+        <button class="project-filter" data-filter="adversarial">Security</button>
+        <button class="project-filter" data-filter="load">Resilience</button>
         <button class="project-filter" data-filter="learns">Learning</button>
         <button class="project-filter" data-filter="other">Other builds</button>
       </div>
@@ -8955,12 +8972,12 @@ import Analytics from '../components/Analytics.astro';
     // Themes ↔ use cases: each use case lists its themes as chips; a theme
     // card's button (or a chip) filters the use cases to that theme.
     const PATTERN_LABELS: Record<string, string> = {
-      decides: 'LLM reads, code decides',
-      gate: 'Gate the irreversible',
-      evals: 'Evals that gate change',
-      adversarial: 'Compromised model',
-      load: 'Load & failure',
-      learns: 'Learns safely'
+      decides: 'Control',
+      gate: 'Money',
+      evals: 'Evals',
+      adversarial: 'Security',
+      load: 'Resilience',
+      learns: 'Learning'
     };
     function jumpToPattern(key: string) {
       applyProjectFilter(key);
