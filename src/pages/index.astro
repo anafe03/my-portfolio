@@ -3867,6 +3867,49 @@ import Analytics from '../components/Analytics.astro';
       gap: 2rem;
     }
 
+    /* Full-width feature card with a live preview (Wild Tracks) */
+    .project-card.feature {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: 2.5rem;
+      align-items: center;
+    }
+
+    .project-card.feature > :global(.project-domain) {
+      grid-column: 1 / -1;
+      margin-bottom: -1rem;
+    }
+
+    .feature-preview {
+      display: block;
+      position: relative;
+      aspect-ratio: 16 / 10;
+      max-width: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #03070c;
+      border: 1px solid var(--border);
+    }
+
+    .feature-preview iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      pointer-events: none;
+    }
+
+    .feature-hit {
+      position: absolute;
+      inset: 0;
+    }
+
+    @media (max-width: 800px) {
+      .project-card.feature { grid-template-columns: 1fr; gap: 1.5rem; }
+    }
+
     .project-card {
       background: var(--bg-light);
       border: 2px solid var(--border);
@@ -5352,6 +5395,23 @@ import Analytics from '../components/Analytics.astro';
         <button class="project-filter" data-filter="wip">In Progress</button>
       </div>
       <div class="projects-grid">
+        <div class="project-card feature" data-category="art,wip">
+          <div class="feature-preview">
+            <iframe src="/wild-tracks/?embed" loading="lazy" title="Wild Tracks live preview" tabindex="-1"></iframe>
+            <a href="/wild-tracks/" target="_blank" class="feature-hit" aria-label="Open Wild Tracks"></a>
+          </div>
+          <div>
+            <h3>Wild Tracks</h3>
+            <p>Every shark, sea turtle and seal OCEARCH has tagged since 2012, replayed as glowing dots on a night ocean. 468 animals and 219,000 satellite pings. Each ripple is a fin breaking the surface. Tap any animal to follow its journey. The start of an art piece for Burning Man.</p>
+            <div class="project-tags">
+              <span class="tag">Canvas</span>
+              <span class="tag">D3</span>
+              <span class="tag">Open Data</span>
+              <span class="tag">Generative Art</span>
+            </div>
+            <a href="/wild-tracks/" target="_blank" class="project-link">Open it →</a>
+          </div>
+        </div>
         <div class="project-card" data-theme-only="midnight,agents,healthcare,cyber" data-category="ai,health">
           <h3>Meridian — Member-Support Agent</h3>
           <p>A health-insurance support agent: an LLM router picks one lane per turn; deterministic workflows do the work. Hybrid RAG over plan docs, two-factor sign-in the model never sees, propose → approve → commit payment gating, and a golden-set eval scored locally and as LangSmith experiments — with a live, clickable graph of every routing decision.</p>
@@ -8519,14 +8579,15 @@ import Analytics from '../components/Analytics.astro';
         health:     { color: '#14b8a6', icon: '🩺', label: 'Healthcare' },
         finance:    { color: '#16a34a', icon: '📈', label: 'Finance' },
         music:      { color: '#ec4899', icon: '🎵', label: 'Music' },
-        game:       { color: '#8b5cf6', icon: '🎮', label: 'Game' },
+        art:        { color: '#3fe0c5', icon: '🌊', label: 'Art' },
+        game:      { color: '#8b5cf6', icon: '🎮', label: 'Game' },
         infra:      { color: '#64748b', icon: '⚙️', label: 'Infrastructure' },
         enterprise: { color: '#d4a017', icon: '🏢', label: 'Enterprise' },
         signal:     { color: '#06b6d4', icon: '📡', label: 'Signal' },
         agents:     { color: '#6366f1', icon: '🤖', label: 'AI Agent' },
         ai:         { color: '#3b82f6', icon: '🧠', label: 'AI' }
       };
-      const PRIORITY = ['security', 'health', 'finance', 'music', 'game', 'infra', 'enterprise', 'signal'];
+      const PRIORITY = ['security', 'health', 'finance', 'music', 'art', 'game', 'infra', 'enterprise', 'signal'];
       document.querySelectorAll<HTMLElement>('.project-card').forEach(card => {
         if (card.querySelector('.project-domain')) return;
         const cats = (card.dataset.category || '').split(',').map(s => s.trim()).filter(Boolean);

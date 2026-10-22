@@ -43,6 +43,8 @@ body {
 #sea:active { cursor: grabbing; }
 
 .hud { position: fixed; pointer-events: none; z-index: 2; }
+.embed .hud { display: none; }
+.embed #sea { cursor: default; }
 .hud > * { pointer-events: auto; }
 
 .readout {
@@ -190,6 +192,9 @@ const GROUPS = {
 const payload = JSON.parse(document.getElementById("animals-data").textContent);
 const land = JSON.parse(document.getElementById("land-data").textContent);
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+// ?embed: a controls-free live preview, e.g. the homepage feature card
+const embed = new URLSearchParams(location.search).has("embed");
+if (embed) document.body.classList.add("embed");
 
 // ---- data prep ---------------------------------------------------------------
 function feet(len) {
@@ -219,7 +224,7 @@ function layout() {
   dpr = Math.min(2, window.devicePixelRatio || 1);
   W = innerWidth; H = innerHeight;
   sea.width = W * dpr; sea.height = H * dpr;
-  projection.fitExtent([[12, 70], [W - 12, H - 110]], { type: "Sphere" });
+  projection.fitExtent(embed ? [[0, 0], [W, H]] : [[12, 70], [W - 12, H - 110]], { type: "Sphere" });
   const path = d3.geoPath(projection);
   landPath = new Path2D(path(landGeo));
   gratPath = new Path2D(path(d3.geoGraticule10()));
@@ -247,7 +252,7 @@ let view = d3.zoomIdentity, followId = null;
 const zoom = d3.zoom().scaleExtent([1, 24])
   .on("start", e => { if (e.sourceEvent) followId = null; })
   .on("zoom", e => { view = e.transform; });
-d3.select(sea).call(zoom).on("dblclick.zoom", null);
+if (!embed) d3.select(sea).call(zoom).on("dblclick.zoom", null);
 
 // ---- time ----------------------------------------------------------------------
 let T = Math.max(T0, T1 - 365 * DAY), playing = !reduceMotion, speedIx = 1, loop = true, lastFrame = 0, holdUntil = 0;
@@ -487,8 +492,8 @@ new ResizeObserver(() => document.documentElement.style.setProperty("--deck-h", 
 layout();
 // open on the western Atlantic, where most tagging happens
 {
-  const [cx, cy] = projection([-68, 30]), k = W < 640 ? 2.6 : 2.2;
-  d3.select(sea).call(zoom.transform, d3.zoomIdentity.translate(W / 2 - cx * k, (H - 40) / 2 - cy * k).scale(k));
+  const [cx, cy] = projection([-68, 30]), k = embed ? 2.4 : W < 640 ? 2.6 : 2.2;
+  d3.select(sea).call(zoom.transform, d3.zoomIdentity.translate(W / 2 - cx * k, (embed ? H : H - 40) / 2 - cy * k).scale(k));
 }
 document.fonts?.ready.then(drawTimeline);
 requestAnimationFrame(frame);
