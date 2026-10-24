@@ -1,0 +1,862 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#06070f">
+<meta name="description" content="The tone of the world's news, country by country, every 15 minutes. A globe that glows brighter or darker with the coverage and turns to face whatever just broke. Data: The GDELT Project.">
+<title>World Mood</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@1,6..72,300..500&family=Inter+Tight:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one full-bleed canvas globe. Mood readout top-left; ticker + controls pinned to the bottom;
+   tapping a country opens a card (right panel on desktop, bottom sheet on phones). */
+:root {
+  color-scheme: dark;
+  --night: #06070f;         /* space */
+  --ink: #ece9f7;           /* primary text */
+  --dim: #8f91b0;           /* secondary text */
+  --rule: rgba(190, 195, 255, 0.13);
+  --panel: rgba(11, 12, 25, 0.8);
+  --violet: #8a74ff;        /* darker than usual news */
+  --amber: #ffb65c;         /* brighter than usual news */
+  --hot: #fff0e3;           /* breaking */
+  --display: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --body: "Inter Tight", "Helvetica Neue", Arial, sans-serif;
+  --data: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --top: env(safe-area-inset-top, 0px);
+  --bot: env(safe-area-inset-bottom, 0px);
+  --gl: max(16px, env(safe-area-inset-left, 0px));
+  --gr: max(16px, env(safe-area-inset-right, 0px));
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; overflow: hidden; background: var(--night); color: var(--ink); font-family: var(--body);
+  -webkit-font-smoothing: antialiased;
+  background-image: radial-gradient(ellipse at 50% 45%, #10112a 0%, var(--night) 62%);
+}
+#globe { position: fixed; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+#globe:active { cursor: grabbing; }
+button { font: inherit; color: inherit; }
+
+.top { position: fixed; top: calc(var(--top) + 16px); left: var(--gl); right: var(--gr); pointer-events: none; z-index: 2; }
+.eyebrow { font: 500 10px/1 var(--data); letter-spacing: .16em; text-transform: uppercase; color: var(--dim); }
+.mood { margin: 8px 0 4px; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.mood h1 { margin: 0; font: italic 300 clamp(36px, 7vw, 68px)/0.95 var(--display); letter-spacing: -0.01em; }
+.mood .num { font: 400 clamp(15px, 2.2vw, 20px)/1 var(--data); color: var(--dim); font-variant-numeric: tabular-nums; }
+.sub { font: 400 12px/1.5 var(--data); color: var(--dim); font-variant-numeric: tabular-nums; }
+.sub b { color: var(--ink); font-weight: 500; }
+.clock { margin-top: 2px; font: 400 11px/1.4 var(--data); color: var(--dim); font-variant-numeric: tabular-nums; }
+.clock i { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--amber); margin-right: 6px; vertical-align: 1px; animation: blink 2.4s ease-in-out infinite; }
+@keyframes blink { 50% { opacity: .25; } }
+
+.bottom {
+  position: fixed; left: var(--gl); right: var(--gr); bottom: calc(var(--bot) + 12px); z-index: 2;
+  display: grid; gap: 10px;
+}
+.ticker {
+  display: flex; align-items: center; gap: 10px; min-width: 0; width: 100%; padding: 6px 14px 6px 6px;
+  background: var(--panel); border: 1px solid var(--rule); border-radius: 999px; cursor: pointer; text-align: left;
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+}
+.ticker:focus-visible, .btn:focus-visible, .seg button:focus-visible, .card a:focus-visible { outline: 1px solid var(--amber); outline-offset: 2px; }
+.ticker .lab {
+  flex: none; padding: 5px 10px; border-radius: 999px; font: 500 10px/1 var(--data); letter-spacing: .12em; text-transform: uppercase;
+  background: rgba(255,255,255,0.06); color: var(--dim);
+}
+.ticker.breaking .lab { background: var(--hot); color: #1a0f08; }
+.ticker .txt { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font: 500 13.5px/1.3 var(--body); transition: opacity .35s; }
+.ticker .txt span { color: var(--dim); font-weight: 400; }
+.ticker .txt.fade { opacity: 0; }
+
+.bar { display: flex; align-items: center; justify-content: space-between; gap: 10px 14px; flex-wrap: wrap; }
+.legend { display: flex; align-items: center; gap: 8px; font: 400 10px/1 var(--data); color: var(--dim); letter-spacing: .04em; }
+.legend .ramp { width: 120px; height: 6px; border-radius: 3px; }
+.controls { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.seg { display: flex; padding: 2px; border: 1px solid var(--rule); border-radius: 999px; background: var(--panel); }
+.seg button { height: 28px; padding: 0 12px; border: 0; border-radius: 999px; background: transparent; color: var(--dim); font: 500 11px/1 var(--data); letter-spacing: .06em; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: rgba(255,255,255,0.1); color: var(--ink); }
+.btn {
+  height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--rule); background: var(--panel);
+  color: var(--ink); font: 500 11px/1 var(--data); letter-spacing: .06em; cursor: pointer; white-space: nowrap;
+}
+.btn:hover, .seg button:hover { color: var(--ink); border-color: rgba(190,195,255,0.3); }
+.btn[aria-pressed="true"] { border-color: var(--amber); color: var(--amber); }
+.credit { font: 400 10px/1.4 var(--data); color: var(--dim); letter-spacing: .03em; }
+.credit a { color: var(--dim); }
+
+.card {
+  position: fixed; z-index: 4; top: calc(var(--top) + 16px); right: var(--gr); width: min(360px, calc(100% - 32px));
+  max-height: calc(100% - var(--top) - var(--bot) - 32px); overflow-y: auto; overscroll-behavior: contain;
+  padding: 18px 18px 16px; background: rgba(10, 11, 24, 0.9); border: 1px solid var(--rule); border-radius: 16px;
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+}
+.card[hidden] { display: none; }
+.card .x { position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; padding: 0; border-radius: 50%; }
+.card h2 { margin: 6px 40px 2px 0; font: italic 400 36px/1 var(--display); text-wrap: balance; }
+.card .moodline { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font: 500 14px/1.4 var(--body); }
+.card .moodline .sw { width: 10px; height: 10px; border-radius: 50%; box-shadow: 0 0 10px currentColor; }
+.card .moodline span { color: var(--dim); font: 400 12px/1.4 var(--data); font-variant-numeric: tabular-nums; }
+.card .stat { margin-top: 4px; font: 400 12px/1.5 var(--data); color: var(--dim); font-variant-numeric: tabular-nums; }
+.card .stat b { color: var(--ink); font-weight: 500; }
+.card .flag { margin-top: 10px; padding: 8px 10px; border-radius: 10px; background: var(--hot); color: #1a0f08; font: 500 12px/1.4 var(--body); }
+.card svg { display: block; width: 100%; height: 64px; margin-top: 14px; overflow: visible; }
+.card .axis { display: flex; justify-content: space-between; font: 400 10px/1 var(--data); color: var(--dim); margin-top: 4px; }
+.card h3 { margin: 16px 0 6px; font: 500 10px/1 var(--data); letter-spacing: .14em; text-transform: uppercase; color: var(--dim); }
+.card ol { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.card li a { color: var(--ink); text-decoration: none; font: 500 13.5px/1.35 var(--body); }
+.card li a:hover { text-decoration: underline; text-decoration-color: var(--dim); }
+.card li .meta { display: block; margin-top: 2px; font: 400 10.5px/1.3 var(--data); color: var(--dim); }
+.card .empty { font: 400 12.5px/1.5 var(--body); color: var(--dim); }
+
+dialog {
+  width: min(520px, calc(100% - 32px)); max-height: calc(100% - 48px); padding: 22px 22px 18px;
+  background: #0c0d1c; color: var(--ink); border: 1px solid var(--rule); border-radius: 16px;
+}
+dialog::backdrop { background: rgba(3, 3, 10, 0.6); backdrop-filter: blur(3px); }
+dialog h2 { margin: 0 0 10px; font: italic 400 30px/1 var(--display); }
+dialog p { margin: 0 0 10px; font: 400 14px/1.55 var(--body); color: #cfcde2; }
+dialog p b { color: var(--ink); font-weight: 600; }
+dialog a { color: var(--amber); }
+dialog .btn { margin-top: 6px; }
+
+@media (max-width: 640px) {
+  .card { top: auto; left: var(--gl); right: var(--gr); width: auto; bottom: calc(var(--bot) + 12px); max-height: 64%; }
+  .legend .ramp { width: 90px; }
+  .credit { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .clock i { animation: none; }
+  .ticker .txt { transition: none; }
+}
+</style>
+</head>
+<body>
+<canvas id="globe" aria-label="Globe of countries colored by the tone of their news coverage"></canvas>
+
+<header class="top">
+  <div class="eyebrow">World Mood · the tone of the news</div>
+  <div class="mood"><h1 id="word">Listening…</h1><span class="num" id="num"></span></div>
+  <div class="sub" id="sub">Reading the last 24 hours of world news</div>
+  <div class="clock" id="clock"><i></i>connecting</div>
+</header>
+
+<div class="bottom">
+  <button class="ticker" id="ticker" type="button" aria-live="polite">
+    <span class="lab" id="tlab">Live</span><span class="txt" id="ttxt">Waiting for the first stories…</span>
+  </button>
+  <div class="bar">
+    <div class="legend" aria-hidden="true">
+      <span id="lo">darker</span><div class="ramp" id="ramp"></div><span id="hi">brighter</span>
+    </div>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Color countries by">
+        <button type="button" id="m-mood" aria-pressed="true">Mood</button>
+        <button type="button" id="m-shift" aria-pressed="false">Shift</button>
+      </div>
+      <button class="btn" id="sound" type="button" aria-pressed="false">Sound off</button>
+      <button class="btn" id="howbtn" type="button">How it works</button>
+    </div>
+    <div class="credit">News data: <a href="https://www.gdeltproject.org/" target="_blank" rel="noopener">The GDELT Project</a> · refreshed every 15 min</div>
+  </div>
+</div>
+
+<aside class="card" id="card" hidden aria-live="polite"></aside>
+
+<dialog id="how">
+  <h2>How it works</h2>
+  <p>Every 15 minutes <a href="https://www.gdeltproject.org/" target="_blank" rel="noopener">The GDELT Project</a> publishes the news events its machines read in that window, from outlets worldwide in more than 100 languages. This page pulls those files straight into your browser.</p>
+  <p><b>Tone is how the coverage reads, not a judgment of the country.</b> It's the average sentiment of each article's text, roughly −10 to +10. A country's color is the tone of stories about events located there in the newest window, weighted by how widely each was picked up, and pulled toward its usual tone when there are only a few stories.</p>
+  <p>News runs negative, about −1.5 on a typical day, so colors center there: <span style="color:var(--violet)">violet</span> reads darker than usual news, <span style="color:var(--amber)">amber</span> brighter. Glow is how much is being written. <b>Shift</b> colors each country against its own last 24 hours instead.</p>
+  <p><b>Breaking</b> means a country's coverage spiked well above its usual 15-minute volume, or turned sharply darker, in the newest window. The globe turns to face it.</p>
+  <p>Headlines are rebuilt from article links, so the wording can be rough, and places come from automated geocoding that is sometimes wrong. Map: Natural Earth via world-atlas.</p>
+  <form method="dialog"><button class="btn">Close</button></form>
+</dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fflate@0.8.2/umd/index.js"></script>
+
+<!-- The model: pure functions over GDELT 2.0 event files, no DOM (scripts/check.mjs runs this block in node). -->
+<script id="model">
+var WM = (() => {
+  // GDELT 2.0 event export, 0-based columns (codebook order, verified against live files)
+  const C = { ROOT: 28, QUAD: 29, MENTIONS: 31, TONE: 34, GEO_TYPE: 51, CC: 53, LAT: 56, LON: 57, URL: 60 };
+  const SHRINK = 3;  // in article-weight units: a country with a story or two stays near its usual tone
+
+  // FIPS 10-4 (what GDELT uses) -> ISO 3166 numeric (what world-atlas uses). "-" = no ISO code, matched by map name.
+  const FIPS_TABLE = `
+AF 004 Afghanistan|AL 008 Albania|AG 012 Algeria|AQ 016 American Samoa|AN 020 Andorra|AO 024 Angola|AV 660 Anguilla
+AY 010 Antarctica|AC 028 Antigua and Barbuda|AR 032 Argentina|AM 051 Armenia|AA 533 Aruba|AS 036 Australia|AU 040 Austria
+AJ 031 Azerbaijan|BF 044 Bahamas|BA 048 Bahrain|BG 050 Bangladesh|BB 052 Barbados|BO 112 Belarus|BE 056 Belgium
+BH 084 Belize|BN 204 Benin|BD 060 Bermuda|BT 064 Bhutan|BL 068 Bolivia|BK 070 Bosnia and Herzegovina|BC 072 Botswana
+BR 076 Brazil|VI 092 British Virgin Islands|BX 096 Brunei|BU 100 Bulgaria|UV 854 Burkina Faso|BM 104 Myanmar|BY 108 Burundi
+CB 116 Cambodia|CM 120 Cameroon|CA 124 Canada|CV 132 Cape Verde|CJ 136 Cayman Islands|CT 140 Central African Republic
+CD 148 Chad|CI 152 Chile|CH 156 China|CO 170 Colombia|CN 174 Comoros|CF 178 Congo|CG 180 DR Congo|CW 184 Cook Islands
+CS 188 Costa Rica|IV 384 Côte d'Ivoire|HR 191 Croatia|CU 192 Cuba|UC 531 Curaçao|CY 196 Cyprus|EZ 203 Czechia
+DA 208 Denmark|DJ 262 Djibouti|DO 212 Dominica|DR 214 Dominican Republic|EC 218 Ecuador|EG 818 Egypt|ES 222 El Salvador
+EK 226 Equatorial Guinea|ER 232 Eritrea|EN 233 Estonia|WZ 748 Eswatini|ET 231 Ethiopia|FK 238 Falkland Islands
+FO 234 Faroe Islands|FJ 242 Fiji|FI 246 Finland|FR 250 France|FG 254 French Guiana|FP 258 French Polynesia
+FS 260 French Southern Lands|GB 266 Gabon|GA 270 Gambia|GZ 275 Gaza|GG 268 Georgia|GM 276 Germany|GH 288 Ghana
+GI 292 Gibraltar|GR 300 Greece|GL 304 Greenland|GJ 308 Grenada|GP 312 Guadeloupe|GQ 316 Guam|GT 320 Guatemala
+GK 831 Guernsey|GV 324 Guinea|PU 624 Guinea-Bissau|GY 328 Guyana|HA 332 Haiti|VT 336 Vatican|HO 340 Honduras
+HK 344 Hong Kong|HU 348 Hungary|IC 352 Iceland|IN 356 India|ID 360 Indonesia|IR 364 Iran|IZ 368 Iraq|EI 372 Ireland
+IM 833 Isle of Man|IS 376 Israel|IT 380 Italy|JM 388 Jamaica|JA 392 Japan|JE 832 Jersey|JO 400 Jordan|KZ 398 Kazakhstan
+KE 404 Kenya|KR 296 Kiribati|KN 408 North Korea|KS 410 South Korea|KV - Kosovo|KU 414 Kuwait|KG 417 Kyrgyzstan
+LA 418 Laos|LG 428 Latvia|LE 422 Lebanon|LT 426 Lesotho|LI 430 Liberia|LY 434 Libya|LS 438 Liechtenstein
+LH 440 Lithuania|LU 442 Luxembourg|MC 446 Macau|MK 807 North Macedonia|MA 450 Madagascar|MI 454 Malawi|MY 458 Malaysia
+MV 462 Maldives|ML 466 Mali|MT 470 Malta|RM 584 Marshall Islands|MB 474 Martinique|MR 478 Mauritania|MP 480 Mauritius
+MF 175 Mayotte|MX 484 Mexico|FM 583 Micronesia|MD 498 Moldova|MN 492 Monaco|MG 496 Mongolia|MJ 499 Montenegro
+MH 500 Montserrat|MO 504 Morocco|MZ 508 Mozambique|WA 516 Namibia|NR 520 Nauru|NP 524 Nepal|NL 528 Netherlands
+NC 540 New Caledonia|NZ 554 New Zealand|NU 558 Nicaragua|NG 562 Niger|NI 566 Nigeria|NE 570 Niue|NF 574 Norfolk Island
+CQ 580 Northern Mariana Islands|NO 578 Norway|MU 512 Oman|PK 586 Pakistan|PS 585 Palau|WE 275 West Bank|PM 591 Panama
+PP 598 Papua New Guinea|PA 600 Paraguay|PE 604 Peru|RP 608 Philippines|PC 612 Pitcairn|PL 616 Poland|PO 620 Portugal
+RQ 630 Puerto Rico|QA 634 Qatar|RE 638 Réunion|RO 642 Romania|RS 643 Russia|RW 646 Rwanda|SH 654 Saint Helena
+SC 659 Saint Kitts and Nevis|ST 662 Saint Lucia|SB 666 Saint Pierre and Miquelon|VC 670 Saint Vincent|WS 882 Samoa
+SM 674 San Marino|TP 678 São Tomé and Príncipe|SA 682 Saudi Arabia|SG 686 Senegal|RI 688 Serbia|RB 688 Serbia|SE 690 Seychelles
+SL 694 Sierra Leone|SN 702 Singapore|NN 534 Sint Maarten|LO 703 Slovakia|SI 705 Slovenia|BP 090 Solomon Islands
+SO 706 Somalia|SF 710 South Africa|OD 728 South Sudan|SP 724 Spain|CE 144 Sri Lanka|SU 729 Sudan|NS 740 Suriname
+SV 744 Svalbard|SW 752 Sweden|SZ 756 Switzerland|SY 760 Syria|TW 158 Taiwan|TI 762 Tajikistan|TZ 834 Tanzania
+TH 764 Thailand|TT 626 Timor-Leste|TO 768 Togo|TL 772 Tokelau|TN 776 Tonga|TD 780 Trinidad and Tobago|TS 788 Tunisia
+TU 792 Turkey|TX 795 Turkmenistan|TK 796 Turks and Caicos|TV 798 Tuvalu|UG 800 Uganda|UP 804 Ukraine|AE 784 UAE
+UK 826 United Kingdom|US 840 United States|UY 858 Uruguay|UZ 860 Uzbekistan|NH 548 Vanuatu|VE 862 Venezuela
+VM 704 Vietnam|VQ 850 US Virgin Islands|WF 876 Wallis and Futuna|WI 732 Western Sahara|YM 887 Yemen|ZA 894 Zambia
+ZI 716 Zimbabwe|IO 086 British Indian Ocean Territory|SX 239 South Georgia|TB 652 Saint Barthélemy|RN 663 Saint Martin`;
+  const FIPS = {};
+  for (const item of FIPS_TABLE.split(/[|\n]/)) {
+    const m = item.trim().match(/^([A-Z]{2}) (\d{3}|-) (.+)$/);
+    if (m && m[3] !== "-") FIPS[m[1]] = { iso: m[2] === "-" ? null : m[2], name: m[3] };
+  }
+  // Map shapes a code should light. Unrecognized territories in world-atlas 110m have no id, only a name.
+  const EXTRA_SHAPES = { SO: ["Somaliland"], CY: ["N. Cyprus"], KV: ["Kosovo"] };
+  function shapeKeys(cc) {
+    const f = FIPS[cc]; if (!f) return [];
+    return [...(f.iso ? [f.iso] : []), ...(EXTRA_SHAPES[cc] || [])];
+  }
+  const nameOf = cc => (FIPS[cc] ? FIPS[cc].name : cc);
+
+  const stampToMs = s => Date.UTC(+s.slice(0, 4), +s.slice(4, 6) - 1, +s.slice(6, 8), +s.slice(8, 10), +s.slice(10, 12), +s.slice(12, 14));
+  const msToStamp = ms => new Date(ms).toISOString().replace(/[-:T]/g, "").slice(0, 14);
+
+  // One 15-minute file -> per-country article tallies. An article geocoded to a country counts once there,
+  // weighted 1 + ln(peak mentions) so a wire story picked up everywhere outweighs a one-off.
+  function parseWindow(text, stamp) {
+    const byCC = new Map(), urls = new Map(), cent = {}, rows = {};
+    let rowsNoCC = 0, rowsAll = 0;
+    for (const line of text.split("\n")) {
+      if (!line) continue;
+      const c = line.split("\t");
+      if (c.length < 61) continue;
+      const url = c[C.URL], tone = +c[C.TONE], m = Math.max(1, +c[C.MENTIONS] || 1), cc = c[C.CC];
+      if (!url || !isFinite(tone)) continue;
+      rowsAll++;
+      let g = urls.get(url); if (!g) urls.set(url, g = { tone, m: 0 }); g.m = Math.max(g.m, m);
+      if (!cc) { rowsNoCC++; continue; }
+      rows[cc] = (rows[cc] || 0) + 1;
+      let arts = byCC.get(cc); if (!arts) byCC.set(cc, arts = new Map());
+      let a = arts.get(url); if (!a) arts.set(url, a = { tone, m: 0, ev: 0, conflict: 0 });
+      a.m = Math.max(a.m, m); a.ev++; if (c[C.QUAD] === "4") a.conflict++;
+      if (c[C.GEO_TYPE] === "1" && !cent[cc]) {
+        const lat = +c[C.LAT], lon = +c[C.LON];
+        if (isFinite(lat) && isFinite(lon) && (lat || lon)) cent[cc] = [lon, lat];
+      }
+    }
+    const countries = {};
+    for (const [cc, arts] of byCC) {
+      let w = 0, tw = 0, ev = 0, conf = 0; const list = [];
+      for (const [url, a] of arts) {
+        const wi = 1 + Math.log(a.m); w += wi; tw += wi * a.tone; ev += a.ev; conf += a.conflict; list.push({ url, tone: a.tone, m: a.m });
+      }
+      list.sort((x, y) => y.m - x.m || x.tone - y.tone);
+      countries[cc] = { n: arts.size, w, tw, conflict: ev ? conf / ev : 0, heads: list.slice(0, 5) };
+    }
+    let gw = 0, gtw = 0;
+    for (const a of urls.values()) { const wi = 1 + Math.log(a.m); gw += wi; gtw += wi * a.tone; }
+    return { stamp, t: stampToMs(stamp), countries, cent, rows, rowsNoCC, rowsAll, global: { n: urls.size, w: gw, tw: gtw } };
+  }
+
+  // All loaded windows -> each country's mood now vs. its own baseline, and what's breaking.
+  function computeState(windows) {
+    const wins = [...windows].sort((a, b) => b.t - a.t);
+    const latest = wins[0], older = wins.slice(1), K = older.length;
+    const gNow = latest.global.w ? latest.global.tw / latest.global.w : 0;
+    let gw = 0, gtw = 0; for (const o of older) { gw += o.global.w; gtw += o.global.tw; }
+    const gBase = gw ? gtw / gw : gNow;
+    const hourAgo = latest.t - 60 * 60 * 1000;
+    const codes = new Set(), cent = {};
+    for (const w of wins) { for (const cc in w.countries) codes.add(cc); for (const cc in w.cent) cent[cc] = cent[cc] || w.cent[cc]; }
+    const out = {};
+    for (const cc of codes) {
+      let sn = 0, sw = 0, stw = 0, recent = 0; const tones = [];
+      for (const o of older) {
+        const r = o.countries[cc]; if (!r) continue;
+        sn += r.n; sw += r.w; stw += r.tw; if (r.n >= 3) tones.push(r.tw / r.w);
+      }
+      for (const w of wins) if (w.t > hourAgo && w.countries[cc]) recent += w.countries[cc].n;
+      const lam = K ? sn / K : 0;
+      const base = (stw + SHRINK * gBase) / (sw + SHRINK);   // sparse countries lean on the world's baseline
+      let std = 1.2;
+      if (tones.length >= 4) {
+        const mu = tones.reduce((a, b) => a + b, 0) / tones.length;
+        std = Math.sqrt(tones.reduce((a, b) => a + (b - mu) ** 2, 0) / (tones.length - 1));
+      }
+      std = Math.max(std, 0.6);
+      const r = latest.countries[cc], n = r ? r.n : 0;
+      const now = r ? (r.tw + SHRINK * base) / (r.w + SHRINK) : base;
+      const zv = (n - lam) / Math.sqrt(lam + 1);   // volume spike, Poisson-ish
+      const zt = (base - now) / std;              // how much darker than usual
+      let score = 0;
+      if (K >= 6 && n >= 5 && ((zv >= 3 && n >= 2 * lam + 3) || (zt >= 1.5 && zv >= 0.5)))
+        score = Math.max(0, zv) * 0.7 + Math.max(0, zt);
+      let heads = r ? r.heads : [];
+      if (!heads.length) for (const w of wins) if (w.countries[cc]) { heads = w.countries[cc].heads; break; }
+      const series = wins.slice().reverse().map(w => {
+        const x = w.countries[cc];
+        return { t: w.t, n: x ? x.n : 0, tone: x ? (x.tw + SHRINK * base) / (x.w + SHRINK) : null };
+      });
+      out[cc] = { cc, name: nameOf(cc), n, lam, recent, base, now, delta: now - base, std, zv, zt, score, conflict: r ? r.conflict : 0, heads, series };
+    }
+    const all = Object.values(out);
+    return {
+      stamp: latest.stamp, t: latest.t, K, gNow, gBase, articles: latest.global.n, cent, countries: out,
+      breaking: all.filter(c => c.score > 0).sort((a, b) => b.score - a.score),
+      covered: all.filter(c => c.n > 0).sort((a, b) => b.n - a.n),
+    };
+  }
+
+  function moodWord(t) {
+    if (t >= 0.5) return "bright";
+    if (t >= -0.3) return "upbeat";
+    if (t >= -1.0) return "calm";
+    if (t >= -1.6) return "steady";
+    if (t >= -2.4) return "slightly tense";
+    if (t >= -3.5) return "tense";
+    if (t >= -5) return "grim";
+    return "dark";
+  }
+  const fmtTone = t => (t >= 0 ? "+" : "−") + Math.abs(t).toFixed(1);
+
+  // A readable title from the article's URL slug (GDELT doesn't ship headlines).
+  function headline(url) {
+    let u; try { u = new URL(url); } catch (e) { return { title: url, domain: "" }; }
+    const domain = u.hostname.replace(/^www\d?\./, "");
+    const segs = u.pathname.split("/").filter(Boolean).reverse();
+    for (let s of segs) {
+      try { s = decodeURIComponent(s); } catch (e) {}
+      s = s.replace(/\.(s?html?|php|aspx?|cms|jsp)$/i, "");
+      const words = s.split(/[-_+.\s]+/).filter(w => w && !/^\d{3,}$/.test(w) && !(/\d/.test(w) && /[a-z]/i.test(w) && w.length >= 6));
+      while (words.length && /^\d+$/.test(words[0])) words.shift();   // dates like 10-23-...
+      if (words.length >= 3) {
+        let t = words.join(" ");
+        t = t.charAt(0).toUpperCase() + t.slice(1);
+        if (t.length > 110) t = t.slice(0, 107).replace(/\s+\S*$/, "") + "…";
+        return { title: t, domain };
+      }
+    }
+    return { title: domain, domain, bare: true };
+  }
+
+  // headlines with a real title first, bare domains last
+  const bestHeads = heads => heads.map(h => ({ ...headline(h.url), url: h.url, tone: h.tone, m: h.m })).sort((a, b) => !!a.bare - !!b.bare);
+
+  return { FIPS, shapeKeys, bestHeads, nameOf, stampToMs, msToStamp, parseWindow, computeState, moodWord, fmtTone, headline };
+})();
+</script>
+
+<script>
+(() => {
+const BASE = "https://data.gdeltproject.org/gdeltv2/";
+const ATLAS = "https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json";
+const Q = 15 * 60 * 1000, DAY = 24 * 60 * 60 * 1000;
+const TAU = Math.PI * 2;
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const $ = id => document.getElementById(id);
+
+// ---- color ----------------------------------------------------------------------
+// Diverging violet <-> amber (colorblind-safe pair), centered on typical news tone (about -1.5).
+const moodScale = d3.scaleLinear().domain([-5.5, -3, -1.5, -0.2, 1.5])
+  .range(["#4b2fb0", "#8a74ff", "#9a9bb4", "#ffb65c", "#ffe2a3"]).interpolate(d3.interpolateLab).clamp(true);
+const shiftScale = d3.scaleLinear().domain([-2.5, -1, 0, 1, 2.5])
+  .range(["#4b2fb0", "#8a74ff", "#9a9bb4", "#ffb65c", "#ffe2a3"]).interpolate(d3.interpolateLab).clamp(true);
+let mode = "mood";
+function paintLegend() {
+  const s = mode === "mood" ? moodScale : shiftScale, [a, b] = [s.domain()[0], s.domain()[4]];
+  $("ramp").style.background = `linear-gradient(90deg, ${d3.range(9).map(i => s(a + (b - a) * i / 8)).join(",")})`;
+  $("lo").textContent = mode === "mood" ? "darker" : "darker than usual";
+  $("hi").textContent = mode === "mood" ? "brighter" : "brighter";
+}
+
+// ---- data ---------------------------------------------------------------------------
+const wins = new Map();
+let state = null, latestStamp = null, loading = { done: 0, total: 0 };
+
+async function fetchLatestStamp() {
+  const txt = await (await fetch(`${BASE}lastupdate.txt?t=${Date.now()}`, { cache: "no-store" })).text();
+  const m = txt.match(/(\d{14})\.export\.CSV\.zip/);
+  if (!m) throw new Error("no export in lastupdate.txt");
+  return m[1];
+}
+async function loadWindow(stamp) {
+  if (wins.has(stamp)) return wins.get(stamp);
+  try {
+    const r = await fetch(`${BASE}${stamp}.export.CSV.zip`);
+    if (!r.ok) return null;
+    const files = fflate.unzipSync(new Uint8Array(await r.arrayBuffer()));
+    const text = new TextDecoder().decode(Object.values(files)[0]);
+    const w = WM.parseWindow(text, stamp);
+    wins.set(stamp, w);
+    return w;
+  } catch (e) { return null; }
+}
+// newest 6 hours at full resolution, then one window an hour back to 24h: ~42 small files
+function backfillStamps(stamp) {
+  const t0 = WM.stampToMs(stamp), out = [];
+  for (let i = 1; i < 24; i++) out.push(WM.msToStamp(t0 - i * Q));
+  for (let h = 7; h <= 24; h++) out.push(WM.msToStamp(t0 - h * 4 * Q));
+  return out;
+}
+async function pool(items, n, fn) {
+  let i = 0;
+  await Promise.all(Array.from({ length: n }, async () => { while (i < items.length) await fn(items[i++]); }));
+}
+let recomputeQueued = false;
+function queueRecompute() {
+  if (recomputeQueued) return;
+  recomputeQueued = true;
+  setTimeout(() => { recomputeQueued = false; recompute(); }, 250);
+}
+function recompute() {
+  if (!wins.size) return;
+  state = WM.computeState([...wins.values()]);
+  colorFeatures();
+  renderReadout();
+  buildTicker();
+  if (openCC) renderCard(openCC);
+  sound.setMood(state.gNow, state.articles);
+}
+
+async function boot() {
+  try {
+    const [topo, stamp] = await Promise.all([fetch(ATLAS).then(r => r.json()), fetchLatestStamp()]);
+    setupMap(topo);
+    latestStamp = stamp;
+    const list = backfillStamps(stamp);
+    loading = { done: 0, total: list.length + 1 };
+    await loadWindow(stamp); loading.done++;
+    recompute();
+    await pool(list, 4, async s => { await loadWindow(s); loading.done++; queueRecompute(); });
+    loading = { done: 0, total: 0 };
+    recompute();
+    reactToBreaking();
+    scheduleRefresh();
+  } catch (e) {
+    $("word").textContent = "Offline";
+    $("sub").textContent = "Couldn't reach the GDELT news feed. Retrying in a minute.";
+    setTimeout(boot, 60000);
+  }
+}
+
+let refreshTimer = null;
+function nextExpected() { return WM.stampToMs(latestStamp) + Q + 90 * 1000; }   // files land a minute or so after the quarter
+function scheduleRefresh(ms) {
+  clearTimeout(refreshTimer);
+  refreshTimer = setTimeout(refresh, ms ?? Math.max(20000, nextExpected() - Date.now()));
+}
+async function refresh() {
+  try {
+    const stamp = await fetchLatestStamp();
+    if (stamp <= latestStamp) return scheduleRefresh(60000);
+    const missing = [];
+    for (let t = WM.stampToMs(latestStamp) + Q; t <= WM.stampToMs(stamp) && missing.length < 8; t += Q) missing.push(WM.msToStamp(t));
+    await pool(missing, 4, loadWindow);
+    latestStamp = stamp;
+    const cutoff = WM.stampToMs(stamp) - DAY - 60000;
+    for (const [s, w] of wins) if (w.t < cutoff) wins.delete(s);
+    recompute();
+    reactToBreaking();
+    scheduleRefresh();
+  } catch (e) { scheduleRefresh(60000); }
+}
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden && latestStamp && Date.now() > nextExpected()) refresh();
+});
+
+// ---- readout + ticker ---------------------------------------------------------------
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+function renderReadout() {
+  const s = state;
+  $("word").textContent = cap(WM.moodWord(s.gNow));
+  $("word").style.color = moodScale(s.gNow);
+  $("num").textContent = `${WM.fmtTone(s.gNow)} tone`;
+  const usual = s.K ? ` · usually ${WM.fmtTone(s.gBase)}` : "";
+  $("sub").innerHTML = `<b>${s.articles.toLocaleString()}</b> stories in the last 15 min${usual}`;
+}
+function updateClock() {
+  const el = $("clock");
+  if (loading.total) { el.innerHTML = `<i></i>reading the news · ${loading.done}/${loading.total} windows`; return; }
+  if (!latestStamp) return;
+  const rem = nextExpected() - Date.now();
+  const at = new Date(WM.stampToMs(latestStamp)).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  el.innerHTML = rem > 0
+    ? `<i></i>as of ${at} · next update in ${Math.floor(rem / 60000)}:${String(Math.floor(rem / 1000) % 60).padStart(2, "0")}`
+    : `<i></i>as of ${at} · checking for new stories`;
+}
+setInterval(updateClock, 1000);
+
+let tickItems = [], tickIdx = 0, tickTimer = null;
+function buildTicker() {
+  const items = [];
+  for (const c of state.breaking.slice(0, 3)) items.push({ kind: "Breaking", c });
+  for (const c of state.covered.slice(0, 6)) if (!items.some(i => i.c.cc === c.cc)) items.push({ kind: "Most covered", c });
+  const key = items.map(i => i.kind + i.c.cc).join();
+  if (key === tickItems.key) return;
+  tickItems = items; tickItems.key = key; tickIdx = 0;
+  showTick();
+  clearInterval(tickTimer);
+  tickTimer = setInterval(() => { tickIdx = (tickIdx + 1) % Math.max(1, tickItems.length); showTick(); }, 6500);
+}
+function showTick() {
+  const it = tickItems[tickIdx]; if (!it) return;
+  const el = $("ttxt"), h = WM.bestHeads(it.c.heads)[0];
+  el.classList.add("fade");
+  setTimeout(() => {
+    $("ticker").classList.toggle("breaking", it.kind === "Breaking");
+    $("tlab").textContent = it.kind;
+    el.innerHTML = `${esc(it.c.name)} <span>· ${h && !h.bare ? esc(h.title) : `${it.c.n} stories`}</span>`;
+    el.classList.remove("fade");
+  }, reduceMotion ? 0 : 300);
+  $("ticker").onclick = () => { openCard(it.c.cc); face(it.c.cc); };
+}
+const esc = s => String(s).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+
+// ---- globe ------------------------------------------------------------------------------
+const canvas = $("globe"), ctx = canvas.getContext("2d");
+const glow = document.createElement("canvas"), gctx = glow.getContext("2d");
+const bloom = document.createElement("canvas"), bctx = bloom.getContext("2d");
+const projection = d3.geoOrthographic().clipAngle(90).precision(0.6);
+const gProj = d3.geoOrthographic().clipAngle(90).precision(1.5);
+const path = d3.geoPath(projection, ctx), gPath = d3.geoPath(gProj, gctx);
+const graticule = d3.geoGraticule10();
+let features = [], borders = null, keyToFeatures = new Map(), featStyle = [], dots = [];
+let W = 0, H = 0, dpr = 1, R = 0, cx = 0, cy = 0, cxTarget = 0, cyTarget = 0, rTarget = 100;
+let rot = [30, -18, 0];
+let worldRGB = d3.rgb("#9a9bb4");
+
+function setupMap(topo) {
+  features = topojson.feature(topo, topo.objects.countries).features;
+  borders = topojson.mesh(topo, topo.objects.countries, (a, b) => a !== b);
+  for (const f of features) {
+    const key = f.id ?? f.properties.name;
+    if (!keyToFeatures.has(key)) keyToFeatures.set(key, []);
+    keyToFeatures.get(key).push(f);
+    // face the biggest landmass, not an overseas average (France would otherwise face the Atlantic)
+    const polys = f.geometry.type === "MultiPolygon" ? f.geometry.coordinates.map(c => ({ type: "Polygon", coordinates: c })) : [f.geometry];
+    f.center = d3.geoCentroid(polys.reduce((a, b) => (d3.geoArea(b) > d3.geoArea(a) ? b : a)));
+  }
+  resize();
+}
+function ccShapes(cc) { return WM.shapeKeys(cc).flatMap(k => keyToFeatures.get(k) || []); }
+function centerOf(cc) { const f = ccShapes(cc)[0]; return f ? f.center : state && state.cent[cc]; }
+
+function colorFeatures() {
+  const s = state, owner = new Map();   // feature -> the country lighting it (West Bank + Gaza share one shape)
+  for (const c of Object.values(s.countries)) for (const f of ccShapes(c.cc)) {
+    const prev = owner.get(f); if (!prev || c.recent > prev.recent) owner.set(f, c);
+  }
+  const maxRecent = d3.max(Object.values(s.countries), c => c.recent) || 1;
+  const scale = mode === "mood" ? moodScale : shiftScale;
+  const style = c => {
+    const b = Math.max(0.12, Math.log1p(c.recent) / Math.log1p(maxRecent));
+    const rgb = d3.rgb(scale(mode === "mood" ? c.now : c.delta));
+    return { c, b, crisp: `rgba(${rgb.r},${rgb.g},${rgb.b},${0.3 + 0.55 * b})`, glow: `rgba(${rgb.r},${rgb.g},${rgb.b},${0.12 + 0.88 * b})`, rgb };
+  };
+  featStyle = features.map(f => (owner.has(f) ? style(owner.get(f)) : null));
+  // places too small for the 110m map still get a glowing dot
+  dots = Object.values(s.countries).filter(c => !ccShapes(c.cc).length && s.cent[c.cc]).map(c => ({ ...style(c), at: s.cent[c.cc] }));
+  worldRGB = d3.rgb(moodScale(s.gNow));
+}
+
+function resize() {
+  dpr = Math.min(devicePixelRatio || 1, 2);
+  W = innerWidth; H = innerHeight;
+  canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+  glow.width = Math.ceil(W / 4); glow.height = Math.ceil(H / 4);
+  bloom.width = Math.ceil(W / 12); bloom.height = Math.ceil(H / 12);
+  const top = document.querySelector(".top").getBoundingClientRect().bottom + 10;
+  const bottom = H - document.querySelector(".bottom").getBoundingClientRect().top + 10;
+  // on phones the card is a bottom sheet: the globe shrinks into the space above it
+  const sheet = openCC && W <= 640 ? H - $("card").getBoundingClientRect().top + 10 : 0;
+  const avail = Math.max(120, H - top - Math.max(bottom, sheet));
+  rTarget = Math.max(60, Math.min(W * 0.45, avail * 0.47, 440));
+  cyTarget = top + avail / 2;
+  cxTarget = openCC && W > 900 ? (W - 380) / 2 : W / 2;
+  if (!R) { R = rTarget; cx = cxTarget; cy = cyTarget; }
+}
+addEventListener("resize", resize);
+
+// pulses: expanding rings on the sphere itself, so they wrap and clip with the globe
+const pulses = [], lastBeat = {};
+function pulse(cc, delay = 0, big = false) {
+  const at = centerOf(cc); if (at) pulses.push({ at, t0: performance.now() + delay, big });
+}
+let flash = 0, anim = null, lastInteract = -1e9;
+function face(cc) {
+  const at = centerOf(cc); if (!at) return;
+  const start = rot.slice(), d = ((-at[0] - start[0]) % 360 + 540) % 360 - 180;
+  const end = [start[0] + d, Math.max(-60, Math.min(60, -at[1])), 0];
+  if (reduceMotion) { rot = end; return; }
+  anim = { t0: performance.now(), dur: 1600, interp: d3.interpolate(start, end) };
+  lastInteract = performance.now() + 9000;   // linger on it before drifting again
+}
+let lastBreakKey = "";
+function reactToBreaking() {
+  const top = state.breaking[0]; if (!top) return;
+  const key = top.cc + state.stamp; if (key === lastBreakKey) return;
+  lastBreakKey = key;
+  face(top.cc);
+  for (let i = 0; i < 3; i++) pulse(top.cc, 1200 + i * 650, true);
+  flash = performance.now() + 1200;
+  setTimeout(() => sound.bell(), 1200);
+  if (tickItems.length) { tickIdx = 0; showTick(); }   // breaking items lead the ticker
+}
+
+let last = performance.now();
+function frame(now) {
+  const dt = Math.max(0, Math.min(64, now - last)); last = now;   // rAF's first timestamp can predate `last`
+  if (anim) {
+    const k = Math.min(1, (now - anim.t0) / anim.dur);
+    rot = anim.interp(d3.easeCubicInOut(k));
+    if (k >= 1) anim = null;
+  } else if (!reduceMotion && now - lastInteract > 5000) rot[0] += dt * 0.0045;
+  const ease = reduceMotion ? 1 : Math.min(1, dt / 160);
+  cx += (cxTarget - cx) * ease; cy += (cyTarget - cy) * ease; R += (rTarget - R) * ease;
+  projection.scale(R).translate([cx, cy]).rotate(rot);
+  gProj.scale(R / 4).translate([cx / 4, cy / 4]).rotate(rot);
+
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, W, H);
+
+  // atmosphere tinted by the world's mood; swells when something breaks
+  const f = flash > now - 1800 ? Math.max(0, 1 - Math.abs(now - flash) / 1800) : 0;
+  const atm = ctx.createRadialGradient(cx, cy, R * 0.92, cx, cy, R * (1.32 + 0.12 * f));
+  atm.addColorStop(0, `rgba(${worldRGB.r},${worldRGB.g},${worldRGB.b},${0.32 + 0.4 * f})`);
+  atm.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = atm; ctx.beginPath(); ctx.arc(cx, cy, R * 1.45, 0, TAU); ctx.fill();
+
+  // ocean, lit from the upper left
+  const oc = ctx.createRadialGradient(cx - R * 0.4, cy - R * 0.45, R * 0.05, cx, cy, R);
+  oc.addColorStop(0, "#1a1f3d"); oc.addColorStop(1, "#05060e");
+  ctx.fillStyle = oc; ctx.beginPath(); ctx.arc(cx, cy, R, 0, TAU); ctx.fill();
+  ctx.beginPath(); path(graticule); ctx.strokeStyle = "rgba(170,175,255,0.06)"; ctx.lineWidth = 0.6; ctx.stroke();
+
+  if (features.length) {
+    // glow: countries drawn small, then blown up twice for a soft bloom
+    gctx.clearRect(0, 0, glow.width, glow.height);
+    features.forEach((ft, i) => { const st = featStyle[i]; if (!st) return; gctx.beginPath(); gPath(ft); gctx.fillStyle = st.glow; gctx.fill(); });
+    for (const d of dots) {
+      if (d3.geoDistance(d.at, [-rot[0], -rot[1]]) > Math.PI / 2) continue;
+      const [x, y] = gProj(d.at); gctx.beginPath(); gctx.arc(x, y, 1.6 + 2 * d.b, 0, TAU); gctx.fillStyle = d.glow; gctx.fill();
+    }
+    bctx.clearRect(0, 0, bloom.width, bloom.height);
+    bctx.drawImage(glow, 0, 0, bloom.width, bloom.height);
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    ctx.globalAlpha = 0.85; ctx.drawImage(bloom, 0, 0, bloom.width * 12, bloom.height * 12);
+    ctx.globalAlpha = 0.55; ctx.drawImage(glow, 0, 0, glow.width * 4, glow.height * 4);
+    ctx.restore();
+
+    // crisp land
+    features.forEach((ft, i) => {
+      const st = featStyle[i];
+      ctx.beginPath(); path(ft); ctx.fillStyle = st ? st.crisp : "rgba(40,44,72,0.55)"; ctx.fill();
+    });
+    ctx.beginPath(); path(borders); ctx.strokeStyle = "rgba(225,228,255,0.11)"; ctx.lineWidth = 0.5; ctx.stroke();
+    for (const d of dots) {
+      if (d3.geoDistance(d.at, [-rot[0], -rot[1]]) > Math.PI / 2) continue;
+      const [x, y] = projection(d.at);
+      ctx.beginPath(); ctx.arc(x, y, 1.8 + 2.2 * d.b, 0, TAU); ctx.fillStyle = d.crisp; ctx.fill();
+    }
+
+    // breaking countries keep a slow heartbeat
+    if (state && !reduceMotion) for (const c of state.breaking.slice(0, 3)) {
+      if (!lastBeat[c.cc] || now - lastBeat[c.cc] > 3200) { lastBeat[c.cc] = now; pulse(c.cc); }
+    }
+    for (let i = pulses.length - 1; i >= 0; i--) {
+      const p = pulses[i], age = (now - p.t0) / (p.big ? 2600 : 2200);
+      if (age < 0) continue;
+      if (age >= 1) { pulses.splice(i, 1); continue; }
+      ctx.beginPath(); path(d3.geoCircle().center(p.at).radius(0.4 + age * (p.big ? 14 : 6))());
+      ctx.strokeStyle = `rgba(255,240,227,${(1 - age) * (p.big ? 0.95 : 0.55)})`;
+      ctx.lineWidth = (p.big ? 2.4 : 1.2) * (1 - age) + 0.4; ctx.stroke();
+    }
+
+    if (openCC) {
+      const shapes = ccShapes(openCC);
+      ctx.strokeStyle = "rgba(255,255,255,0.9)"; ctx.lineWidth = 1.3;
+      for (const ft of shapes) { ctx.beginPath(); path(ft); ctx.stroke(); }
+      if (!shapes.length && state && state.cent[openCC] && d3.geoDistance(state.cent[openCC], [-rot[0], -rot[1]]) < Math.PI / 2) {
+        const [x, y] = projection(state.cent[openCC]); ctx.beginPath(); ctx.arc(x, y, 7, 0, TAU); ctx.stroke();
+      }
+    }
+  }
+
+  // limb darkening + a soft highlight sell the sphere
+  const limb = ctx.createRadialGradient(cx, cy, R * 0.55, cx, cy, R);
+  limb.addColorStop(0, "rgba(0,0,0,0)"); limb.addColorStop(1, "rgba(2,2,8,0.5)");
+  ctx.fillStyle = limb; ctx.beginPath(); ctx.arc(cx, cy, R, 0, TAU); ctx.fill();
+  const hi = ctx.createRadialGradient(cx - R * 0.45, cy - R * 0.5, 0, cx - R * 0.45, cy - R * 0.5, R * 0.9);
+  hi.addColorStop(0, "rgba(255,255,255,0.07)"); hi.addColorStop(1, "rgba(255,255,255,0)");
+  ctx.fillStyle = hi; ctx.beginPath(); ctx.arc(cx, cy, R, 0, TAU); ctx.fill();
+
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+// drag to spin, tap to open a country
+let moved = 0;
+d3.select(canvas).call(d3.drag()
+  .container(canvas)
+  .on("start", () => { anim = null; moved = 0; lastInteract = performance.now(); })
+  .on("drag", e => {
+    moved += Math.abs(e.dx) + Math.abs(e.dy);
+    const k = 70 / R;
+    rot[0] += e.dx * k; rot[1] = Math.max(-75, Math.min(75, rot[1] - e.dy * k));
+    lastInteract = performance.now();
+  })
+  .on("end", e => { if (moved < 6) pick(e.x, e.y); lastInteract = performance.now(); }));
+
+function pick(x, y) {
+  if (!state) return;
+  if ((x - cx) ** 2 + (y - cy) ** 2 > R * R) return closeCard();
+  const p = projection.invert([x, y]);
+  let best = null, bestD = 18;
+  for (const d of dots) {
+    if (d3.geoDistance(d.at, [-rot[0], -rot[1]]) > Math.PI / 2) continue;
+    const [dx, dy] = projection(d.at), dd = Math.hypot(dx - x, dy - y);
+    if (dd < bestD) { bestD = dd; best = d.c.cc; }
+  }
+  if (!best && p) features.forEach((ft, i) => { if (!best && featStyle[i] && d3.geoContains(ft, p)) best = featStyle[i].c.cc; });
+  best ? openCard(best) : closeCard();
+}
+
+// ---- country card -----------------------------------------------------------------
+let openCC = null;
+function openCard(cc) { openCC = cc; renderCard(cc); $("card").hidden = false; resize(); }
+function closeCard() { if (!openCC) return; openCC = null; $("card").hidden = true; resize(); }
+addEventListener("keydown", e => { if (e.key === "Escape") closeCard(); });
+
+function renderCard(cc) {
+  const c = state.countries[cc]; if (!c) return closeCard();
+  const col = moodScale(c.now);
+  const vs = c.lam ? (c.n / c.lam) : null;
+  let flag = "";
+  if (c.score > 0) {
+    const why = [];
+    if (c.zv >= 2) why.push(vs ? `coverage ${vs.toFixed(1)}× its usual` : "a burst of new coverage");
+    if (c.zt >= 1.2) why.push(`tone ${Math.abs(c.delta).toFixed(1)} darker than usual`);
+    flag = `<div class="flag">Breaking · ${why.join(", ") || "unusual coverage"} in the last 15 minutes</div>`;
+  }
+  const heads = WM.bestHeads(c.heads);
+  $("card").innerHTML = `
+    <button class="btn x" type="button" aria-label="Close">×</button>
+    <div class="eyebrow">${c.n ? "Last 15 minutes" : "Quiet right now · last 24 hours"}</div>
+    <h2>${esc(c.name)}</h2>
+    <div class="moodline"><i class="sw" style="background:${col};color:${col}"></i>${cap(WM.moodWord(c.now))} ${WM.fmtTone(c.now)}
+      <span>usually ${WM.fmtTone(c.base)}</span></div>
+    <div class="stat"><b>${c.n}</b> ${c.n === 1 ? "story" : "stories"} this window · usually ${c.lam < 1 ? c.lam.toFixed(1) : Math.round(c.lam)}${c.conflict >= 0.25 ? ` · ${Math.round(c.conflict * 100)}% about conflict` : ""}</div>
+    ${flag}
+    ${spark(c)}
+    <div class="axis"><span>${state.K ? "24h ago" : ""}</span><span>tone over the day · dashed = usual</span><span>now</span></div>
+    <h3>What's being written</h3>
+    ${heads.length ? `<ol>${heads.map(h => `<li><a href="${esc(h.url)}" target="_blank" rel="noopener">${esc(h.title)}</a>
+      <span class="meta">${esc(h.domain)} · tone ${WM.fmtTone(h.tone)}${h.m > 1 ? ` · ${h.m} mentions` : ""}</span></li>`).join("")}</ol>`
+      : `<p class="empty">No stories located here in the last day.</p>`}`;
+  $("card").querySelector(".x").onclick = closeCard;
+}
+function spark(c) {
+  const pts = c.series.filter(p => p.tone != null);
+  if (pts.length < 2) return "";
+  const w = 300, h = 60, t0 = c.series[0].t, t1 = c.series[c.series.length - 1].t || t0 + 1;
+  const vals = pts.map(p => p.tone).concat([c.base]);
+  const lo = Math.min(...vals) - 0.4, hi = Math.max(...vals) + 0.4;
+  const x = t => ((t - t0) / Math.max(1, t1 - t0)) * w, y = v => h - ((v - lo) / (hi - lo)) * h;
+  const line = pts.map((p, i) => `${i ? "L" : "M"}${x(p.t).toFixed(1)},${y(p.tone).toFixed(1)}`).join("");
+  const dotsSvg = pts.map(p => `<circle cx="${x(p.t).toFixed(1)}" cy="${y(p.tone).toFixed(1)}" r="${(1.2 + Math.min(3, Math.sqrt(p.n) / 2)).toFixed(1)}" fill="${moodScale(p.tone)}"/>`).join("");
+  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img" aria-label="Tone over the last day">
+    <line x1="0" x2="${w}" y1="${y(c.base)}" y2="${y(c.base)}" stroke="rgba(255,255,255,0.25)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
+    <path d="${line}" fill="none" stroke="rgba(236,233,247,0.5)" stroke-width="1.2" vector-effect="non-scaling-stroke"/>${dotsSvg}</svg>`;
+}
+
+// ---- controls ------------------------------------------------------------------------
+function setMode(m) {
+  mode = m;
+  $("m-mood").setAttribute("aria-pressed", m === "mood");
+  $("m-shift").setAttribute("aria-pressed", m === "shift");
+  paintLegend();
+  if (state) colorFeatures();
+}
+$("m-mood").onclick = () => setMode("mood");
+$("m-shift").onclick = () => setMode("shift");
+$("howbtn").onclick = () => $("how").showModal();
+$("sound").onclick = () => {
+  const on = $("sound").getAttribute("aria-pressed") !== "true";
+  $("sound").setAttribute("aria-pressed", on);
+  $("sound").textContent = on ? "Sound on" : "Sound off";
+  on ? sound.start() : sound.stop();
+  if (on && state) sound.setMood(state.gNow, state.articles);
+};
+
+// ---- sound: a slow drone whose chord darkens with the world's tone; a soft bell when something breaks
+const sound = (() => {
+  let ac = null, master = null, filt = null, oscs = [], on = false;
+  function start() {
+    ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+    ac.resume();
+    master = ac.createGain(); master.gain.value = 0;
+    filt = ac.createBiquadFilter(); filt.type = "lowpass"; filt.frequency.value = 600; filt.Q.value = 0.6;
+    filt.connect(master); master.connect(ac.destination);
+    oscs = [1, 1.2, 1.5, 2].map((r, i) => {
+      const o = ac.createOscillator(), g = ac.createGain(), lfo = ac.createOscillator(), lg = ac.createGain();
+      o.type = i % 2 ? "triangle" : "sine"; o.frequency.value = 98 * r; o.detune.value = (i - 1.5) * 4;
+      g.gain.value = 0.16 / (i + 1);
+      lfo.frequency.value = 0.05 + i * 0.023; lg.gain.value = 0.05 / (i + 1);
+      lfo.connect(lg); lg.connect(g.gain); o.connect(g); g.connect(filt); o.start(); lfo.start();
+      return { o, r, lfo };
+    });
+    master.gain.linearRampToValueAtTime(0.5, ac.currentTime + 3);
+    on = true;
+  }
+  function stop() {
+    if (!on) return; on = false;
+    const m = master, os = oscs;
+    m.gain.cancelScheduledValues(ac.currentTime); m.gain.setTargetAtTime(0, ac.currentTime, 0.4);
+    setTimeout(() => os.forEach(x => { x.o.stop(); x.lfo.stop(); }), 2000);
+  }
+  function setMood(tone, n) {
+    if (!on) return;
+    // brighter news: major third and an open filter; darker: minor third, then a flat fifth, and a closed filter
+    const third = tone > -1.2 ? 1.25 : 1.2, fifth = tone < -3 ? 1.414 : 1.5;
+    [1, third, fifth, 2].forEach((r, i) => oscs[i].o.frequency.setTargetAtTime(98 * r, ac.currentTime, 2));
+    filt.frequency.setTargetAtTime(300 + Math.max(0, Math.min(1, (tone + 4) / 5)) * 1400 + Math.min(600, n / 4), ac.currentTime, 3);
+  }
+  function bell() {
+    if (!on) return;
+    const t = ac.currentTime;
+    [784, 1176].forEach((f, i) => {
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.frequency.value = f; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.12 / (i + 1), t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 4); o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + 4.1);
+    });
+  }
+  return { start, stop, setMood, bell };
+})();
+
+paintLegend();
+boot();
+window.WorldMood = { get state() { return state; }, open: cc => { openCard(cc); face(cc); }, replayBreaking: () => { lastBreakKey = ""; reactToBreaking(); } };
+})();
+</script>
+</body>
+</html>

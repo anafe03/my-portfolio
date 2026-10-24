@@ -1,0 +1,691 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#08110f">
+<meta name="description" content="The planet's seasons as one slow breath: twenty-five years of NASA satellite greenness and snow, then against now.">
+<title>Breathing Earth</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap">
+<style>
+/* Layout: the globe fills the screen; month + breath line float top-left, the deck (mode, play, year strip)
+   sits along the bottom, the legend and the tap readout float above it. */
+:root {
+  color-scheme: dark;
+  --night: #08110f;          /* the dark the planet floats in */
+  --moss: #0f1d19;           /* raised panels */
+  --lichen: #e9efe4;         /* primary text */
+  --sage: #93a69a;           /* secondary text */
+  --rule: rgba(200, 225, 205, 0.14);
+  --glass: rgba(10, 20, 17, 0.72);
+  --breath: #9fe0a8;         /* accent: the inhale */
+  --then: #d9b98a;           /* the early 2000s */
+  --now: #9fe0a8;            /* the last three years */
+  --display: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --body: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --data: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  background: var(--night); color: var(--lichen); font-family: var(--body);
+  overflow: hidden; -webkit-font-smoothing: antialiased; touch-action: none;
+}
+canvas#earth { position: fixed; inset: 0; width: 100%; height: 100%; display: block; cursor: grab; }
+canvas#earth.dragging { cursor: grabbing; }
+.hud { position: fixed; z-index: 2; pointer-events: none; }
+.hud > * { pointer-events: auto; }
+button { font: inherit; color: inherit; }
+
+.title {
+  top: calc(env(safe-area-inset-top, 0px) + 18px); left: max(18px, env(safe-area-inset-left, 0px));
+  right: max(18px, env(safe-area-inset-right, 0px)); pointer-events: none;
+}
+.title .eyebrow { font: 400 10.5px/1 var(--data); letter-spacing: .22em; text-transform: uppercase; color: var(--sage); }
+.title .month {
+  font: italic 300 clamp(44px, 9vw, 92px)/0.92 var(--display); letter-spacing: -0.02em; margin-top: 8px;
+  transition: opacity .6s ease;
+}
+.title .sub { font: 400 13px/1.45 var(--body); color: var(--sage); margin-top: 8px; max-width: 34ch; }
+.title .sub b { color: var(--lichen); font-weight: 500; }
+.nw { white-space: nowrap; }
+.breathline { font: italic 300 17px/1.3 var(--display); color: var(--breath); margin-top: 6px; min-height: 1.3em; transition: opacity 1.2s ease; }
+
+.deck {
+  left: 0; right: 0; bottom: 0;
+  padding: 18px max(16px, env(safe-area-inset-right, 0px)) calc(14px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  background: linear-gradient(to top, rgba(8,17,15,0.94) 45%, rgba(8,17,15,0));
+  display: grid; gap: 10px;
+}
+.row { display: flex; gap: 8px; align-items: center; }
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 999px; background: var(--glass); padding: 3px; }
+.seg button {
+  border: 0; background: transparent; padding: 7px 12px; border-radius: 999px; cursor: pointer;
+  font: 500 12.5px/1 var(--body); color: var(--sage); white-space: nowrap;
+}
+.seg button[aria-pressed="true"] { background: rgba(159,224,168,0.16); color: var(--lichen); }
+.seg button:focus-visible, .btn:focus-visible { outline: 1px solid var(--breath); outline-offset: 2px; }
+.btn {
+  height: 36px; padding: 0 14px; border-radius: 18px; border: 1px solid var(--rule); background: var(--glass);
+  font: 500 12.5px/1 var(--body); color: var(--lichen); cursor: pointer; white-space: nowrap;
+}
+.btn.round { width: 44px; height: 44px; padding: 0; border-radius: 50%; display: grid; place-items: center; border-color: rgba(159,224,168,0.4); }
+.btn.round svg { width: 16px; height: 16px; fill: var(--lichen); }
+.btn[aria-pressed="true"] { border-color: var(--breath); color: var(--breath); }
+.btn.quiet { width: 40px; height: 40px; border-color: var(--rule); color: var(--sage); }
+.btn.quiet svg { fill: currentColor; }
+.btn.quiet[aria-pressed="true"] { border-color: var(--breath); color: var(--breath); }
+.spacer { flex: 1; }
+
+.strip { position: relative; height: 54px; }
+.strip canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.strip input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; }
+.strip input:focus-visible + .ring { opacity: 1; }
+.ring { position: absolute; inset: -3px; border: 1px solid var(--breath); border-radius: 8px; opacity: 0; pointer-events: none; }
+.credit { display: flex; justify-content: space-between; gap: 6px 14px; flex-wrap: wrap; font: 400 10.5px/1.4 var(--data); color: var(--sage); }
+.credit a, .credit button { color: var(--sage); background: none; border: 0; padding: 0; font: inherit; text-decoration: underline; cursor: pointer; }
+
+.legend {
+  right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(var(--deck-h, 170px) + 8px);
+  background: var(--glass); border: 1px solid var(--rule); border-radius: 10px; padding: 8px 10px;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); font: 400 10.5px/1.3 var(--data); color: var(--sage);
+  display: grid; gap: 5px; min-width: 150px;
+}
+.legend .bar { height: 7px; border-radius: 4px; }
+.legend .ends { display: flex; justify-content: space-between; gap: 10px; }
+.legend .swatch { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+
+.readout {
+  left: max(16px, env(safe-area-inset-left, 0px)); bottom: calc(var(--deck-h, 170px) + 8px);
+  background: var(--glass); border: 1px solid var(--rule); border-radius: 10px; padding: 10px 12px; max-width: min(260px, calc(100% - 200px));
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); font: 400 12px/1.45 var(--body);
+}
+.readout .where { font: 400 10.5px/1.3 var(--data); color: var(--sage); letter-spacing: .04em; margin-bottom: 3px; }
+.readout b { font-weight: 500; }
+
+.split { top: 0; height: 0; width: 44px; margin-left: -22px; cursor: ew-resize; z-index: 1; display: none; touch-action: none; }
+.split::before { content: ""; position: absolute; left: 21px; top: 0; bottom: 0; width: 1.5px; background: rgba(233,239,228,0.55); }
+.split .knob {
+  position: absolute; left: 7px; top: 50%; width: 30px; height: 30px; margin-top: -15px; border-radius: 50%;
+  background: var(--night); border: 1.5px solid rgba(233,239,228,0.8); display: grid; place-items: center;
+  font: 400 12px/1 var(--data); color: var(--lichen);
+}
+.split .tag { position: absolute; top: 50%; margin-top: 24px; font: 400 10.5px/1 var(--data); letter-spacing: .08em; white-space: nowrap; }
+.split .tag.l { right: 28px; color: var(--then); }
+.split .tag.r { left: 28px; color: var(--now); }
+body.mode-split .split { display: block; }
+
+dialog {
+  max-width: min(520px, calc(100% - 32px)); border: 1px solid var(--rule); border-radius: 14px; padding: 22px 22px 18px;
+  background: var(--moss); color: var(--lichen); font: 400 14px/1.6 var(--body);
+}
+dialog::backdrop { background: rgba(0,0,0,0.55); }
+dialog h2 { font: italic 300 28px/1.1 var(--display); margin: 0 0 10px; }
+dialog p { margin: 0 0 10px; color: #cdd8cf; }
+dialog .btn { margin-top: 6px; }
+
+.loading {
+  position: fixed; inset: 0; display: grid; place-items: center; z-index: 5; background: var(--night);
+  font: italic 300 22px/1.3 var(--display); color: var(--sage); transition: opacity 1s ease;
+}
+.loading small { display: block; font: 400 11px/1 var(--data); letter-spacing: .18em; text-transform: uppercase; margin-top: 12px; text-align: center; }
+.loading.done { opacity: 0; pointer-events: none; }
+
+@media (max-width: 640px) {
+  .title .sub { font-size: 12.5px; }
+  .seg button { padding: 7px 10px; font-size: 12px; }
+  .legend { min-width: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .title .month, .breathline { transition: none; }
+}
+</style>
+</head>
+<body class="mode-year">
+<canvas id="earth" aria-label="A globe showing the planet's vegetation and snow, month by month"></canvas>
+
+<div class="hud title">
+  <div class="eyebrow">Breathing Earth · NASA MODIS</div>
+  <div class="month" id="month">—</div>
+  <div class="sub" id="sub"></div>
+  <div class="breathline" id="breathline"></div>
+</div>
+
+<div class="hud split" id="split" aria-hidden="true">
+  <div class="knob">⇆</div>
+  <div class="tag l" id="tagThen">2001–03</div>
+  <div class="tag r" id="tagNow">2023–25</div>
+</div>
+
+<div class="hud legend" id="legend"></div>
+<div class="hud readout" id="readout" hidden></div>
+
+<div class="hud deck" id="deck">
+  <div class="row">
+    <button class="btn round" id="play" aria-label="Pause"><svg viewBox="0 0 16 16"><rect x="3" y="2" width="3.5" height="12" rx="1"/><rect x="9.5" y="2" width="3.5" height="12" rx="1"/></svg></button>
+    <div class="seg" role="group" aria-label="View">
+      <button data-mode="year" aria-pressed="true">This year</button>
+      <button data-mode="split" aria-pressed="false">Then · Now</button>
+      <button data-mode="change" aria-pressed="false">Change</button>
+    </div>
+    <span class="spacer"></span>
+    <button class="btn round quiet" id="sound" aria-pressed="false" aria-label="Ambient sound" title="Ambient breath sound (off)"><svg viewBox="0 0 16 16"><path d="M2 6h3l4-3.5v11L5 10H2z"/><path d="M11.5 5.2a4 4 0 0 1 0 5.6M13.3 3.5a6.5 6.5 0 0 1 0 9" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" opacity=".9"/></svg></button>
+  </div>
+  <div class="strip">
+    <canvas id="stripCanvas"></canvas>
+    <input id="scrub" type="range" min="0" max="11.99" step="0.01" value="0" aria-label="Month">
+    <div class="ring"></div>
+  </div>
+  <div class="credit">
+    <span>Imagery: NASA GIBS · MODIS Terra NDVI, Aqua snow cover, Blue Marble relief</span>
+    <button id="howBtn">How it works</button>
+  </div>
+</div>
+
+<dialog id="how">
+  <h2>How it works</h2>
+  <p>Every colour on land is a satellite measurement. Green is <b>NDVI</b>, the vegetation index: leaves reflect near-infrared light and absorb red, so the ratio between the two says how much living, leafy growth a place has. Bare sand reads near 0, a rainforest near 0.9. White is the share of the month a place was under snow.</p>
+  <p>The northern hemisphere holds most of the land, so when its spring arrives the whole planet greens and the snow retreats: an inhale. Six months later the south takes its turn while the north browns and whitens.</p>
+  <p><b>Then · Now</b> compares the same calendar month averaged over 2001–2003 against 2023–2025 (snow: 2003–2005, when Aqua's record starts). <b>Change</b> paints the difference: greener now, browner now, less snow, more snow. Three-year averages soften one-off years, but the differences still include cloud gaps, sensor ageing and processing changes, so read them as a picture, not a measurement.</p>
+  <p>Data: NASA Global Imagery Browse Services (GIBS), Terra MODIS monthly NDVI and Aqua MODIS monthly snow cover, decoded back from their published colour scales.</p>
+  <form method="dialog"><button class="btn">Close</button></form>
+</dialog>
+
+<div class="loading" id="loading"><div>The planet is taking a breath…<small id="loadCount">loading</small></div></div>
+
+<script>
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const SEC_PER_MONTH = 2.6;
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const $ = id => document.getElementById(id);
+
+// ---- WebGL --------------------------------------------------------------------------------------------
+const cv = $("earth");
+const gl = cv.getContext("webgl", { antialias: true, premultipliedAlpha: false });
+if (!gl) {
+  document.getElementById("loading").innerHTML = "<div>This needs WebGL, which this browser has turned off.<small>try another browser</small></div>";
+  throw new Error("no WebGL");
+}
+gl.getExtension("OES_standard_derivatives");
+
+const VS = `attribute vec2 p; void main(){ gl_Position = vec4(p, 0., 1.); }`;
+const FS = `
+#extension GL_OES_standard_derivatives : enable
+precision highp float;
+uniform vec2 uCenter; uniform float uR; uniform vec2 uRot;      // rot: centre longitude, latitude (radians)
+uniform sampler2D uBase, uLand, uA0, uB0, uA1, uB1;
+uniform float uMix, uMode, uSplitX, uBreath, uTime;
+const float PI = 3.14159265;
+
+vec3 veg(float n) {                       // NDVI → dusty ochre, olive, fresh green, deep emerald
+  vec3 c = mix(vec3(.62,.50,.36), vec3(.55,.55,.28), smoothstep(.05,.3,n));
+  c = mix(c, vec3(.33,.58,.25), smoothstep(.28,.55,n));
+  c = mix(c, vec3(.09,.40,.22), smoothstep(.55,.85,n));
+  return c;
+}
+vec2 dataAt(sampler2D a, sampler2D b, vec2 uv) {
+  vec4 x = mix(texture2D(a, uv), texture2D(b, uv), uMix);
+  return x.rg;                             // r: NDVI (0 = none, else 1..255), g: snow 0..1
+}
+float ndviOf(float r) { return r < .5/255. ? -1. : (r*255. - 1.)/254.; }
+
+void main() {
+  vec2 p = (gl_FragCoord.xy - uCenter) / uR;
+  float d = length(p);
+  vec3 bg = vec3(.031,.067,.059);
+  // halo: a soft breath of light around the limb
+  float h = exp(-max(d - 1., 0.) * (7. - 2.2*uBreath)) * (.22 + .38*uBreath);
+  vec3 halo = bg + mix(vec3(.35,.55,.62), vec3(.55,.85,.6), uBreath)*h;
+  if (d > 1.) { gl_FragColor = vec4(halo, 1.); return; }
+  float edge = smoothstep(1., 1. - 1.6/uR, d);   // ~1.5px antialiased limb
+  d = min(d, .9995);
+  vec3 v = vec3(p / max(length(p), 1e-6) * d, sqrt(1. - d*d));
+  float cl = cos(uRot.y), sl = sin(uRot.y), co = cos(uRot.x), so = sin(uRot.x);
+  vec3 w = vec3(v.x, v.y*cl + v.z*sl, -v.y*sl + v.z*cl);           // Rx(-lat)
+  w = vec3(w.x*co + w.z*so, w.y, -w.x*so + w.z*co);                 // Ry(lon)
+  float lon = atan(w.x, w.z), lat = asin(clamp(w.y, -1., 1.));
+  vec2 uv = vec2(lon/(2.*PI) + .5, .5 - lat/PI);
+  // the longitude wrap makes u jump 1→0, which picks a tiny mip along the seam; of two equivalent u's
+  // (REPEAT wrap) use whichever changes smoothly here (Tarini's trick)
+  float u2 = fract(uv.x + .5) - .5;
+  uv.x = fwidth(uv.x) <= fwidth(u2) + 1e-5 ? uv.x : u2;
+
+  vec3 base = texture2D(uBase, uv).rgb;
+  float lum = dot(base, vec3(.299,.587,.114));
+  float land = texture2D(uLand, uv).r;
+
+  bool useSecond = (uMode > .5 && uMode < 1.5 && gl_FragCoord.x > uSplitX);
+  vec2 s0 = dataAt(uA0, uB0, uv);
+  vec2 s1 = dataAt(uA1, uB1, uv);
+  vec2 s = useSecond ? s1 : s0;
+
+  vec3 ocean = mix(vec3(.02,.07,.09), vec3(.06,.20,.24), smoothstep(.05,.45,lum));
+  vec3 col;
+  if (uMode > 1.5) {                       // change: now (slot 1) minus then (slot 0)
+    float n0 = ndviOf(s0.r), n1 = ndviOf(s1.r);
+    float dn = (n0 < 0. || n1 < 0.) ? 0. : n1 - n0;
+    vec3 neutral = vec3(.30,.31,.29) * (.75 + .6*lum);
+    col = neutral;
+    col = mix(col, vec3(.36,.82,.38), smoothstep(.02,.16, dn));
+    col = mix(col, vec3(.72,.42,.18), smoothstep(.02,.16,-dn));
+    float ds = s1.g - s0.g;
+    col = mix(col, vec3(.80,.62,1.), smoothstep(.06,.4,-ds)*.9);  // less snow now
+    col = mix(col, vec3(.55,.86,1.), smoothstep(.06,.4, ds)*.8);  // more snow now
+  } else {
+    float n = ndviOf(s.r);
+    col = n < 0. ? vec3(.50,.47,.42) * (.6 + .6*lum) : veg(n) * (.78 + .5*(lum - .4));
+    col = mix(col, vec3(.93,.96,1.), smoothstep(.04,.9, s.g));
+  }
+  col = mix(ocean, col, smoothstep(.3,.7, land));
+
+  vec3 L = normalize(vec3(-.45,.45,.77));
+  float diff = .58 + .42*max(dot(v, L), 0.);
+  float rim = pow(1. - v.z, 2.6);
+  col = col*diff*(.94 + .1*uBreath) + rim*mix(vec3(.25,.42,.5), vec3(.4,.75,.5), uBreath)*.55;
+  if (uMode > .5 && uMode < 1.5) col *= 1. - .5*smoothstep(1.5, 0., abs(gl_FragCoord.x - uSplitX));
+  gl_FragColor = vec4(mix(halo, col, edge), 1.);
+}`;
+
+function shader(type, src) {
+  const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+  return s;
+}
+const prog = gl.createProgram();
+gl.attachShader(prog, shader(gl.VERTEX_SHADER, VS));
+gl.attachShader(prog, shader(gl.FRAGMENT_SHADER, FS));
+gl.linkProgram(prog); gl.useProgram(prog);
+gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+const loc = gl.getAttribLocation(prog, "p");
+gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+const U = {};
+for (const n of ["uCenter","uR","uRot","uBase","uLand","uA0","uB0","uA1","uB1","uMix","uMode","uSplitX","uBreath","uTime"])
+  U[n] = gl.getUniformLocation(prog, n);
+
+function texture(unit) {
+  const t = gl.createTexture();
+  gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, t);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, 1, 1, 0, gl.RGB, gl.UNSIGNED_BYTE, new Uint8Array(3));
+  return { t, unit, key: null };
+}
+function upload(slot, img, key) {
+  gl.activeTexture(gl.TEXTURE0 + slot.unit); gl.bindTexture(gl.TEXTURE_2D, slot.t);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img);
+  gl.generateMipmap(gl.TEXTURE_2D);
+  slot.key = key;
+}
+const T = { base: texture(0), land: texture(1), A0: texture(2), B0: texture(3), A1: texture(4), B1: texture(5) };
+[["uBase",0],["uLand",1],["uA0",2],["uB0",3],["uA1",4],["uB1",5]].forEach(([n,u]) => gl.uniform1i(U[n], u));
+
+// ---- frames -------------------------------------------------------------------------------------------
+// three sets of twelve monthly frames: "latest" (the last twelve months), "then" (2001–03), "now" (2023–25)
+let meta = null;
+const imgs = {};                 // "then-07" → HTMLImageElement (decoded)
+function frameKey(set, i) { return set === "latest" ? `latest-${String(i).padStart(2,"0")}` : `${set}-${String(i+1).padStart(2,"0")}`; }
+function loadImage(src) {
+  return new Promise((res, rej) => { const im = new Image(); im.decoding = "async"; im.onload = () => res(im); im.onerror = rej; im.src = src; });
+}
+const pending = {};
+function want(key) {
+  if (imgs[key]) return Promise.resolve(imgs[key]);
+  return pending[key] ??= loadImage(`frames/${key}.webp`).then(im => (imgs[key] = im));
+}
+function setFrames(set) { return Array.from({ length: 12 }, (_, i) => frameKey(set, i)); }
+
+// ---- state --------------------------------------------------------------------------------------------
+let mode = "year";               // year | split | change
+let t = 0;                       // 0..12 months, fractional
+let playing = !reduceMotion;
+let rot = [-20 * Math.PI/180, 28 * Math.PI/180];   // centre on the Atlantic, tipped to show the north
+let vel = [0, 0], dragging = false, zoom = 1;
+let splitFrac = 0.5;
+let dpr = 1, W = 0, H = 0, R = 0, CX = 0, CY = 0;
+let lastFrame = performance.now();
+
+function sets() { return mode === "year" ? ["latest", null] : ["then", "now"]; }
+function calMonth(i) {               // calendar month (0–11) shown at frame i
+  if (mode === "year" && meta) return Number(meta.latest[i].slice(5)) - 1;
+  return i;
+}
+function yearLabel(i) {
+  if (mode === "year" && meta) return meta.latest[i].slice(0, 4);
+  return mode === "split" ? "2001–03 · 2023–25" : "2023–25 vs 2001–03";
+}
+
+// keep slots A (frame i) and B (frame i+1) filled for the active set(s); hold time if a frame isn't ready
+function ensure(i) {
+  const j = (i + 1) % 12, [s0, s1] = sets();
+  let ready = true;
+  const need = [[T.A0, s0, i], [T.B0, s0, j]];
+  if (s1) need.push([T.A1, s1, i], [T.B1, s1, j]);
+  for (const [slot, set, k] of need) {
+    const key = frameKey(set, k);
+    if (slot.key === key) continue;
+    if (imgs[key]) upload(slot, imgs[key], key);
+    else { ready = false; want(key); }
+  }
+  // prefetch the frame after next
+  want(frameKey(s0, (i + 2) % 12)); if (s1) want(frameKey(s1, (i + 2) % 12));
+  return ready;
+}
+
+// global greenness per frame drives the breath: rising = inhale
+function green(set, i) { return meta ? meta.stats[frameKey(set, i)][0] : 0.3; }
+function breathAt(tt) {
+  const [s0] = sets();
+  const vals = Array.from({ length: 12 }, (_, i) => green(s0, i));
+  const lo = Math.min(...vals), hi = Math.max(...vals);
+  const i = Math.floor(tt) % 12, f = ease(tt - Math.floor(tt));
+  const v = vals[i] * (1 - f) + vals[(i + 1) % 12] * f;
+  return { level: (v - lo) / (hi - lo || 1), rising: vals[(i + 1) % 12] > vals[i] };
+}
+function ease(x) { return x * x * x * (x * (x * 6 - 15) + 10); }
+
+// ---- layout -------------------------------------------------------------------------------------------
+function layout() {
+  dpr = Math.min(devicePixelRatio || 1, 2);
+  W = innerWidth; H = innerHeight;
+  cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+  gl.viewport(0, 0, cv.width, cv.height);
+  const deckH = $("deck").offsetHeight;
+  document.documentElement.style.setProperty("--deck-h", deckH + "px");
+  const titleH = $("breathline").getBoundingClientRect().bottom + 18;
+  const narrow = W < 700;
+  const availTop = narrow ? titleH : 30, availBot = H - deckH - (narrow ? 64 : 20);
+  const base = Math.min(W * (narrow ? 0.47 : 0.36), (availBot - availTop) / 2);
+  R = Math.max(90, base) * zoom;
+  CX = W / 2; CY = narrow ? (availTop + availBot) / 2 : Math.min(H / 2, (availTop + availBot) / 2 + 10);
+  placeSplit();
+  drawStrip();
+}
+function placeSplit() {
+  const el = $("split").style;
+  el.left = (CX - R + splitFrac * 2 * R) + "px";
+  // the line only spans the globe at that x
+  const dx = (splitFrac * 2 - 1) * R, half = Math.sqrt(Math.max(0, R * R - dx * dx));
+  el.top = (CY - half) + "px"; el.height = (2 * half) + "px";
+}
+addEventListener("resize", layout);
+document.fonts?.ready.then(layout);
+
+// ---- render loop --------------------------------------------------------------------------------------
+let shownMonth = -1;
+function frame(now) {
+  const dt = Math.max(0, Math.min(0.1, (now - lastFrame) / 1000)); lastFrame = now;
+  const i = Math.floor(t) % 12;
+  const ready = ensure(i);
+  if (playing && ready && meta) t = (t + dt / SEC_PER_MONTH) % 12;
+  if (!dragging) {
+    rot[0] += vel[0]; rot[1] += vel[1]; vel[0] *= 0.94; vel[1] *= 0.94;
+    if (playing && !reduceMotion && Math.abs(vel[0]) < 1e-4) rot[0] += dt * 0.05;   // slow drift east
+  }
+  rot[1] = Math.max(-1.2, Math.min(1.2, rot[1]));
+  const b = breathAt(t);
+  gl.uniform2f(U.uCenter, CX * dpr, (H - CY) * dpr);
+  gl.uniform1f(U.uR, R * dpr);
+  gl.uniform2f(U.uRot, rot[0], rot[1]);
+  gl.uniform1f(U.uMix, ease(t - Math.floor(t)));
+  gl.uniform1f(U.uMode, mode === "year" ? 0 : mode === "split" ? 1 : 2);
+  gl.uniform1f(U.uSplitX, (CX - R + splitFrac * 2 * R) * dpr);
+  gl.uniform1f(U.uBreath, reduceMotion ? 0.5 : b.level);
+  gl.uniform1f(U.uTime, now / 1000);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  sound.update(b.level);
+
+  const shown = Math.round(t) % 12;
+  if (shown !== shownMonth) { shownMonth = shown; updateText(shown, b); }
+  $("scrub").value = t.toFixed(2);
+  drawPlayhead();
+  requestAnimationFrame(frame);
+}
+
+function updateText(i, b) {
+  const m = calMonth(i);
+  $("month").textContent = MONTHS[m];
+  const north = [2,3,4,5,6,7].includes(m) ? (m < 6 ? "greening" : "in full leaf") : (m >= 8 && m <= 10 ? "browning" : "asleep under snow");
+  const sub = mode === "year" ? `<b>${yearLabel(i)}</b> · the north is ${north}` :
+              mode === "split" ? `<b>Then · Now</b> · <span class="nw">2001–03</span> against <span class="nw">2023–25</span>` :
+                                 `<b>Change</b> · <span class="nw">2023–25</span> against <span class="nw">2001–03</span>`;
+  $("sub").innerHTML = sub;
+  const line = b.rising ? "the planet breathes in" : "the planet breathes out";
+  const bl = $("breathline");
+  if (bl.textContent !== line) { bl.style.opacity = 0; setTimeout(() => { bl.textContent = line; bl.style.opacity = 1; }, 500); }
+  legend();
+}
+
+function legend() {
+  const el = $("legend");
+  if (mode === "change") {
+    el.innerHTML = `<div><span class="swatch" style="background:#5cd161"></span>greener now</div>
+      <div><span class="swatch" style="background:#b86b2e"></span>browner now</div>
+      <div><span class="swatch" style="background:#ccA0ff"></span>less snow now</div>
+      <div><span class="swatch" style="background:#8cdcff"></span>more snow now</div>`;
+  } else {
+    el.innerHTML = `<div>vegetation (NDVI)</div>
+      <div class="bar" style="background:linear-gradient(90deg,#9e805c,#8c8c47,#54943f,#17663a)"></div>
+      <div class="ends"><span>bare</span><span>dense</span></div>
+      <div><span class="swatch" style="background:#eef4ff"></span>snow cover</div>`;
+  }
+}
+
+// ---- the year strip: twelve months, global greenness curve(s), playhead -------------------------------
+const sc = $("stripCanvas"), sx = sc.getContext("2d");
+let stripImg = null;
+function drawStrip() {
+  const w = sc.clientWidth, h = sc.clientHeight; if (!w) return;
+  sc.width = w * dpr; sc.height = h * dpr; sx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  sx.clearRect(0, 0, w, h);
+  const css = getComputedStyle(document.documentElement);
+  const top = 6, bot = h - 16;
+  const curves = mode === "year" ? [["latest", css.getPropertyValue("--breath")]] :
+                 [["then", css.getPropertyValue("--then")], ["now", css.getPropertyValue("--now")]];
+  if (meta) {
+    const all = curves.flatMap(([s]) => Array.from({ length: 12 }, (_, i) => green(s, i)));
+    const lo = Math.min(...all), hi = Math.max(...all);
+    for (const [s, color] of curves) {
+      sx.beginPath();
+      for (let k = 0; k <= 60; k++) {
+        const tt = k / 60 * 12, i = Math.floor(tt) % 12, f = ease(tt - Math.floor(tt));
+        const v = green(s, i) * (1 - f) + green(s, (i + 1) % 12) * f;
+        const x = k / 60 * w, y = bot - (v - lo) / (hi - lo || 1) * (bot - top);
+        k ? sx.lineTo(x, y) : sx.moveTo(x, y);
+      }
+      sx.strokeStyle = color.trim(); sx.lineWidth = 1.6; sx.globalAlpha = 0.9; sx.stroke(); sx.globalAlpha = 1;
+    }
+  }
+  sx.font = "400 9.5px 'IBM Plex Mono', monospace"; sx.fillStyle = css.getPropertyValue("--sage"); sx.textAlign = "center";
+  for (let i = 0; i < 12; i++) {
+    const x = (i + 0.5) / 12 * w;
+    const label = MONTHS[calMonth(i)].slice(0, 1);
+    sx.fillText(w > 420 ? MONTHS[calMonth(i)].slice(0, 3) : label, x, h - 3);
+  }
+  stripImg = sx.getImageData(0, 0, sc.width, sc.height);
+}
+function drawPlayhead() {
+  if (!stripImg) return;
+  const w = sc.clientWidth, h = sc.clientHeight;
+  sx.putImageData(stripImg, 0, 0);
+  const x = (t / 12) * w;
+  sx.fillStyle = "rgba(233,239,228,0.9)"; sx.fillRect(x - 0.75, 2, 1.5, h - 18);
+}
+$("scrub").addEventListener("input", e => { t = Number(e.target.value); });
+
+// ---- controls -----------------------------------------------------------------------------------------
+const PLAY = '<svg viewBox="0 0 16 16"><path d="M4 2.5v11l9-5.5z"/></svg>';
+const PAUSE = '<svg viewBox="0 0 16 16"><rect x="3" y="2" width="3.5" height="12" rx="1"/><rect x="9.5" y="2" width="3.5" height="12" rx="1"/></svg>';
+function setPlaying(p) { playing = p; $("play").innerHTML = p ? PAUSE : PLAY; $("play").setAttribute("aria-label", p ? "Pause" : "Play"); }
+$("play").onclick = () => setPlaying(!playing);
+document.querySelectorAll(".seg button").forEach(b => b.onclick = () => setMode(b.dataset.mode));
+function setMode(m) {
+  if (m === mode) return;
+  // keep the same calendar month when switching between "this year" and the averaged sets
+  const cm = calMonth(Math.floor(t) % 12), frac = t - Math.floor(t);
+  mode = m;
+  document.body.className = "mode-" + m;
+  document.querySelectorAll(".seg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === m));
+  let i = cm;
+  if (m === "year" && meta) i = meta.latest.findIndex(s => Number(s.slice(5)) - 1 === cm);
+  t = i + frac; shownMonth = -1;
+  setFrames(sets()[0]).forEach(want); if (sets()[1]) setFrames(sets()[1]).forEach(want);
+  $("readout").hidden = true;
+  drawStrip();
+}
+$("howBtn").onclick = () => $("how").showModal();
+addEventListener("keydown", e => {
+  if (e.target.tagName === "INPUT" && e.key !== " ") return;
+  if (e.key === " ") { e.preventDefault(); setPlaying(!playing); }
+  if (e.key === "ArrowRight") t = (Math.floor(t) + 1) % 12;
+  if (e.key === "ArrowLeft") t = (Math.floor(t) + 11) % 12;
+});
+
+// ---- drag to spin, pinch/wheel to zoom, tap to read a place ------------------------------------------
+const pts = new Map(); let down = null, pinch0 = null;
+cv.addEventListener("pointerdown", e => {
+  cv.setPointerCapture(e.pointerId); pts.set(e.pointerId, [e.clientX, e.clientY]);
+  if (pts.size === 1) down = { x: e.clientX, y: e.clientY, time: performance.now(), lx: e.clientX, ly: e.clientY };
+  if (pts.size === 2) { const [a, b] = [...pts.values()]; pinch0 = { d: Math.hypot(a[0]-b[0], a[1]-b[1]), z: zoom }; }
+  dragging = true; cv.classList.add("dragging"); vel = [0, 0];
+});
+cv.addEventListener("pointermove", e => {
+  if (!pts.has(e.pointerId)) return;
+  pts.set(e.pointerId, [e.clientX, e.clientY]);
+  if (pts.size === 2 && pinch0) {
+    const [a, b] = [...pts.values()];
+    zoom = Math.max(0.7, Math.min(3.2, pinch0.z * Math.hypot(a[0]-b[0], a[1]-b[1]) / pinch0.d)); layout(); return;
+  }
+  if (!down) return;
+  const dx = e.clientX - down.lx, dy = e.clientY - down.ly; down.lx = e.clientX; down.ly = e.clientY;
+  const k = 1 / R;
+  rot[0] -= dx * k; rot[1] += dy * k;
+  vel = [-dx * k * 0.6, dy * k * 0.6];
+});
+function up(e) {
+  pts.delete(e.pointerId);
+  if (pts.size < 2) pinch0 = null;
+  if (pts.size === 0) {
+    dragging = false; cv.classList.remove("dragging");
+    if (down && Math.hypot(e.clientX - down.x, e.clientY - down.y) < 6 && performance.now() - down.time < 350) { vel = [0, 0]; tapAt(e.clientX, e.clientY); }
+    down = null;
+  }
+}
+cv.addEventListener("pointerup", up); cv.addEventListener("pointercancel", up);
+cv.addEventListener("wheel", e => { e.preventDefault(); zoom = Math.max(0.7, Math.min(3.2, zoom * Math.exp(-e.deltaY * 0.0015))); layout(); }, { passive: false });
+
+// split handle
+const split = $("split");
+split.addEventListener("pointerdown", e => { split.setPointerCapture(e.pointerId); split.dragging = true; });
+split.addEventListener("pointermove", e => {
+  if (!split.dragging) return;
+  splitFrac = Math.max(0.08, Math.min(0.92, (e.clientX - (CX - R)) / (2 * R))); placeSplit();
+});
+split.addEventListener("pointerup", () => split.dragging = false);
+
+// screen point → latitude/longitude, the same inverse projection as the shader
+function toLatLon(x, y) {
+  const px = (x - CX) / R, py = -(y - CY) / R, d2 = px*px + py*py;
+  if (d2 > 1) return null;
+  const v = [px, py, Math.sqrt(1 - d2)];
+  const cl = Math.cos(rot[1]), sl = Math.sin(rot[1]), co = Math.cos(rot[0]), so = Math.sin(rot[0]);
+  let w = [v[0], v[1]*cl + v[2]*sl, -v[1]*sl + v[2]*cl];
+  w = [w[0]*co + w[2]*so, w[1], -w[0]*so + w[2]*co];
+  return [Math.asin(Math.max(-1, Math.min(1, w[1]))) * 180/Math.PI, Math.atan2(w[0], w[2]) * 180/Math.PI];
+}
+const probe = document.createElement("canvas"), px = probe.getContext("2d", { willReadFrequently: true });
+function sample(key, lat, lon) {
+  const im = imgs[key]; if (!im) return null;
+  const x = Math.floor((lon + 180) / 360 * im.width) % im.width, y = Math.min(im.height - 1, Math.floor((90 - lat) / 180 * im.height));
+  probe.width = 1; probe.height = 1;
+  px.drawImage(im, x, y, 1, 1, 0, 0, 1, 1);
+  const [r, g] = px.getImageData(0, 0, 1, 1).data;
+  return { ndvi: r === 0 ? null : (r - 1) / 254, snow: g / 255 };
+}
+function fmtLat(lat, lon) { return `${Math.abs(lat).toFixed(1)}°${lat >= 0 ? "N" : "S"} ${Math.abs(lon).toFixed(1)}°${lon >= 0 ? "E" : "W"}`; }
+function describe(s) {
+  if (!s) return "—";
+  if (s.ndvi === null) return s.snow > 0.05 ? `${Math.round(s.snow*100)}% snow` : "ocean or no reading";
+  const word = s.ndvi < 0.1 ? "bare" : s.ndvi < 0.25 ? "sparse" : s.ndvi < 0.45 ? "grassy" : s.ndvi < 0.65 ? "green" : "lush";
+  return `<b>${word}</b> ${s.ndvi.toFixed(2)}${s.snow > 0.05 ? ` · ${Math.round(s.snow*100)}% snow` : ""}`;
+}
+function tapAt(x, y) {
+  const ll = toLatLon(x, y), el = $("readout");
+  if (!ll) { el.hidden = true; return; }
+  const i = Math.round(t) % 12, [s0, s1] = sets();
+  const where = `<div class="where">${fmtLat(...ll)} · ${MONTHS[calMonth(i)]}</div>`;
+  if (!s1) el.innerHTML = where + describe(sample(frameKey(s0, i), ...ll));
+  else {
+    const a = sample(frameKey(s0, i), ...ll), b = sample(frameKey(s1, i), ...ll);
+    let delta = "";
+    if (a?.ndvi != null && b?.ndvi != null) {
+      const d = b.ndvi - a.ndvi;
+      delta = `<div style="margin-top:4px;color:var(--sage)">${Math.abs(d) < 0.02 ? "about the same" : d > 0 ? `greener now by ${d.toFixed(2)}` : `browner now by ${(-d).toFixed(2)}`}</div>`;
+    }
+    el.innerHTML = where + `<div><span style="color:var(--then)">2001–03</span> ${describe(a)}</div><div><span style="color:var(--now)">2023–25</span> ${describe(b)}</div>` + delta;
+  }
+  el.hidden = false;
+}
+
+// ---- ambient breath (off by default): filtered noise that swells with the inhale, a low open fifth ----
+const sound = {
+  ctx: null, on: false,
+  start() {
+    const ctx = this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const buf = ctx.createBuffer(1, ctx.sampleRate * 4, ctx.sampleRate), d = buf.getChannelData(0);
+    let last = 0; for (let i = 0; i < d.length; i++) { last = (last + 0.02 * (Math.random() * 2 - 1)) / 1.02; d[i] = last * 3.5; }
+    const src = ctx.createBufferSource(); src.buffer = buf; src.loop = true;
+    this.filter = ctx.createBiquadFilter(); this.filter.type = "lowpass"; this.filter.Q.value = 0.7;
+    this.gain = ctx.createGain(); this.gain.gain.value = 0;
+    src.connect(this.filter).connect(this.gain).connect(ctx.destination); src.start();
+    this.drone = ctx.createGain(); this.drone.gain.value = 0.0; this.drone.connect(ctx.destination);
+    for (const f of [73.4, 110, 146.8]) { const o = ctx.createOscillator(); o.type = "sine"; o.frequency.value = f; o.connect(this.drone); o.start(); }
+    this.drone.gain.setTargetAtTime(0.025, ctx.currentTime, 2);
+  },
+  update(level) {
+    if (!this.on || !this.ctx) return;
+    const now = this.ctx.currentTime;
+    this.filter.frequency.setTargetAtTime(260 + level * 1100, now, 0.4);
+    this.gain.gain.setTargetAtTime(0.05 + level * 0.12, now, 0.4);
+  },
+  toggle() {
+    this.on = !this.on;
+    if (this.on && !this.ctx) this.start();
+    if (this.ctx) this.on ? this.ctx.resume() : this.ctx.suspend();
+    $("sound").setAttribute("aria-pressed", this.on);
+    $("sound").title = `Ambient breath sound (${this.on ? "on" : "off"})`;
+  },
+};
+$("sound").onclick = () => sound.toggle();
+
+// ---- boot ---------------------------------------------------------------------------------------------
+(async function boot() {
+  layout();
+  meta = await fetch("frames/meta.json").then(r => r.json());
+  const [base, land] = await Promise.all([loadImage("frames/base.jpg"), loadImage("frames/land.png")]);
+  upload(T.base, base, "base");
+  gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, T.land.t);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, land); gl.generateMipmap(gl.TEXTURE_2D);
+  // open on the current calendar month of the latest year
+  const cm = new Date().getMonth();
+  const idx = meta.latest.findIndex(s => Number(s.slice(5)) - 1 === cm);
+  t = idx >= 0 ? idx : 11;
+  const first = setFrames("latest");
+  let n = 0;
+  const firstTwo = [first[Math.floor(t)], first[(Math.floor(t) + 1) % 12]];
+  await Promise.all(firstTwo.map(k => want(k).then(() => $("loadCount").textContent = `${++n} of 2 frames`)));
+  $("loading").classList.add("done");
+  setPlaying(playing);
+  drawStrip();
+  requestAnimationFrame(now => { lastFrame = now; frame(now); });
+  // the rest of this year, then the averaged sets in the background
+  for (const k of first) await want(k).catch(() => {});
+  for (const k of [...setFrames("then"), ...setFrames("now")]) await want(k).catch(() => {});
+})();
+</script>
+</body>
+</html>

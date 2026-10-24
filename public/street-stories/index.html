@@ -1,0 +1,915 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Street Stories</title>
+<meta name="description" content="Put in headphones and walk anywhere. When you pass something with a Wikipedia article, a short story is read aloud.">
+<meta name="theme-color" content="#f4eee2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16130f" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Street Stories">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Public+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* A printed walking guide: paper, ink and one guidebook red. Phone-first: one column of big type,
+   the story you're hearing on top, a heading-up "what's around" plot below it, then the day's log. */
+:root {
+  color-scheme: light;
+  --paper: #f4eee2;        /* page */
+  --card: #fbf8f1;         /* raised panels */
+  --ink: #1b1813;          /* primary text */
+  --ink-2: #5a5247;        /* secondary text */
+  --rule: #d8ccb6;         /* hairlines */
+  --red: #b8361f;          /* guidebook accent */
+  --red-ink: #ffffff;      /* text on red */
+  --dot: #8a7d68;          /* places on the plot */
+  --hi: #f1d9a8;           /* sentence being read */
+  --display: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --body: "Public Sans", "Helvetica Neue", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --paper: #16130f; --card: #201c16; --ink: #f3ecdf; --ink-2: #b5aa98; --rule: #3a3329;
+    --red: #ff7657; --red-ink: #1b1813; --dot: #9d917d; --hi: #4a3a1c;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #16130f; --card: #201c16; --ink: #f3ecdf; --ink-2: #b5aa98; --rule: #3a3329;
+  --red: #ff7657; --red-ink: #1b1813; --dot: #9d917d; --hi: #4a3a1c;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink); font: 400 17px/1.5 var(--body);
+  -webkit-font-smoothing: antialiased; overflow-x: hidden;
+}
+.wrap {
+  max-width: 720px; margin: 0 auto;
+  padding: calc(env(safe-area-inset-top, 0px) + 18px) max(16px, env(safe-area-inset-right, 0px))
+           calc(env(safe-area-inset-bottom, 0px) + 32px) max(16px, env(safe-area-inset-left, 0px));
+}
+a { color: inherit; text-decoration-color: var(--rule); text-underline-offset: 3px; }
+a:hover { text-decoration-color: var(--red); }
+button, select, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+[hidden] { display: none !important; }
+
+.mast { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding-bottom: 12px; border-bottom: 2px solid var(--ink); }
+.mast h1 { margin: 0; font: 600 26px/1 var(--display); letter-spacing: -0.01em; }
+.mast h1 i { font-style: italic; font-weight: 400; color: var(--red); }
+.chip { font: 600 11px/1 var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); white-space: nowrap; }
+.chip.live { color: var(--red); }
+
+.eyebrow { font: 700 11.5px/1.2 var(--body); letter-spacing: .14em; text-transform: uppercase; color: var(--red); }
+.muted { color: var(--ink-2); }
+
+/* start */
+.start { padding: 28px 0 8px; }
+.start .lede { font: 400 clamp(30px, 8vw, 44px)/1.08 var(--display); letter-spacing: -0.015em; margin: 0 0 14px; text-wrap: balance; }
+.start .lede i { color: var(--red); }
+.start p { margin: 0 0 22px; color: var(--ink-2); max-width: 34em; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 20px;
+  border-radius: 999px; border: 1.5px solid var(--ink); background: transparent; cursor: pointer;
+  font: 600 15px/1 var(--body); text-decoration: none;
+}
+.btn:hover { background: color-mix(in srgb, var(--ink) 6%, transparent); }
+.btn.primary { background: var(--red); border-color: var(--red); color: var(--red-ink); min-height: 58px; padding: 0 28px; font-size: 17px; }
+.btn.primary:hover { filter: brightness(1.05); }
+.btn.small { min-height: 40px; padding: 0 14px; font-size: 14px; }
+.btn:disabled { opacity: .4; cursor: default; }
+.go { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.demos { margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--rule); }
+.demos h2, .sec h2 { margin: 0 0 12px; font: 700 11.5px/1.2 var(--body); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); }
+.walks { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.walk {
+  text-align: left; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--rule); background: var(--card); cursor: pointer;
+}
+.walk:hover { border-color: var(--ink); }
+.walk b { display: block; font: 600 18px/1.15 var(--display); }
+.walk span { display: block; margin-top: 4px; font-size: 13px; color: var(--ink-2); }
+.search { display: flex; gap: 8px; margin-top: 12px; }
+.search input {
+  flex: 1; min-width: 0; min-height: 44px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--rule); background: var(--card);
+}
+.note { margin-top: 14px; font-size: 13.5px; color: var(--ink-2); }
+.err { margin-top: 14px; padding: 12px 14px; border-radius: 10px; background: color-mix(in srgb, var(--red) 12%, transparent); color: var(--ink); font-size: 14.5px; }
+
+details.settings { margin-top: 22px; border-top: 1px solid var(--rule); padding-top: 14px; }
+details.settings summary { cursor: pointer; font: 700 11.5px/1.2 var(--body); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); }
+.fields { display: grid; gap: 12px; margin-top: 14px; }
+.fields label { display: grid; gap: 6px; font-size: 13.5px; color: var(--ink-2); }
+.fields select, .fields input[type=range] { width: 100%; }
+.fields select { min-height: 42px; border-radius: 10px; border: 1px solid var(--rule); background: var(--card); padding: 0 10px; }
+.check { display: flex !important; grid-template-columns: none; align-items: center; gap: 10px; color: var(--ink) !important; }
+
+/* tour */
+.bar {
+  position: sticky; top: 0; z-index: 3; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between;
+  margin: 0 calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding: 10px max(16px, env(safe-area-inset-left, 0px));
+  background: color-mix(in srgb, var(--paper) 92%, transparent); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--rule);
+}
+.bar .where { font: 600 14px/1.2 var(--body); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1 1 140px; }
+.bar .where small { display: block; font-weight: 400; color: var(--ink-2); font-size: 12.5px; }
+.bar .ctl { display: flex; gap: 6px; flex-wrap: wrap; }
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 999px; overflow: hidden; }
+.seg button { border: 0; background: transparent; padding: 0 11px; min-height: 36px; font: 600 13px/1 var(--body); cursor: pointer; color: var(--ink-2); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+
+.now { margin-top: 18px; }
+.now .head { display: grid; grid-template-columns: 1fr auto; gap: 14px; align-items: start; }
+.now h2 { margin: 6px 0 4px; font: 600 clamp(30px, 8.4vw, 46px)/1.02 var(--display); letter-spacing: -0.02em; text-wrap: balance; overflow-wrap: anywhere; }
+.now h2 a { text-decoration: none; }
+.now .desc { margin: 0; color: var(--ink-2); font-size: 15px; }
+.arrow { width: 64px; height: 64px; border-radius: 50%; border: 1.5px solid var(--ink); display: grid; place-items: center; flex: none; }
+.arrow svg { width: 30px; height: 30px; transition: transform .6s ease; }
+.arrow svg path { fill: var(--red); }
+.now .thumb { margin-top: 14px; width: 100%; max-height: 240px; object-fit: cover; border-radius: 12px; display: block; background: var(--card); }
+.story { margin: 16px 0 0; font: 400 21px/1.5 var(--display); }
+.story span { transition: background .3s; border-radius: 3px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.story span.on { background: var(--hi); }
+.story.idle { color: var(--ink-2); font-style: italic; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+
+.grid2 { display: grid; gap: 28px; margin-top: 30px; }
+@media (min-width: 700px) { .grid2 { grid-template-columns: 1fr 1fr; } }
+.sec { border-top: 2px solid var(--ink); padding-top: 12px; }
+.radar { width: 100%; max-width: 340px; display: block; margin: 0 auto; aspect-ratio: 1; }
+.radar .ring { fill: none; stroke: var(--rule); stroke-width: 1; }
+.radar .zone { fill: color-mix(in srgb, var(--red) 10%, transparent); stroke: var(--red); stroke-dasharray: 3 4; stroke-width: 1; }
+.radar .me { fill: var(--red); }
+.radar .p { fill: var(--dot); }
+.radar .p.told { fill: none; stroke: var(--dot); stroke-width: 1.2; }
+.radar .p.cur { fill: var(--red); }
+.radar text { font: 500 9.5px var(--body); fill: var(--ink-2); }
+.radar .lbl { fill: var(--ink); font-weight: 600; }
+.radar .route { fill: none; stroke: var(--ink-2); stroke-width: 1.2; stroke-dasharray: 2 4; opacity: .7; }
+.legend { margin-top: 8px; text-align: center; font-size: 12.5px; color: var(--ink-2); }
+
+ol.list { list-style: none; margin: 0; padding: 0; }
+ol.list li { display: grid; grid-template-columns: 44px 1fr auto; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--rule); }
+ol.list img, ol.list .ph { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; background: var(--card); border: 1px solid var(--rule); }
+ol.list .t { font: 600 16px/1.2 var(--display); min-width: 0; overflow-wrap: anywhere; }
+ol.list .t a { text-decoration: none; }
+ol.list .s { font-size: 12.5px; color: var(--ink-2); margin-top: 2px; }
+ol.list .d { font: 600 12.5px/1 var(--body); color: var(--ink-2); white-space: nowrap; font-variant-numeric: tabular-nums; }
+ol.list li.told .t { color: var(--ink-2); }
+.empty { color: var(--ink-2); font-style: italic; padding: 10px 0; }
+
+footer { margin-top: 36px; padding-top: 14px; border-top: 1px solid var(--rule); font-size: 12.5px; color: var(--ink-2); display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; }
+
+.pocket {
+  position: fixed; inset: 0; z-index: 10; background: #000; color: #6f6656; display: grid; place-items: center; text-align: center;
+  padding: 24px; font: 400 15px/1.5 var(--body); cursor: pointer;
+}
+.pocket b { display: block; font: 400 26px/1.2 var(--display); color: #b9ad97; margin-bottom: 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="mast">
+    <h1>Street <i>Stories</i></h1>
+    <span class="chip" id="chip">A walking guide</span>
+  </header>
+
+  <!-- start screen -->
+  <section class="start" id="start">
+    <p class="lede">Every street has a story. <i>Put in headphones and walk.</i></p>
+    <p>When you pass something with a Wikipedia article (a building, a statue, the site of something that happened), a short story is read aloud: what it is, which side it's on, and why it matters.</p>
+    <div class="go">
+      <button class="btn primary" id="startBtn">Start walking</button>
+    </div>
+    <div class="note" id="geoNote">Uses your location while the page is open. Nothing is sent anywhere except Wikipedia.</div>
+    <div class="err" id="startErr" hidden></div>
+
+    <div class="demos">
+      <h2>Or take a walk from your desk</h2>
+      <div class="walks" id="walks"></div>
+      <form class="search" id="searchForm">
+        <input id="searchInput" type="search" placeholder="Anywhere else: a street, a town…" aria-label="Place to wander">
+        <button class="btn small" type="submit">Wander</button>
+      </form>
+    </div>
+
+    <details class="settings">
+      <summary>Voice and pace</summary>
+      <div class="fields">
+        <label>Voice <select id="voiceSel"></select></label>
+        <label>Reading speed <input type="range" id="rateIn" min="0.8" max="1.3" step="0.05" value="1"></label>
+        <label class="check"><input type="checkbox" id="compassIn"> Use the compass for "left / right" when standing still</label>
+      </div>
+    </details>
+  </section>
+
+  <!-- the tour -->
+  <main id="tour" hidden>
+    <div class="bar">
+      <div class="where" id="where">Finding you…<small id="whereSub"></small></div>
+      <div class="ctl">
+        <span class="seg" id="paceSeg" hidden>
+          <button data-pace="1" aria-pressed="false">1×</button><button data-pace="4" aria-pressed="true">4×</button><button data-pace="12" aria-pressed="false">12×</button>
+        </span>
+        <button class="btn small" id="pauseBtn">Pause</button>
+        <button class="btn small" id="pocketBtn" title="Black screen that keeps the tour running">Pocket</button>
+        <button class="btn small" id="endBtn">End</button>
+      </div>
+    </div>
+
+    <article class="now" aria-live="polite">
+      <div class="head">
+        <div>
+          <div class="eyebrow" id="nowEyebrow">Listening for stories…</div>
+          <h2 id="nowTitle"></h2>
+          <p class="desc" id="nowDesc"></p>
+        </div>
+        <div class="arrow" id="arrowBox" hidden><svg viewBox="0 0 24 24" id="arrow" aria-hidden="true"><path d="M12 2 20 21 12 16.5 4 21Z"/></svg></div>
+      </div>
+      <img class="thumb" id="nowImg" alt="" hidden>
+      <div class="story idle" id="story">Keep walking. The next story starts when you're close to something worth hearing about.</div>
+      <div class="actions">
+        <button class="btn" id="moreBtn" disabled>Tell me more</button>
+        <button class="btn" id="skipBtn" disabled>Skip</button>
+        <a class="btn" id="readBtn" target="_blank" rel="noopener" hidden>Read the article</a>
+      </div>
+    </article>
+
+    <div class="grid2">
+      <section class="sec">
+        <h2>Around you</h2>
+        <svg class="radar" id="radar" viewBox="-160 -160 320 320" role="img" aria-label="Nearby places, the way you're facing is up"></svg>
+        <div class="legend" id="legend">Up is the way you're walking · rings every 100 m</div>
+      </section>
+      <section class="sec">
+        <h2>Coming up</h2>
+        <ol class="list" id="nearby"></ol>
+      </section>
+    </div>
+
+    <section class="sec" style="margin-top:30px">
+      <h2>Heard today</h2>
+      <ol class="list" id="heard"></ol>
+    </section>
+  </main>
+
+  <footer>
+    <span>Stories from <a href="https://www.wikipedia.org/" target="_blank" rel="noopener">Wikipedia</a> (CC BY-SA), read aloud by your device.</span>
+    <span id="foot"></span>
+  </footer>
+</div>
+
+<div class="pocket" id="pocket" hidden><div><b>Still walking.</b>The screen stays awake so stories keep playing.<br>Tap anywhere to come back.</div></div>
+
+<script>
+// ==CORE== pure helpers; scripts/sample_walks.mjs evals this block to test ranking and scripts outside a browser
+const EARTH = 6371008.8, RAD = Math.PI / 180;
+
+function distM(a, b) {
+  const dLat = (b.lat - a.lat) * RAD, dLon = (b.lon - a.lon) * RAD;
+  const s = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * RAD) * Math.cos(b.lat * RAD) * Math.sin(dLon / 2) ** 2;
+  return 2 * EARTH * Math.asin(Math.sqrt(s));
+}
+function bearingDeg(a, b) {
+  const y = Math.sin((b.lon - a.lon) * RAD) * Math.cos(b.lat * RAD);
+  const x = Math.cos(a.lat * RAD) * Math.sin(b.lat * RAD) - Math.sin(a.lat * RAD) * Math.cos(b.lat * RAD) * Math.cos((b.lon - a.lon) * RAD);
+  return (Math.atan2(y, x) / RAD + 360) % 360;
+}
+function moveBy(p, bearing, m) {
+  const d = m / EARTH, b = bearing * RAD, la = p.lat * RAD, lo = p.lon * RAD;
+  const la2 = Math.asin(Math.sin(la) * Math.cos(d) + Math.cos(la) * Math.sin(d) * Math.cos(b));
+  const lo2 = lo + Math.atan2(Math.sin(b) * Math.sin(d) * Math.cos(la), Math.cos(d) - Math.sin(la) * Math.sin(la2));
+  return { lat: la2 / RAD, lon: lo2 / RAD };
+}
+
+// How close counts as "passing": wider when GPS is fuzzy or you're moving fast
+function triggerRadius(accuracy, speed) {
+  return Math.max(40, Math.min(85, 42 + 0.6 * (accuracy || 10) + 8 * (speed || 1.4)));
+}
+
+// Interesting beats nearby: long articles with photos, landmarks and events up; lists, stations, streets,
+// districts and schools down (stations are only told when nothing better has come along for a while)
+const BOOST = /\b(museum|memorial|monument|church|cathedral|basilica|chapel|synagogue|mosque|temple|shrine|statue|sculpture|fountain|theat(re|er)|opera|palace|castle|fort|tower|bridge|gate|tomb|ruins?|market|garden|park|cemetery|palazzo|villa|house|mansion|hotel|lighthouse|pub|tavern|café|cafe|gallery|library|obelisk|column|arch|piazza)\b/;
+const EVENT = /\b(murder|assassination|battle|riot|fire|bombing|massacre|siege|explosion|attack|collapse|disaster|protest|shooting)\b/;
+function scorePlace(p) {
+  const t = p.title || "", d = (p.desc || "").toLowerCase();
+  let s = Math.log10(Math.max(p.length || 600, 600));          // ~2.8 for a stub, ~5 for a big article
+  if (p.thumb) s += 0.5;
+  if (/^lists? of\b/i.test(t) || /\blist of\b/.test(d) || /disambiguation/.test(d)) s -= 6;
+  if (/\b(station|metro|subway|underground|railway|tram|bus stop|light rail|halt)\b/.test(d) || /\bstation\b/i.test(t)) s -= 2.8;
+  if (/^(street|road|avenue|boulevard|thoroughfare|alley|lane|highway|motorway)\b|\b(street|road|avenue|boulevard) in\b/.test(d)) s -= 1.4;
+  // only when the place *is* an area ("Neighborhood in Manhattan"), not when it sits in one ("Shrine in the Gion District")
+  if (/^([a-z-]+ ){0,2}(neighbou?rhood|district|ward|borough|census|municipality|rione|quartiere|frazione|suburb|area|human settlement|constituency|parish|locality|prefecture|commune|electoral|town|city|village|hamlet)\b/.test(d)) s -= 1.6;
+  if (/\b(school|college|university|academy|kindergarten)\b/.test(d)) s -= 0.9;
+  if (/\b(company|corporation|business|bank|law firm|office)\b/.test(d)) s -= 0.6;
+  if (/\b(restaurant|bar|nightclub|shop|store|boutique|retailer)\b/.test(d)) s -= 1.0;   // fine, but rarely the story of the street
+  if (BOOST.test(d) || BOOST.test(t.toLowerCase())) s += 0.4;
+  if (EVENT.test(d) || EVENT.test(t.toLowerCase())) s += 0.7;
+  return s;
+}
+const TELL_MIN = 3.35;        // normal bar for telling a place
+const TELL_MIN_QUIET = 2.6;   // after a long quiet stretch, anything with substance will do
+
+function speechTitle(t) { return (t || "").replace(/\s*\([^)]*\)\s*$/, "").trim(); }
+
+// Wikipedia intro -> clean spoken prose: no pronunciations, bracketed dates, IPA, native-script glosses
+function cleanText(s) {
+  let t = (s || "").replace(/\r/g, "");
+  let prev;
+  do { prev = t; t = t.replace(/\s*\([^()]*\)/g, ""); } while (t !== prev);   // nested parentheticals
+  do { prev = t; t = t.replace(/\s*\[[^\[\]]*\]/g, ""); } while (t !== prev);
+  t = t.replace(/\/[^\/\s][^\/]{0,40}\//g, m => /[ˈˌəɪʊæɑɔɛʃʒθðŋː]/.test(m) ? "" : m);
+  t = t.replace(/\b(listen|lit\.)\b\s*/gi, "");
+  t = t.replace(/\s+([,.;:!?])/g, "$1").replace(/([,;:])(?=[,;:.])/g, "").replace(/,\s*,/g, ",");
+  t = t.replace(/\(\s*\)/g, "").replace(/[ \t]{2,}/g, " ").replace(/\n{2,}/g, "\n");
+  return t.trim();
+}
+
+const ABBR = /\b(St|Mt|Ft|Mr|Mrs|Ms|Dr|Jr|Sr|No|Nos|Ave|Rd|Blvd|Inc|Co|Corp|Ltd|vs|ca|approx|Gen|Col|Capt|Lt|Rev|Hon|Prof|Sen|Rep|Gov|Pres|Bros|U\.S|U\.K|D\.C|e\.g|i\.e)\./g;
+function splitSentences(text) {
+  const out = [];
+  for (const para of cleanText(text).split("\n")) {
+    if (!para.trim()) continue;
+    const prot = para.replace(ABBR, m => m.replace(/\./g, "․")).replace(/\b([A-Z])\.(?=\s*[A-Z])/g, "$1․");
+    for (const s of prot.split(/(?<=[.!?]["”’)]?)\s+(?=["“‘(]?[A-Z0-9À-ÖØ-Þ])/)) {
+      const r = s.replace(/․/g, ".").trim();
+      if (r.length > 1) out.push(r);
+    }
+  }
+  return out;
+}
+
+// Next ~30 seconds of story: 2-4 sentences, about 55-95 words
+function nextChunk(sentences, from) {
+  const out = []; let words = 0, i = from;
+  while (i < sentences.length) {
+    const w = sentences[i].split(/\s+/).length;
+    if (out.length >= 2 && (words + w > 95 || words >= 55)) break;
+    if (out.length >= 4) break;
+    out.push(sentences[i]); words += w; i++;
+  }
+  return { sentences: out, end: i };
+}
+
+function relDirection(bearingTo, heading, dist) {
+  if (dist < 22) return "here";
+  if (heading == null) return "near";
+  const r = ((bearingTo - heading) % 360 + 540) % 360 - 180;   // -180..180, 0 = straight ahead
+  if (Math.abs(r) <= 35) return "ahead";
+  if (Math.abs(r) >= 145) return "behind";
+  return r > 0 ? "right" : "left";
+}
+const LEAD = { here: "Right here", near: "Close by", ahead: "Just ahead", behind: "Just behind you", left: "On your left", right: "On your right" };
+function leadIn(p, dir) { return `${LEAD[dir] || "Close by"}: ${speechTitle(p.title)}.`; }
+
+// Hook for a later LLM rewrite (server endpoint that turns the intro into a livelier 30-second telling).
+// Must resolve to an array of sentences; today it's the deterministic cut from the article intro.
+async function storyScript(place, fromSentence) {
+  return nextChunk(place.sentences || [], fromSentence || 0);
+}
+// ==/CORE==
+
+// ---- presets -------------------------------------------------------------------------
+const WALKS = {
+  uws:   { name: "Upper West Side", sub: "Columbus Circle to the Museum of Natural History", lang: "en",
+           path: [[40.7681,-73.9819],[40.7712,-73.9796],[40.7743,-73.9778],[40.7766,-73.9762],[40.7787,-73.9747],[40.7799,-73.9739],[40.7812,-73.9729],[40.7826,-73.9719],[40.7836,-73.9746],[40.7806,-73.9768],[40.7786,-73.9814]] },
+  rome:  { name: "Rome centro", sub: "Piazza del Popolo, Spanish Steps, Trevi, Pantheon, Navona", lang: "en",
+           path: [[41.9109,12.4763],[41.9080,12.4792],[41.9058,12.4822],[41.9035,12.4836],[41.9009,12.4833],[41.9003,12.4795],[41.8990,12.4770],[41.8986,12.4769],[41.8992,12.4745],[41.8992,12.4731],[41.8968,12.4723],[41.8956,12.4722]] },
+  thames:{ name: "London Southbank", sub: "Westminster Bridge to Borough Market", lang: "en",
+           path: [[51.5007,-0.1218],[51.5020,-0.1199],[51.5033,-0.1196],[51.5056,-0.1167],[51.5070,-0.1140],[51.5081,-0.1095],[51.5085,-0.1050],[51.5076,-0.0994],[51.5081,-0.0972],[51.5074,-0.0935],[51.5055,-0.0910]] },
+  gion:  { name: "Kyoto, Gion", sub: "Shijō bridge, Hanamikōji, Yasaka, up to Kiyomizu-dera", lang: "en",
+           path: [[35.0039,135.7712],[35.0037,135.7740],[35.0035,135.7752],[35.0026,135.7752],[35.0012,135.7750],[35.0006,135.7737],[35.0018,135.7770],[35.0037,135.7785],[35.0010,135.7795],[34.9985,135.7807],[34.9966,135.7820],[34.9957,135.7836],[34.9949,135.7850]] },
+};
+
+// ---- state ---------------------------------------------------------------------------
+const $ = id => document.getElementById(id);
+const store = {
+  get(k, d) { try { const v = localStorage.getItem("ss:" + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem("ss:" + k, JSON.stringify(v)); } catch {} },
+};
+const today = new Date().toISOString().slice(0, 10);
+const told = new Set(store.get("told", []));
+let heard = (store.get("heard", null) || {}).day === today ? store.get("heard").items : [];
+const places = new Map();          // key "lang:pageid" -> place
+const params = new URLSearchParams(location.search);
+const deviceLang = (params.get("lang") || navigator.language || "en").slice(0, 2).toLowerCase();
+
+const S = {
+  mode: null,            // "gps" | "demo"
+  pos: null, acc: 10, speed: 1.4, heading: null, compass: null,
+  fixes: [],
+  lang: "en",
+  lastFetchAt: null, fetching: false,
+  current: null,         // place being told
+  chunkEnd: 0,
+  next: null,            // at most one queued place
+  paused: false,
+  lastToldAt: Date.now(),
+  // demo walker
+  path: null, along: 0, pathLen: 0, pace: 4, wander: false, target: null, demoName: "",
+};
+
+// ---- speech ----------------------------------------------------------------------------
+const synth = "speechSynthesis" in window ? window.speechSynthesis : null;
+let voices = [], speechToken = 0, speaking = false;
+let rate = Number(store.get("rate", 1)) || 1;
+let voicePref = store.get("voice", "");
+
+function loadVoices() {
+  voices = synth ? synth.getVoices() : [];
+  const sel = $("voiceSel"), lang = S.lang || deviceLang;
+  const mine = voices.filter(v => v.lang.toLowerCase().startsWith(lang));
+  sel.innerHTML = "";
+  const auto = document.createElement("option"); auto.value = ""; auto.textContent = mine.length ? `Best available (${bestVoice(lang)?.name || "default"})` : "Device default";
+  sel.appendChild(auto);
+  for (const v of mine) { const o = document.createElement("option"); o.value = v.name; o.textContent = `${v.name} · ${v.lang}`; sel.appendChild(o); }
+  sel.value = mine.some(v => v.name === voicePref) ? voicePref : "";
+}
+function bestVoice(lang) {
+  const mine = voices.filter(v => v.lang.toLowerCase().startsWith(lang));
+  if (!mine.length) return null;
+  const rank = v => (/premium|enhanced|natural|neural/i.test(v.name) ? 6 : 0) + (/siri/i.test(v.name) ? 5 : 0) +
+    (/google/i.test(v.name) ? 3 : 0) + (v.default ? 1 : 0) + (/en-(us|gb)/i.test(v.lang) ? 0.5 : 0) -
+    (/compact|eloquence|zarvox|bad news|bells|boing|bubbles|cellos|whisper|trinoids|organ|albert|jester|superstar|wobble|grandma|grandpa|rocko|shelley|sandy|flo|reed|eddy/i.test(v.name) ? 8 : 0);
+  return mine.slice().sort((a, b) => rank(b) - rank(a))[0];
+}
+function voiceFor(lang) {
+  const v = voicePref && voices.find(x => x.name === voicePref && x.lang.toLowerCase().startsWith(lang));
+  return v || bestVoice(lang);
+}
+function stopSpeech() { speechToken++; speaking = false; if (synth) synth.cancel(); }
+
+// Speak sentence by sentence (Chrome drops long utterances); a timer stands in when there's no voice
+// (headless, muted) and doubles as a watchdog when a browser never fires onend
+function speakParts(parts, lang, onEach, onDone) {
+  stopSpeech();
+  const token = speechToken, canSpeak = !!(synth && voices.length);
+  let i = 0;
+  speaking = true;
+  const next = () => {
+    if (token !== speechToken) return;
+    if (i >= parts.length) { speaking = false; onDone && onDone(); return; }
+    const idx = i++, txt = parts[idx];
+    onEach && onEach(idx);
+    const est = 1000 * txt.split(/\s+/).length / (2.6 * rate) + 350;
+    let done = false;
+    const fin = () => { if (done) return; done = true; clearTimeout(wd); setTimeout(next, 180); };
+    const wd = setTimeout(fin, canSpeak ? est * 2.2 + 4000 : est);
+    if (canSpeak) {
+      const u = new SpeechSynthesisUtterance(txt);
+      const v = voiceFor(lang); if (v) u.voice = v;
+      u.lang = v ? v.lang : lang; u.rate = rate;
+      u.onend = fin; u.onerror = fin;
+      synth.speak(u);
+    }
+  };
+  next();
+}
+
+// ---- Wikipedia ---------------------------------------------------------------------------
+const api = lang => `https://${lang}.wikipedia.org/w/api.php`;
+async function wiki(lang, q) {
+  const u = new URL(api(lang));
+  for (const [k, v] of Object.entries({ ...q, format: "json", formatversion: "2", origin: "*" })) u.searchParams.set(k, v);
+  const r = await fetch(u);
+  if (!r.ok) throw new Error(`Wikipedia ${r.status}`);
+  return r.json();
+}
+async function fetchNearby(pos, lang) {
+  const d = await wiki(lang, {
+    action: "query", generator: "geosearch", ggscoord: `${pos.lat}|${pos.lon}`, ggsradius: 600, ggslimit: 50,
+    prop: "coordinates|pageimages|info|pageprops", colimit: 50, coprimary: "primary", piprop: "thumbnail", pithumbsize: 480, pilimit: 50,
+    ppprop: "wikibase-shortdesc|disambiguation",
+  });
+  const out = [];
+  for (const pg of d.query?.pages || []) {
+    const c = pg.coordinates?.[0]; if (!c || pg.pageprops?.disambiguation !== undefined) continue;
+    const key = `${lang}:${pg.pageid}`;
+    const p = places.get(key) || { key, id: pg.pageid, lang, title: pg.title };
+    Object.assign(p, { lat: c.lat, lon: c.lon, length: pg.length, thumb: pg.thumbnail?.source || p.thumb || null, desc: pg.pageprops?.["wikibase-shortdesc"] || p.desc || "" });
+    p.score = scorePlace(p);
+    p.url = `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(pg.title.replace(/ /g, "_"))}`;
+    places.set(key, p); out.push(p);
+  }
+  return out;
+}
+const extractQueue = new Set();
+async function fetchExtracts(list) {
+  const want = list.filter(p => p.sentences == null && !extractQueue.has(p.key)).slice(0, 20);
+  if (!want.length) return;
+  want.forEach(p => extractQueue.add(p.key));
+  const byLang = {};
+  for (const p of want) (byLang[p.lang] ||= []).push(p);
+  try {
+    for (const [lang, ps] of Object.entries(byLang)) {
+      const d = await wiki(lang, { action: "query", prop: "extracts", exintro: 1, explaintext: 1, exlimit: 20, pageids: ps.map(p => p.id).join("|") });
+      for (const pg of d.query?.pages || []) {
+        const p = places.get(`${lang}:${pg.pageid}`); if (!p) continue;
+        p.sentences = splitSentences(pg.extract || "");
+        if (p.sentences.length < 2 && (p.sentences[0] || "").split(" ").length < 14) p.score -= 1.5;   // one-line stub
+      }
+    }
+  } catch (e) { console.warn(e); }
+  finally { want.forEach(p => extractQueue.delete(p.key)); }
+}
+// "Tell me more" past the intro: the article body, paragraphs only (no headings, no reference lists)
+async function fetchBody(p) {
+  if (p.body) return;
+  const d = await wiki(p.lang, { action: "query", prop: "extracts", explaintext: 1, exsectionformat: "plain", pageids: p.id });
+  const text = d.query?.pages?.[0]?.extract || "";
+  const stop = /^(See also|References|Notes|Further reading|External links|Bibliography|Sources|Citations|Gallery|Footnotes)\s*$/m;
+  const main = text.split(stop)[0];
+  const paras = main.split("\n").filter(l => l.split(" ").length > 12);
+  const all = splitSentences(paras.join("\n"));
+  const intro = new Set(p.sentences);
+  p.body = true;
+  p.sentences = p.sentences.concat(all.filter(s => !intro.has(s)));
+}
+
+async function refresh(force) {
+  if (S.fetching || !S.pos) return;
+  if (!force && S.lastFetchAt && distM(S.lastFetchAt, S.pos) < 150) return;
+  S.fetching = true;
+  const at = { ...S.pos };
+  try {
+    let got = [];
+    if (S.lang !== "en") {
+      got = await fetchNearby(at, S.lang);
+      if (got.length < 8) { S.lang = "en"; loadVoices(); }
+    }
+    if (S.lang === "en") got = await fetchNearby(at, "en");
+    S.lastFetchAt = at;
+    $("foot").textContent = `${places.size} places within reach · ${S.lang}.wikipedia.org`;
+  } catch (e) {
+    $("whereSub").textContent = "Couldn't reach Wikipedia. Retrying as you move.";
+  } finally { S.fetching = false; }
+}
+
+// ---- the guide -----------------------------------------------------------------------------
+function inReach() {
+  const out = [];
+  for (const p of places.values()) {
+    if (p.lang !== S.lang) continue;
+    p.dist = distM(S.pos, p); p.brg = bearingDeg(S.pos, p);
+    out.push(p);
+  }
+  return out.sort((a, b) => a.dist - b.dist);
+}
+function quiet() { return Date.now() - S.lastToldAt > 180000; }
+function tellable(p) { return !told.has(p.key) && p.score >= (quiet() ? TELL_MIN_QUIET : TELL_MIN); }
+
+function think() {
+  if (!S.pos) return;
+  refresh(false);
+  const near = inReach();
+  // have intros ready before you arrive
+  fetchExtracts(near.filter(p => p.dist < 320 && tellable(p)));
+  const r = triggerRadius(S.acc, S.speed);
+  const cands = near.filter(p => p.dist <= r && tellable(p) && p !== S.current)
+    .sort((a, b) => (b.score - b.dist / 120) - (a.score - a.dist / 120));
+  const best = cands.find(p => p.sentences) || null;
+  if (cands.length && !best) fetchExtracts(cands);
+  if (S.paused) return;
+  if (speaking) {
+    if (best && (!S.next || best.score > S.next.score)) S.next = best;     // hold one, never interrupt
+  } else {
+    let p = S.next && !told.has(S.next.key) && distM(S.pos, S.next) <= r * 1.6 ? S.next : best;
+    S.next = null;
+    if (p && p.sentences && p.sentences.length) tell(p);
+  }
+  if (S.next && distM(S.pos, S.next) > r * 1.8) S.next = null;
+}
+
+async function tell(p, more) {
+  S.current = p;
+  if (!more) {
+    told.add(p.key); store.set("told", [...told].slice(-3000));
+    heard = [{ key: p.key, title: p.title, url: p.url, thumb: p.thumb, desc: p.desc, t: Date.now() }, ...heard.filter(h => h.key !== p.key)].slice(0, 200);
+    store.set("heard", { day: today, items: heard });
+    S.chunkEnd = 0;
+  }
+  const chunk = await storyScript(p, S.chunkEnd);
+  const dir = relDirection(bearingDeg(S.pos, p), S.compassActive() ?? S.heading, distM(S.pos, p));
+  const parts = (more ? [] : [leadIn(p, dir)]).concat(chunk.sentences);
+  S.chunkEnd = chunk.end;
+  S.lastToldAt = Date.now();
+  renderStory(p, chunk.sentences, more ? null : parts[0]);
+  setMediaSession(p);
+  speakParts(parts, p.lang, i => highlight(more ? i : i - 1), () => {
+    S.lastToldAt = Date.now();
+    $("moreBtn").disabled = false;
+    setTimeout(think, 2500);   // a breath between stories
+  });
+  $("moreBtn").disabled = true;
+  $("skipBtn").disabled = false;
+  renderHeard();
+}
+S.compassActive = () => (S.compass != null && (S.speed || 0) < 0.6) ? S.compass : null;
+
+async function tellMore() {
+  const p = S.current; if (!p) return;
+  if (S.chunkEnd >= p.sentences.length) {
+    $("moreBtn").textContent = "Loading…";
+    try { await fetchBody(p); } catch {}
+    $("moreBtn").textContent = "Tell me more";
+  }
+  if (S.chunkEnd >= p.sentences.length) {
+    $("story").textContent = "That's everything the article has. Tap below to read it with pictures.";
+    return;
+  }
+  tell(p, true);
+}
+function skip() {
+  stopSpeech();
+  $("moreBtn").disabled = !S.current;
+  S.lastToldAt = Date.now();
+  setTimeout(think, 400);
+}
+
+// ---- rendering -----------------------------------------------------------------------------
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fmtDist = m => m < 1000 ? `${Math.round(m / 5) * 5} m` : `${(m / 1000).toFixed(1)} km`;
+const DIRWORD = { here: "right here", near: "nearby", ahead: "ahead", behind: "behind you", left: "on your left", right: "on your right" };
+
+function renderStory(p, sentences, lead) {
+  $("nowTitle").innerHTML = `<a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(speechTitle(p.title))}</a>`;
+  $("nowDesc").textContent = p.desc ? p.desc.charAt(0).toUpperCase() + p.desc.slice(1) : "";
+  const img = $("nowImg");
+  if (p.thumb) { img.src = p.thumb; img.alt = p.title; img.hidden = false; } else img.hidden = true;
+  const st = $("story");
+  st.classList.remove("idle");
+  st.innerHTML = sentences.map((s, i) => `<span data-i="${i}">${esc(s)}</span>`).join(" ");
+  const rb = $("readBtn"); rb.href = p.url; rb.hidden = false;
+  $("arrowBox").hidden = false;
+  updateNow();
+}
+function highlight(i) {
+  for (const el of $("story").querySelectorAll("span")) el.classList.toggle("on", Number(el.dataset.i) === i);
+}
+function updateNow() {
+  const p = S.current;
+  if (!p || !S.pos) return;
+  const d = distM(S.pos, p), b = bearingDeg(S.pos, p), h = S.compassActive() ?? S.heading;
+  $("nowEyebrow").textContent = `${speaking ? "Now" : "Last story"} · ${fmtDist(d)} ${DIRWORD[relDirection(b, h, d)]}`;
+  $("arrow").style.transform = `rotate(${h == null ? b : b - h}deg)`;
+}
+function idleLine(near) {
+  if (S.current || !S.pos) return;
+  const nx = near.find(p => tellable(p));
+  $("nowEyebrow").textContent = S.paused ? "Paused" : "Listening for stories…";
+  $("story").textContent = nx ? `Next up: ${speechTitle(nx.title)}, ${fmtDist(nx.dist)} away.` :
+    (S.fetching || !S.lastFetchAt ? "Looking up what's around you…" : "Nothing nearby has a story yet. Keep walking.");
+}
+
+let lastList = 0;
+function renderAround() {
+  if (!S.pos) return;
+  const near = inReach(), h = S.compassActive() ?? S.heading ?? 0, r = triggerRadius(S.acc, S.speed);
+  idleLine(near);
+  // heading-up plot, 300 m to the edge
+  const k = 150 / 300, pts = [];
+  for (const p of near) {
+    if (p.dist > 300) break;
+    const a = (p.brg - h) * RAD;
+    pts.push({ p, x: Math.sin(a) * p.dist * k, y: -Math.cos(a) * p.dist * k });
+  }
+  let route = "";
+  if (S.mode === "demo" && S.path) {
+    const pts2 = [];
+    for (let s = S.along; s < Math.min(S.pathLen, S.along + 320); s += 15) {
+      const q = pointAlong(s), d = distM(S.pos, q), a = (bearingDeg(S.pos, q) - h) * RAD;
+      pts2.push(`${(Math.sin(a) * d * k).toFixed(1)},${(-Math.cos(a) * d * k).toFixed(1)}`);
+    }
+    if (pts2.length > 1) route = `<polyline class="route" points="${pts2.join(" ")}"/>`;
+  }
+  // label the best few, skipping any that would land on a label already placed
+  const labels = [], boxes = [];
+  for (const o of pts.filter(o => tellable(o.p) || o.p === S.current).sort((a, b) => (b.p === S.current) - (a.p === S.current) || b.p.score - a.p.score)) {
+    const w = Math.min(26, speechTitle(o.p.title).length) * 5.1, x0 = o.x > 60 ? o.x - 8 - w : o.x + 8;
+    if (boxes.some(b => x0 < b.x1 && x0 + w > b.x0 && Math.abs(o.y - b.y) < 12)) continue;
+    boxes.push({ x0, x1: x0 + w, y: o.y }); labels.push(o);
+    if (labels.length === 4) break;
+  }
+  const north = (-h) * RAD;
+  $("radar").innerHTML =
+    [50, 100, 150].map(rr => `<circle class="ring" r="${rr}"/>`).join("") +
+    `<circle class="zone" r="${(r * k).toFixed(1)}"/>` + route +
+    `<text x="${(Math.sin(north) * 158).toFixed(1)}" y="${(-Math.cos(north) * 158 + 3).toFixed(1)}" text-anchor="middle" style="font-weight:700">N</text>` +
+    pts.map(o => `<circle class="p ${told.has(o.p.key) ? "told" : ""} ${o.p === S.current ? "cur" : ""}" cx="${o.x.toFixed(1)}" cy="${o.y.toFixed(1)}" r="${o.p === S.current ? 5.5 : 2.2 + Math.max(0, o.p.score - 3) * 1.1}"><title>${esc(o.p.title)}</title></circle>`).join("") +
+    labels.map(o => `<text class="lbl" x="${(o.x + (o.x > 60 ? -8 : 8)).toFixed(1)}" y="${(o.y + 3).toFixed(1)}" text-anchor="${o.x > 60 ? "end" : "start"}">${esc(speechTitle(o.p.title).slice(0, 26))}</text>`).join("") +
+    `<path class="me" d="M0 -9 6 6 0 3 -6 6Z"/>`;
+  $("legend").textContent = S.heading == null && S.compassActive() == null ? "North is up until you start moving · rings every 100 m" : "Up is the way you're facing · rings every 100 m";
+  if (Date.now() - lastList < 1500) return;
+  lastList = Date.now();
+  const list = near.filter(p => p.dist < 400 && tellable(p)).sort((a, b) => (b.score - b.dist / 120) - (a.score - a.dist / 120)).slice(0, 6)
+    .sort((a, b) => a.dist - b.dist);
+  $("nearby").innerHTML = list.length ? list.map(p => `<li>${p.thumb ? `<img src="${esc(p.thumb)}" alt="" loading="lazy">` : `<span class="ph"></span>`}
+    <div><div class="t"><a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(speechTitle(p.title))}</a></div><div class="s">${esc(p.desc || "")}</div></div>
+    <div class="d">${fmtDist(p.dist)}<br><span class="muted">${DIRWORD[relDirection(p.brg, S.heading, p.dist)]}</span></div></li>`).join("")
+    : `<li class="empty" style="display:block">${S.lastFetchAt ? "Nothing new within 400 m." : "Looking…"}</li>`;
+}
+function renderHeard() {
+  $("heard").innerHTML = heard.length ? heard.map(h => `<li class="told">${h.thumb ? `<img src="${esc(h.thumb)}" alt="" loading="lazy">` : `<span class="ph"></span>`}
+    <div><div class="t"><a href="${esc(h.url)}" target="_blank" rel="noopener">${esc(speechTitle(h.title))}</a></div><div class="s">${esc(h.desc || "")}</div></div>
+    <div class="d">${new Date(h.t).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</div></li>`).join("")
+    : `<li class="empty" style="display:block">Stories you hear today collect here, with links to read more.</li>`;
+}
+function setMediaSession(p) {
+  if (!("mediaSession" in navigator)) return;
+  try {
+    navigator.mediaSession.metadata = new MediaMetadata({ title: speechTitle(p.title), artist: "Street Stories", album: p.desc || "", artwork: p.thumb ? [{ src: p.thumb, sizes: "480x480" }] : [] });
+    navigator.mediaSession.setActionHandler("nexttrack", skip);
+    navigator.mediaSession.setActionHandler("pause", togglePause);
+    navigator.mediaSession.setActionHandler("play", togglePause);
+  } catch {}
+}
+
+// ---- movement ----------------------------------------------------------------------------
+function onFix(pos, acc, speedHint) {
+  S.pos = pos; S.acc = acc;
+  const now = Date.now();
+  S.fixes.push({ ...pos, t: now });
+  S.fixes = S.fixes.filter(f => now - f.t < 20000);
+  // course from the last few fixes; ignore jitter when standing still
+  const old = S.fixes.find(f => distM(f, pos) > Math.max(8, acc * 0.6));
+  if (old) {
+    S.heading = bearingDeg(old, pos);
+    S.speed = speedHint ?? distM(old, pos) / Math.max(1, (now - old.t) / 1000);
+  } else if (speedHint != null) S.speed = speedHint;
+  else S.speed = 0.3;
+}
+
+// GPS
+let watchId = null;
+function startGps() {
+  if (!("geolocation" in navigator)) return showStartErr("This browser can't share your location. Try a demo walk instead.");
+  if (!isSecureContext) return showStartErr("Location needs a secure (https) page. Try a demo walk instead.");
+  S.mode = "gps";
+  enterTour("Walking", "Using your location");
+  watchId = navigator.geolocation.watchPosition(p => {
+    onFix({ lat: p.coords.latitude, lon: p.coords.longitude }, p.coords.accuracy, p.coords.speed > 0 ? p.coords.speed : null);
+    if (p.coords.heading != null && !isNaN(p.coords.heading) && p.coords.speed > 0.5) S.heading = p.coords.heading;
+    if (!S.located) { S.located = true; refresh(true).then(think); nameHere(); }
+    $("whereSub").textContent = `GPS ±${Math.round(p.coords.accuracy)} m`;
+  }, e => {
+    $("whereSub").textContent = e.code === 1 ? "Location is off. Allow it in settings, or try a demo walk." : "Waiting for GPS…";
+  }, { enableHighAccuracy: true, maximumAge: 2000, timeout: 20000 });
+}
+async function nameHere() {
+  try {
+    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&zoom=14&lat=${S.pos.lat}&lon=${S.pos.lon}`);
+    const d = await r.json();
+    const a = d.address || {};
+    $("where").firstChild.textContent = [a.neighbourhood || a.suburb || a.quarter, a.city || a.town || a.village].filter(Boolean).join(", ") || "Walking";
+  } catch {}
+}
+
+// demo walker: along a preset path, or wandering from place to place
+function pathLength(path) { let L = 0; for (let i = 1; i < path.length; i++) L += distM(path[i - 1], path[i]); return L; }
+function pointAlong(s) {
+  const P = S.path;
+  for (let i = 1; i < P.length; i++) {
+    const L = distM(P[i - 1], P[i]);
+    if (s <= L) return moveBy(P[i - 1], bearingDeg(P[i - 1], P[i]), s);
+    s -= L;
+  }
+  return P[P.length - 1];
+}
+function startDemo(key, at, label) {
+  S.mode = "demo";
+  if (key) {
+    const w = WALKS[key];
+    S.path = w.path.map(([lat, lon]) => ({ lat, lon })); S.pathLen = pathLength(S.path); S.along = 0; S.wander = false;
+    S.demoName = w.name; S.lang = w.lang;
+    onFix(S.path[0], 5, 1.4);
+  } else {
+    S.path = null; S.wander = true; S.demoName = label; S.lang = deviceLang;
+    onFix(at, 5, 1.4);
+  }
+  enterTour(S.demoName, "Demo walk · stories pause the walk");
+  $("paceSeg").hidden = false;
+  refresh(true).then(think);
+}
+let lastStep = Date.now();
+function stepDemo() {
+  const now = Date.now(), dt = Math.min(2, (now - lastStep) / 1000); lastStep = now;
+  if (S.mode !== "demo" || S.paused || speaking) return;
+  const m = 1.4 * S.pace * dt;
+  if (S.path && !S.wander) {
+    S.along = Math.min(S.pathLen, S.along + m);
+    const p = pointAlong(S.along), ahead = pointAlong(Math.min(S.pathLen, S.along + 10));
+    onFix(p, 5, 1.4);
+    if (distM(p, ahead) > 1) S.heading = bearingDeg(p, ahead);
+    if (S.along >= S.pathLen) { S.wander = true; $("whereSub").textContent = "End of the route · wandering on"; }
+  } else {
+    // head for the best untold place within 450 m; if there's none, keep going and look again
+    if (!S.target || told.has(S.target.key) || distM(S.pos, S.target) < 15) {
+      S.target = inReach().filter(p => p.dist < 450 && tellable(p)).sort((a, b) => (b.score - b.dist / 150) - (a.score - a.dist / 150))[0] || null;
+    }
+    const brg = S.target ? bearingDeg(S.pos, S.target) : (S.heading ?? 45);
+    const p = moveBy(S.pos, brg, m);
+    onFix(p, 5, 1.4);
+    S.heading = brg;
+  }
+}
+
+// compass (optional; only used when you're standing still)
+async function enableCompass() {
+  try {
+    if (typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function") {
+      if (await DeviceOrientationEvent.requestPermission() !== "granted") return;
+    }
+    addEventListener("deviceorientationabsolute", e => { if (e.alpha != null) S.compass = (360 - e.alpha) % 360; }, true);
+    addEventListener("deviceorientation", e => { if (e.webkitCompassHeading != null) S.compass = e.webkitCompassHeading; }, true);
+  } catch {}
+}
+
+// ---- screens ---------------------------------------------------------------------------------
+let wakeLock = null;
+async function keepAwake() {
+  try { if ("wakeLock" in navigator && document.visibilityState === "visible") wakeLock = await navigator.wakeLock.request("screen"); } catch {}
+}
+document.addEventListener("visibilitychange", () => { if (S.mode && document.visibilityState === "visible") keepAwake(); });
+
+function enterTour(where, sub) {
+  $("start").hidden = true; $("tour").hidden = false;
+  $("where").firstChild.textContent = where; $("whereSub").textContent = sub;
+  $("chip").textContent = S.mode === "demo" ? "Demo walk" : "Walking"; $("chip").classList.add("live");
+  if (synth) { const u = new SpeechSynthesisUtterance(""); synth.speak(u); }   // unlocks speech on iOS (needs this tap)
+  loadVoices(); keepAwake(); renderHeard();
+  scrollTo(0, 0);
+}
+function endTour() {
+  stopSpeech();
+  if (watchId != null) navigator.geolocation.clearWatch(watchId);
+  watchId = null; S.mode = null; S.pos = null; S.current = null; S.next = null; S.located = false; S.lastFetchAt = null; S.fixes = [];
+  S.paused = false; $("pauseBtn").textContent = "Pause"; S.target = null;
+  places.clear();
+  try { wakeLock && wakeLock.release(); } catch {}
+  $("tour").hidden = true; $("start").hidden = false; $("paceSeg").hidden = true;
+  $("chip").textContent = "A walking guide"; $("chip").classList.remove("live");
+  $("story").className = "story idle"; $("nowTitle").textContent = ""; $("nowDesc").textContent = ""; $("nowImg").hidden = true; $("arrowBox").hidden = true; $("readBtn").hidden = true;
+  history.replaceState(null, "", location.pathname);
+}
+function togglePause() {
+  S.paused = !S.paused;
+  if (S.paused) stopSpeech();
+  $("pauseBtn").textContent = S.paused ? "Resume" : "Pause";
+  $("moreBtn").disabled = !S.current;
+  if (!S.paused) think();
+}
+function showStartErr(msg) { const e = $("startErr"); e.textContent = msg; e.hidden = false; }
+
+// ---- wire up -----------------------------------------------------------------------------------
+$("walks").innerHTML = Object.entries(WALKS).map(([k, w]) => `<button class="walk" data-walk="${k}"><b>${esc(w.name)}</b><span>${esc(w.sub)}</span></button>`).join("");
+$("walks").addEventListener("click", e => {
+  const b = e.target.closest("[data-walk]"); if (!b) return;
+  history.replaceState(null, "", `?demo=${b.dataset.walk}`);
+  startDemo(b.dataset.walk);
+});
+$("searchForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const q = $("searchInput").value.trim(); if (!q) return;
+  try {
+    const r = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(q)}`);
+    const [hit] = await r.json();
+    if (!hit) return showStartErr(`Couldn't find "${q}".`);
+    startDemo(null, { lat: +hit.lat, lon: +hit.lon }, hit.display_name.split(",").slice(0, 2).join(","));
+  } catch { showStartErr("Place search is unavailable right now. Try a preset walk."); }
+});
+$("startBtn").addEventListener("click", () => { if ($("compassIn").checked) enableCompass(); startGps(); });
+$("moreBtn").addEventListener("click", tellMore);
+$("skipBtn").addEventListener("click", skip);
+$("pauseBtn").addEventListener("click", togglePause);
+$("endBtn").addEventListener("click", endTour);
+$("pocketBtn").addEventListener("click", () => { $("pocket").hidden = false; keepAwake(); });
+$("pocket").addEventListener("click", () => { $("pocket").hidden = true; });
+$("paceSeg").addEventListener("click", e => {
+  const b = e.target.closest("[data-pace]"); if (!b) return;
+  S.pace = Number(b.dataset.pace);
+  for (const x of $("paceSeg").children) x.setAttribute("aria-pressed", String(x === b));
+});
+$("voiceSel").addEventListener("change", e => { voicePref = e.target.value; store.set("voice", voicePref); });
+$("rateIn").value = rate;
+$("rateIn").addEventListener("change", e => { rate = Number(e.target.value); store.set("rate", rate); });
+$("compassIn").addEventListener("change", e => { if (e.target.checked) enableCompass(); });
+if (synth) { loadVoices(); synth.addEventListener?.("voiceschanged", loadVoices); }
+if (!isSecureContext) $("geoNote").textContent = "Walking mode needs this page on https. Demo walks work anywhere.";
+
+setInterval(() => { stepDemo(); renderAround(); updateNow(); }, 500);
+setInterval(() => { if (S.mode) think(); }, 2000);
+
+// shareable demo links: ?demo=rome&pace=12
+const dk = params.get("demo");
+if (dk && WALKS[dk]) {
+  const pace = Number(params.get("pace"));
+  if ([1, 4, 12].includes(pace)) { S.pace = pace; for (const x of $("paceSeg").children) x.setAttribute("aria-pressed", String(Number(x.dataset.pace) === pace)); }
+  startDemo(dk);
+}
+</script>
+</body>
+</html>
