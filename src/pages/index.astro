@@ -3867,7 +3867,7 @@ import Analytics from '../components/Analytics.astro';
       gap: 2rem;
     }
 
-    /* Full-width feature card with a live preview (Wild Tracks) */
+    /* Full-width feature card with a live preview (Find My Shark) */
     .project-card.feature {
       grid-column: 1 / -1;
       display: grid;
@@ -5397,11 +5397,11 @@ import Analytics from '../components/Analytics.astro';
       <div class="projects-grid">
         <div class="project-card feature" data-category="art,wip">
           <div class="feature-preview">
-            <iframe src="/wild-tracks/?embed" loading="lazy" title="Wild Tracks live preview" tabindex="-1"></iframe>
-            <a href="/wild-tracks/" target="_blank" class="feature-hit" aria-label="Open Wild Tracks"></a>
+            <iframe src="/find-my-shark/?embed" loading="lazy" title="Find My Shark live preview" tabindex="-1"></iframe>
+            <a href="/find-my-shark/" target="_blank" class="feature-hit" aria-label="Open Find My Shark"></a>
           </div>
           <div>
-            <h3>Wild Tracks</h3>
+            <h3>Find My Shark</h3>
             <p>Every shark, sea turtle and seal OCEARCH has tagged since 2012, replayed as glowing dots on a night ocean. 468 animals and 219,000 satellite pings. Each ripple is a fin breaking the surface. Tap any animal to follow its journey. The start of an art piece for Burning Man.</p>
             <div class="project-tags">
               <span class="tag">Canvas</span>
@@ -5409,7 +5409,7 @@ import Analytics from '../components/Analytics.astro';
               <span class="tag">Open Data</span>
               <span class="tag">Generative Art</span>
             </div>
-            <a href="/wild-tracks/" target="_blank" class="project-link">Open it →</a>
+            <a href="/find-my-shark/" target="_blank" class="project-link">Open it →</a>
           </div>
         </div>
         <div class="project-card" data-category="art,signal,wip">
@@ -5568,19 +5568,25 @@ import Analytics from '../components/Analytics.astro';
     <div class="container">
       <div class="section-header">
         <h2>Writing</h2>
-        <p>Long-form, scroll-through pieces — how I think, and what I've shipped</p>
+        <p>Three blogs. <a href="/writing" style="color:var(--ocean)">All writing →</a></p>
       </div>
       <div class="blog-posts">
-        <a href="/intelligence" class="blog-post">
-          <div class="blog-kind">Explainer · scroll-through</div>
-          <h3>What Is AI?</h3>
-          <p>What AI actually is — tokens, embeddings, attention — through agents and production, then the energy wall and what comes after silicon. Starts from zero.</p>
+        <a href="/writing#ai" class="blog-post">
+          <div class="blog-kind">Blog</div>
+          <h3>AI</h3>
+          <p>The concepts, and the projects that use them.</p>
           <span class="blog-go">Read →</span>
         </a>
-        <a href="/tmgo" class="blog-post">
-          <div class="blog-kind">Case study · scroll-through</div>
-          <h3>TM Go — Architecture Case Study</h3>
-          <p>How I bounded an AI agent so it could be trusted with real data: the seven engineering decisions, the closed-loop eval harness, and how it scales.</p>
+        <a href="/writing#ai2" class="blog-post">
+          <div class="blog-kind">Blog</div>
+          <h3>(AI)²</h3>
+          <p>Austin's Intelligence × Artificial Intelligence. Music, visuals, art.</p>
+          <span class="blog-go">Read →</span>
+        </a>
+        <a href="/writing#culture" class="blog-post">
+          <div class="blog-kind">Blog</div>
+          <h3>Culture</h3>
+          <p>My takes.</p>
           <span class="blog-go">Read →</span>
         </a>
       </div>

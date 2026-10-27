@@ -1,0 +1,58 @@
+---
+// src/pages/writing/index.astro — the three blogs: AI, (AI)², Culture.
+import { getCollection } from 'astro:content';
+import Writing from '../../layouts/Writing.astro';
+import { BLOGS } from '../../content.config';
+
+const posts = (await getCollection('writing', (p) => import.meta.env.DEV || !p.data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const fmt = (d) => d.toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+---
+<Writing title="Writing — Austin Nafe" description="AI, (AI)² and culture. Writing by Austin Nafe." path="/writing">
+  <h1>Writing</h1>
+
+  {Object.entries(BLOGS).map(([key, blog]) => {
+    const list = posts.filter((p) => p.data.blog === key);
+    return (
+      <section id={key} class="blog">
+        <h2>{blog.name}</h2>
+        <p class="blurb">{blog.blurb}</p>
+        {list.length ? (
+          <ul>
+            {list.map((p) => (
+              <li>
+                <a class="post" href={p.data.href ?? `/writing/${p.id}`}>
+                  <span class="title">{p.data.title}{p.data.draft && <em> · draft</em>}</span>
+                  <span class="summary">{p.data.summary}</span>
+                  <span class="date">{fmt(p.data.date)}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p class="soon">First post soon.</p>
+        )}
+      </section>
+    );
+  })}
+</Writing>
+
+<style>
+  h1 { font-size: 40px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
+  .blog { margin-top: 48px; scroll-margin-top: 24px; }
+  h2 { font-size: 24px; font-weight: 800; letter-spacing: -0.01em; }
+  .blurb { color: var(--text-dim); font-size: 15px; margin-top: 2px; }
+  ul { list-style: none; margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+  .post {
+    display: block; background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 16px 18px; transition: border-color 0.15s ease, transform 0.15s ease;
+  }
+  .post:hover { border-color: var(--ocean); transform: translateY(-1px); }
+  .title { display: block; font-weight: 600; font-size: 17px; }
+  .title em { color: var(--coral); font-style: normal; font-size: 13px; }
+  .summary { display: block; color: var(--text-dim); font-size: 14px; margin-top: 4px; }
+  .date { display: block; color: var(--text-dim); font-size: 12px; margin-top: 8px; }
+  .soon { color: var(--text-dim); font-size: 14px; margin-top: 16px; padding: 16px 18px; border: 1px dashed var(--border); border-radius: 14px; }
+  @media (prefers-reduced-motion: reduce) { .post { transition: none; } .post:hover { transform: none; } }
+</style>

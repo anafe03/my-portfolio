@@ -1,0 +1,50 @@
+---
+// src/pages/writing/[...slug].astro — one post. Posts with an `href` live on their own page and skip this.
+import { getCollection, render } from 'astro:content';
+import Writing from '../../layouts/Writing.astro';
+import { BLOGS } from '../../content.config';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('writing', (p) => !p.data.href && (import.meta.env.DEV || !p.data.draft));
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const blog = BLOGS[post.data.blog];
+const date = post.data.date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+---
+<Writing title={`${post.data.title} — Austin Nafe`} description={post.data.summary} path={`/writing/${post.id}`}>
+  <article>
+    <a class="kind" href={`/writing#${post.data.blog}`}>{blog.name}</a>
+    <h1>{post.data.title}</h1>
+    <p class="meta">{date}{post.data.draft && ' · draft'}</p>
+    <div class="prose"><Content /></div>
+
+    {post.data.projects.length > 0 && (
+      <aside class="projects">
+        <h2>The projects</h2>
+        {post.data.projects.map((p) => <a href={p.href}>{p.label} →</a>)}
+      </aside>
+    )}
+  </article>
+</Writing>
+
+<style>
+  .kind { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em; color: var(--coral); }
+  h1 { font-size: 36px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; margin-top: 8px; }
+  .meta { color: var(--text-dim); font-size: 14px; margin-top: 8px; }
+  .prose { margin-top: 32px; font-size: 17px; line-height: 1.75; }
+  .prose :global(h2) { font-size: 22px; font-weight: 800; margin: 40px 0 12px; }
+  .prose :global(p) { margin: 0 0 18px; }
+  .prose :global(a) { color: var(--ocean); text-decoration: underline; text-underline-offset: 3px; }
+  .prose :global(ul), .prose :global(ol) { margin: 0 0 18px 22px; }
+  .prose :global(img), .prose :global(video) { max-width: 100%; border-radius: 12px; margin: 8px 0 18px; }
+  .prose :global(code) { font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 6px; }
+  .prose :global(pre) { background: var(--bg-light); border: 1px solid var(--border); border-radius: 12px; padding: 16px; overflow-x: auto; margin: 0 0 18px; }
+  .prose :global(pre code) { background: none; padding: 0; }
+  .prose :global(blockquote) { border-left: 3px solid var(--coral); padding-left: 16px; color: var(--text-dim); margin: 0 0 18px; }
+  .projects { margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
+  .projects h2 { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em; color: var(--text-dim); }
+  .projects a { color: var(--ocean); font-weight: 600; }
+</style>
