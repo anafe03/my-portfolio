@@ -12,6 +12,11 @@ draft: true
 
 <!-- Simple effects. Red, because melodic house. The first thing that worked. -->
 
+## The setup day
+
+<!-- Sep 20–25: Videosync wouldn't render. The fix was a Showsync script compiled for Live's Python 3.11, track output to Main, a Properties device. The real test: lsof shows Videosync opening .mov files. Live's video window proves nothing. -->
+<!-- Question: what did that day teach you about debugging with an AI? -->
+
 ## bb17
 
 <!-- My travel footage, cut by hand in Ableton. Sierra dusk on the intro, Death Valley on drop 1, Hong Kong neon on drop 2. The MCP follows my cuts. -->
