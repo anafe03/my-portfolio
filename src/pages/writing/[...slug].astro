@@ -12,13 +12,18 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 const { Content } = await render(post);
 const blog = BLOGS[post.data.blog];
+const minutes = Math.max(1, Math.round((post.body ?? '').replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length / 230));
 const date = post.data.date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 ---
 <Writing title={`${post.data.title} — Austin Nafe`} description={post.data.summary} path={`/writing/${post.id}`}>
   <article>
     <a class="kind" href={`/writing#${post.data.blog}`}>{blog.name}</a>
     <h1>{post.data.title}</h1>
-    <p class="meta">{date}{post.data.draft && ' · draft'}</p>
+    <p class="dek">{post.data.summary}</p>
+    <div class="byline">
+      <img src="/profile.jpg" alt="" width="36" height="36">
+      <span><strong>Austin Nafe</strong><br>{date} · {minutes} min read{post.data.draft && ' · draft'}</span>
+    </div>
     <div class="prose"><Content /></div>
 
     {post.data.projects.length > 0 && (
@@ -32,18 +37,38 @@ const date = post.data.date.toLocaleDateString('en-US', { month: 'long', day: 'n
 
 <style>
   .kind { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em; color: var(--coral); }
-  h1 { font-size: 36px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; margin-top: 8px; }
-  .meta { color: var(--text-dim); font-size: 14px; margin-top: 8px; }
-  .prose { margin-top: 32px; font-size: 17px; line-height: 1.75; }
-  .prose :global(h2) { font-size: 22px; font-weight: 800; margin: 40px 0 12px; }
-  .prose :global(p) { margin: 0 0 18px; }
+  h1 { font-family: var(--serif); font-size: 38px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.1; margin-top: 10px; }
+  .dek { font-family: var(--serif); font-style: italic; font-size: 20px; color: var(--text-dim); line-height: 1.4; margin-top: 10px; }
+  .byline { display: flex; align-items: center; gap: 12px; margin-top: 24px; padding: 14px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text-dim); line-height: 1.4; }
+  .byline img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+  .byline strong { color: var(--text); font-weight: 600; }
+  .prose { margin-top: 32px; font-family: var(--serif); font-size: 19px; line-height: 1.65; }
+  .prose :global(h2) { font-family: var(--font); font-size: 22px; font-weight: 800; margin: 48px 0 12px; }
+  .prose :global(p) { margin: 0 0 22px; }
   .prose :global(a) { color: var(--ocean); text-decoration: underline; text-underline-offset: 3px; }
-  .prose :global(ul), .prose :global(ol) { margin: 0 0 18px 22px; }
-  .prose :global(img), .prose :global(video) { max-width: 100%; border-radius: 12px; margin: 8px 0 18px; }
-  .prose :global(code) { font-size: 0.9em; background: var(--bg-light); padding: 2px 6px; border-radius: 6px; }
-  .prose :global(pre) { background: var(--bg-light); border: 1px solid var(--border); border-radius: 12px; padding: 16px; overflow-x: auto; margin: 0 0 18px; }
+  .prose :global(ul), .prose :global(ol) { margin: 0 0 28px 22px; }
+  .prose :global(img), .prose :global(video) { max-width: 100%; border-radius: 6px; margin: 8px 0 28px; }
+  .prose :global(p:first-of-type::first-letter) { float: left; font-size: 3.4em; line-height: 0.85; font-weight: 600; margin: 6px 8px 0 0; color: var(--coral); }
+  .prose :global(.beat) { font-weight: 600; margin: 30px 0; }
+  .prose :global(.quote) { text-align: center; font-size: 1.25em; line-height: 1.35; margin: 36px 0; padding: 20px 0; border-top: 2px solid var(--coral); border-bottom: 2px solid var(--coral); }
+  .prose :global(hr) { border: 0; text-align: center; margin: 40px 0; clear: both; }
+  .prose :global(hr)::after { content: '· · ·'; color: var(--text-dim); letter-spacing: 0.4em; }
+  .prose :global(.beat em) { font-weight: 400; }
+  .prose :global(figure) { float: right; clear: right; width: 42%; margin: 6px 0 16px 28px; }
+  .prose :global(figure.left) { float: left; clear: left; margin: 6px 28px 16px 0; }
+  .prose :global(figure img) { display: block; width: 100%; margin: 0; }
+  .prose :global(figure.tall) { width: 30%; }
+  .prose :global(figcaption) { font-family: var(--font); font-size: 12px; color: var(--text-dim); margin-top: 8px; }
+  .prose :global(figcaption a) { color: inherit; }
+  .prose :global(code) { font-size: 0.85em; background: var(--bg-light); padding: 2px 6px; border-radius: 6px; }
+  .prose :global(pre) { font-size: 15px; background: var(--bg-light); border: 1px solid var(--border); border-radius: 12px; padding: 16px; overflow-x: auto; margin: 0 0 28px; }
   .prose :global(pre code) { background: none; padding: 0; }
-  .prose :global(blockquote) { border-left: 3px solid var(--coral); padding-left: 16px; color: var(--text-dim); margin: 0 0 18px; }
+  .prose :global(blockquote) { border-left: 3px solid var(--coral); padding-left: 16px; color: var(--text-dim); margin: 0 0 28px; }
+  @media (max-width: 600px) {
+    h1 { font-size: 30px; } .dek { font-size: 18px; } .prose { font-size: 18px; }
+    .prose :global(figure), .prose :global(figure.left), .prose :global(figure.tall) { float: none; width: 100%; margin: 24px 0; }
+    .prose :global(figure img) { max-height: 320px; object-fit: cover; }
+  }
   .projects { margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
   .projects h2 { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em; color: var(--text-dim); }
   .projects a { color: var(--ocean); font-weight: 600; }
